@@ -1,0 +1,112 @@
+;
+; Number format extended form
+;
+;
+;                      | <------ A ------> |
+;                              | <-- X --> |
+;                              | XS|  
+;      WS-1              4   3   2   1   0  
+;      +---+--- ... ---+---+---+---+---+---+   
+; A/C  | S |           | S | E | E | E | E |  
+;      +---+--- ... ---+---+---+---+---+---+
+;
+;      +---+--- ... ---+---+---+---+---+---+
+; B/D  | 0 |    WS - 2 digits significand  |
+;      +---+--- ... ---+---+---+---+---+---+
+;
+; 9 as Significand sign means negative number
+; Digits 5..9 as exponent sign means negative exponent
+
+        loadp       #30       ;     P=      14
+        ldn         b,#5      ;     LC(1)  #5
+        
+
+;
+; SQRT 
+;
+; A exponent in A field
+; B significand in m field
+;
+;
+;
+;
+;
+;
+;
+
+SQRT_Full:                    ;
+                              ; =SQR15
+                              ;     XM=0
+                              ;     SB=0
+                              ;     SETHEX
+                              ;     A=A+1   XS
+                              ;     A=A-1   XS
+                              ;     SETDEC
+                              ;     GONC    =SQR17
+                              ;     ?A#0    B
+                              ;     RTNYES
+                              ;     ?A#0    S
+                              ;     GOYES   L_0C563
+                              ;     RTN
+                              ; *********************
+                              ; =SQR17
+                              ;     B=0     S
+        mov.w       c,b       ;     C=B     W
+                              ;     ?B=0    W
+                              ;     GOYES   =SQR70
+                              ;     ?A=0    S
+                              ;     GOYES   L_0C56D
+                              ; L_0C563
+                              ;     P=      0
+                              ;     LC(2)  #A
+                              ;     GOTO    =INVNaN
+                              ; L_0C56D
+        add.d.w     b,b       ;     B=B+B   W
+        add.d.w     b,b       ;     B=B+B   W
+        add.d.w     b,c       ;     B=B+C   W
+        mov.a       c,a       ;     C=A     A
+        add.d.a     c,c       ;     C=C+C   A
+        mov.w       c,0       ;     C=0     M
+        jnc         SQRT_1    ;     GONC    L_0C583
+        not.d.m     c         ;     C=-C-1  M
+SQRT_1:                       ; L_0C583
+        mov.a       c,a       ;     C=A     A
+        mov.m       a,c       ;     A=C     W
+        add.d.w     c,c       ;     C=C+C   W
+        add.d.w     c,c       ;     C=C+C   W
+        add.d.w     a,c       ;     A=A+C   W
+        loadp       #0        ;     P=      0
+        neq.p       a,0       ;     ?A#0    P
+        jt          SQRT_2    ;     GOYES   L_0C59B
+        sr.d.w      b         ;     BSR     W
+SQRT_2:                       ; L_0C59B
+        sr.d.w      a         ;     ASR     W
+        mov.w       c,0       ;     C=0     W
+        loadp       #30       ;     P=      14
+        ldn         c,#5      ;     LC(1)  #5
+        ex.w        b,c       ;     BCEX    W
+SQRT_3:                       ; L_0C5A9
+        sr.d.wp     b         ;     BSR     WP
+        sub.d.p     b,#1      ;     B=B-1   P
+SQRT_4:                       ; L_0C5AF
+        add.d.p     b,#1      ;     B=B+1   P
+        sub.d.w     c,b       ;     C=C-B   W
+        jnc         SQRT_4    ;     GONC    L_0C5AF
+        add.d.w     c,b       ;     C=C+B   W
+        sl.d.w      c         ;     CSL     W
+        decp                  ;     P=P-1
+        jnc         SQRT_3    ;     GONC    L_0C5A9
+                              ; *********************
+SQRT_5:                       ; =SQR70
+                              ;     SB=0
+SQRT_6:                       ; L_0C5C6
+        eq.w        c,0       ;     ?C=0    W
+        jt          SQRT_7    ;     GOYES   L_0C5D1
+        sub.d.x     c,#1      ;     C=C-1   X
+        sr.d.x      c         ;     CSR     X
+SQRT_7:                       ; L_0C5D1
+        stop                  ;     RTNCC
+
+
+                
+                

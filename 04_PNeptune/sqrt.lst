@@ -1,0 +1,112 @@
+     1            ;
+     2            ; Number format extended form
+     3            ;
+     4            ;
+     5            ;                      | <------ A ------> |
+     6            ;                              | <-- X --> |
+     7            ;                              | XS|  
+     8            ;      WS-1              4   3   2   1   0  
+     9            ;      +---+--- ... ---+---+---+---+---+---+   
+    10            ; A/C  | S |           | S | E | E | E | E |  
+    11            ;      +---+--- ... ---+---+---+---+---+---+
+    12            ;
+    13            ;      +---+--- ... ---+---+---+---+---+---+
+    14            ; B/D  | 0 |    WS - 2 digits significand  |
+    15            ;      +---+--- ... ---+---+---+---+---+---+
+    16            ;
+    17            ; 9 as Significand sign means negative number
+    18            ; Digits 5..9 as exponent sign means negative exponent
+    19            
+    20  000000 2000001E          loadp       #30       ;     P=      14
+    21  000001 31300005          ldn         b,#5      ;     LC(1)  #5
+    22                    
+    23            
+    24            ;
+    25            ; SQRT 
+    26            ;
+    27            ; A exponent in A field
+    28            ; B significand in m field
+    29            ;
+    30            ;
+    31            ;
+    32            ;
+    33            ;
+    34            ;
+    35            ;
+    36            
+    37            SQRT_Full:                    ;
+    38                                          ; =SQR15
+    39                                          ;     XM=0
+    40                                          ;     SB=0
+    41                                          ;     SETHEX
+    42                                          ;     A=A+1   XS
+    43                                          ;     A=A-1   XS
+    44                                          ;     SETDEC
+    45                                          ;     GONC    =SQR17
+    46                                          ;     ?A#0    B
+    47                                          ;     RTNYES
+    48                                          ;     ?A#0    S
+    49                                          ;     GOYES   L_0C563
+    50                                          ;     RTN
+    51                                          ; *********************
+    52                                          ; =SQR17
+    53                                          ;     B=0     S
+    54  000002 19431F00          mov.w       c,b       ;     C=B     W
+    55                                          ;     ?B=0    W
+    56                                          ;     GOYES   =SQR70
+    57                                          ;     ?A=0    S
+    58                                          ;     GOYES   L_0C56D
+    59                                          ; L_0C563
+    60                                          ;     P=      0
+    61                                          ;     LC(2)  #A
+    62                                          ;     GOTO    =INVNaN
+    63                                          ; L_0C56D
+    64  000003 08331F00          add.d.w     b,b       ;     B=B+B   W
+    65  000004 08331F00          add.d.w     b,b       ;     B=B+B   W
+    66  000005 08341F00          add.d.w     b,c       ;     B=B+C   W
+    67  000006 19420400          mov.a       c,a       ;     C=A     A
+    68  000007 08440400          add.d.a     c,c       ;     C=C+C   A
+    69  000008 19401F00          mov.w       c,0       ;     C=0     M
+    70  000009 5300000B          jnc         SQRT_1    ;     GONC    L_0C583
+    71  00000A 0E491F03          not.d.m     c         ;     C=-C-1  M
+    72            SQRT_1:                       ; L_0C583
+    73  00000B 19420400          mov.a       c,a       ;     C=A     A
+    74  00000C 19241F03          mov.m       a,c       ;     A=C     W
+    75  00000D 08441F00          add.d.w     c,c       ;     C=C+C   W
+    76  00000E 08441F00          add.d.w     c,c       ;     C=C+C   W
+    77  00000F 08241F00          add.d.w     a,c       ;     A=A+C   W
+    78  000010 20000000          loadp       #0        ;     P=      0
+    79  000011 1120FFFF          neq.p       a,0       ;     ?A#0    P
+    80  000012 54000014          jt          SQRT_2    ;     GOYES   L_0C59B
+    81  000013 1C301F00          sr.d.w      b         ;     BSR     W
+    82            SQRT_2:                       ; L_0C59B
+    83  000014 1C201F00          sr.d.w      a         ;     ASR     W
+    84  000015 19401F00          mov.w       c,0       ;     C=0     W
+    85  000016 2000001E          loadp       #30       ;     P=      14
+    86  000017 31400005          ldn         c,#5      ;     LC(1)  #5
+    87  000018 1A341F00          ex.w        b,c       ;     BCEX    W
+    88            SQRT_3:                       ; L_0C5A9
+    89  000019 1C30FF00          sr.d.wp     b         ;     BSR     WP
+    90  00001A 0D31FFFF          sub.d.p     b,#1      ;     B=B-1   P
+    91            SQRT_4:                       ; L_0C5AF
+    92  00001B 0931FFFF          add.d.p     b,#1      ;     B=B+1   P
+    93  00001C 0C431F00          sub.d.w     c,b       ;     C=C-B   W
+    94  00001D 5300001B          jnc         SQRT_4    ;     GONC    L_0C5AF
+    95  00001E 08431F00          add.d.w     c,b       ;     C=C+B   W
+    96  00001F 1D401F00          sl.d.w      c         ;     CSL     W
+    97  000020 24000000          decp                  ;     P=P-1
+    98  000021 53000019          jnc         SQRT_3    ;     GONC    L_0C5A9
+    99                                          ; *********************
+   100            SQRT_5:                       ; =SQR70
+   101                                          ;     SB=0
+   102            SQRT_6:                       ; L_0C5C6
+   103  000022 10401F00          eq.w        c,0       ;     ?C=0    W
+   104  000023 54000026          jt          SQRT_7    ;     GOYES   L_0C5D1
+   105  000024 0D410200          sub.d.x     c,#1      ;     C=C-1   X
+   106  000025 1C400200          sr.d.x      c         ;     CSR     X
+   107            SQRT_7:                       ; L_0C5D1
+   108  000026 41000000          stop                  ;     RTNCC
+   109            
+   110            
+   111                            
+   112                            
