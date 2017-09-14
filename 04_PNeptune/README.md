@@ -3,11 +3,11 @@ Parallel Neptune Core - An extended Saturn processor
 
 Programming model
 
-16 128 bit Alu registers, equivalent to A..D
-5 bits P register
-256 Level Hardware stack
-Carry and comparion flags are separated and have their own branches on true/false
-Per opcode decimal/hex flag for ALU registers
+- 16 128 bit Alu registers, equivalent to A..D
+- 5 bits P register
+- 256 Level Hardware stack
+- Carry and comparion flags are separated and have their own branches on true/false
+- Per opcode decimal/hex flag for ALU registers
 
 The assembly syntax has been changed and the encoding of opcodes too. It doesn't
 make at this point much sense to cram all opcodes issome tiny encoding like 
@@ -17,67 +17,69 @@ saturn even at the assembly level is problematic.
 Contrary to the Saturn, all register combintions are possible.
 
 Register fields
-                      | <------ A ------> |
-                              | <-- X --> |
-                              | XS|  
-      WS-1              4   3   2   1   0  
-      +---+--- ... ---+---+---+---+---+---+   
-      | S |           | S | E | E | E | E |  
-      +---+--- ... ---+---+---+---+---+---+
 
-      +---+--- ... ---+---+---+---+---+---+
-      | 0 |    WS - 2 digits significand  |
-      +---+--- ... ---+---+---+---+---+---+
-      
+
+31 | 30 | 29 |28 | 27 | 26 | ... | 10 | 9 | 8 | 7| 4 | 3 | 2 | 1 | 0
+--- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+S | | | P | | | | | | | | |   | XS | B | B
+S | | | | | | | | | | | A | A | A | A | A
+S | M | M | M | M | M | M | M | M | M | M | M | M | X | X | X
+S |   |   | WP | WP | WP | WP | WP | WP | WP | WP | WP | WP | WP | WP | WP
+W | W | W | W | W | W | W | W | W | W | W | W | W | W | W | W
+
+When P = 28
+
 Encoding
 
 Opcodes on arithmetic registers hex/decimal
 
 Arithmetic opcodes ADD, SUB, RSUB, EQ, NEQ, LT, LE, GT, GE
 
- 31  28 27   24 23  20 19  16 15    8 7   0
-+------+-------+------+------+-------+-----+
-| 000x | Opcode|  Rd  |  Rs  | start | end | 
-+------+-------+------+------+-------+-----+
+ 31..28 | 27..24 | 23..20 | 19..16 | 15..8 | 7..0
+--- | --- | --- | --- | --- | ---
+ 000x | Opcode|  Rd  |  Rs  | start | end 
 
 Opcodes on P register
- 31  28 27   24 23  20 19  16 15    8 7     0
-+------+-------+------+------+-------+-------+
-| 0010 | Opcode|  Rd  | 0000 | Start |  lit  | 
-+------+-------+------+------+-------+-------+
+
+ 31..28 | 27..24 | 23..20 | 19..16 | 15..8 | 7..0
+--- | --- | --- | --- | --- | ---
+0010 | Opcode|  Rd  | 0000 | Start |  lit  
+
 
 Load immediate to ALU register up to 5 nibbles @P
- 31  28 27   24 23  20 19  16 15    8 7     0
-+------+-------+------+------+-------+-------+
-| 0011 |   n   |  Rd  |       literal        | 
-+------+-------+------+------+-------+-------+
+
+ 31..28 | 27..24 | 23..20 | 19..0
+--- | --- | --- | --- | 
+0011 |   n   |  Rd  |       literal        
+
 
 Conditional/Unconditional jumps
- 31  28 27   24 23  20 19  16 15          0
-+------+-------+---------------------------+
-| 0100 |  CCCC |    ---- address ------    | 
-+------+-------+---------------------------+
+
+ 31..28 | 27..24 | 23..0
+--- | --- | --- 
+ 0100 |  CCCC |    ---- address ------     
+
 
 Opcodes on Address registers
- 31  28 27   24 23  20 19  16 15          0
-+------+-------+------+------+-------------+
-| 1000 | Opcode|  Rd  |  Rs  |    literal  | 
-+------+-------+------+------+-------------+
+
+ 31..28 | 27..24 | 23..20 | 19..16 | 15..0
+--- | --- | --- | --- | --- 
+1000 | Opcode|  Rd  |  Rs  |    literal  
 
 
-Field  |  End (MSD) | Start (LSD)
--------+------------+------------
-   S   |      31    |     31
-   W   |      31    |      0
-   M   |      30    |      3
-   XS  |       2    |      2
-   B   |       1    |      0
-   X   |       2    |      0
-   WP  |       p    |      0
-   P   |       P    |      P
 
-The register P can take values from 31 to 0.
+Field | End (MSD) | Start (LSD)
+--- | --- | ---
+S | 31 | 31
+W | 31 | 0
+M | 30 | 3
+XS | 2 | 2
+B | 1 | 0
+X | 2 | 0
+WP | p | 0
+P | P | P
 
+Other fields can also be specified as they are coded as left most nibble and right most nibble.
 
    
 ADD.H/D.f  dst, src   dst = dst+src
@@ -91,9 +93,9 @@ depending on the result of the last digit. The source argument can be a
 register or a constant. The given constant will be used for the rightmost 
 digit and the rest will be zeros. Used for A=A+1.
 
-A=A+1 W     add.d.w     a,#1
-A=A+C WP    add.d.wp    a,c
-B=B+C X     add.h.x     b,c     in hexmode
+- A=A+1 W     add.d.w     a,#1
+- A=A+C WP    add.d.wp    a,c
+- B=B+C X     add.h.x     b,c     in hexmode
 
 SUB.H/D.f   dst, src   dst = dst+src
 ------------------------------------
@@ -106,9 +108,9 @@ depending on the result of the last digit. The source argument can be a
 register or a constant. The given constant will be used for the rightmost 
 digit and the rest will be zeros. Used for A=A-1.
 
-A=A-1 W     sub.d.w     a,#1
-A=A-C WP    sub.d.wp    a,c
-B=B-C X     sub.h.x     b,c     in hexmode
+- A=A-1 W     sub.d.w     a,#1
+- A=A-C WP    sub.d.wp    a,c
+- B=B-C X     sub.h.x     b,c     in hexmode
 
 RSUB.H/D.f   dst, src   dst = dst+src
 ------------------------------------
@@ -121,27 +123,60 @@ depending on the result of the last digit. The source argument can be a
 register or a constant. The given constant will be used for the rightmost 
 digit and the rest will be zeros. Used for A=-A (A=0-A).
 
-A=B-A W     rsub.d.w    a,b
-A=-A WP     rsub.d.wp   a,#9
-B=C-B X     rsub.h.x    b,c     in hexmode
+- A=B-A W     rsub.d.w    a,b
+- A=-A WP     rsub.d.wp   a,#9
+- B=C-B X     rsub.h.x    b,c     in hexmode
 
 EQ.H/D.f    dst,src     ?A=B
+-----------------------------
+
+Comparison operands. They affect the comparison flag and not the carry.
+They should be followed by a JT/JNT opcode.
+
 NEQ.H/D.f   dst,src     ?A#B
+-----------------------------
+
+Comparison operands. They affect the comparison flag and not the carry.
+They should be followed by a JT/JNT opcode.
+
 GT.H/D.f    dst,src     ?A>B
+-----------------------------
+
+Comparison operands. They affect the comparison flag and not the carry.
+They should be followed by a JT/JNT opcode.
+
 GTEQ.H/D.f  dst,src     ?A>=B
+-----------------------------
+
+Comparison operands. They affect the comparison flag and not the carry.
+They should be followed by a JT/JNT opcode.
+
 LT.H/D.f    dst,src     ?A<B
+-----------------------------
+
+Comparison operands. They affect the comparison flag and not the carry.
+They should be followed by a JT/JNT opcode.
+
 LTEQ.H/D.f  dst,src     ?A<=B
 -----------------------------
 
 Comparison operands. They affect the comparison flag and not the carry.
 They should be followed by a JT/JNT opcode.
 
-OR.f        dst,src     A=A|A 
+OR.f        dst,src     A=A|A
+-----------------------------
+
+Logical OR operation. Do not affect carry.
+ 
 XOR.f        dst,src    A=A^A 
+-----------------------------
+
+Logical XOR operation. Do not affect carry.
+ 
 AND.f        dst,src    A=A&A
 -----------------------------
 
-Logical operations. Do not affect carry.
+Logical AND operation. Do not affect carry.
  
 MOV.f       dst, src    A=B
 -----------------------------
@@ -196,8 +231,6 @@ LDN         dst,#n      LA(x) n/LC(x) n
 
 Load up to 5 nibbles at P in dst. Dst can be any register.
 
-
-
 RET                      RTN
 ----------------------------
 
@@ -220,20 +253,34 @@ Unconditional call
 
 
 JC                      GOC
+----------------------------
+
+Conditional jump if carry set
+
 JNC                     GONC
+----------------------------
+
+Conditional jump if carry set
+
 JT
+----------------------------
+
+Conditional jump if condition was true
+
 JNT
+----------------------------
+
+Conditional jump if condition was false
+
 JS
+----------------------------
+
+Conditional jump if shifted bit/nibble was not zero
+
 JNS
 ----------------------------
 
-Conditional jumps.
-Carry set
-Carry cleared
-Condition true
-Condition false
-Shift not zero
-Shift zero
+Conditional jump if shifted bit/nibble was zero
 
 
 Assembler
@@ -241,7 +288,7 @@ Assembler
 
 To assemble a file:
 
-python pneptune_asm.py <filename.pnasm>
+- python pneptune_asm.py <filename.pnasm>
 
 Two output files are generated:
 
@@ -256,20 +303,20 @@ Simulation
 
 Invoque the simulator like:
 
-python pneptune_sim.py <code.bin>
+- python pneptune_sim.py <code.bin>
 
 A list of executed opcodes and results are written to the console:
 
-PNeptune Simulator v1.00
-   39 words read
-Reset
-00000  2000001e        LOADP    #1e             P: 1e
-00004  31300005        LDN      B,#5            B: 0500000000000000000000000000000
-00008  19431f00        MOV.W    C,B             C: 0500000000000000000000000000000
-0000c  08331f00        ADD.D.W  B,B             B: 1000000000000000000000000000000
-00010  08331f00        ADD.D.W  B,B             B: 2000000000000000000000000000000
-00014  08341f00        ADD.D.W  B,C             B: 2500000000000000000000000000000
-00018  19420400        MOV.A    C,A             C: 0500000000000000000000000000000
-0001c  08440400        ADD.D.A  C,C             C: 0500000000000000000000000000000
-00020  19401f00        MOV.W    C,0             C: 0000000000000000000000000000000
-00024  5300000b        JNC      0002c
+PNeptune Simulator v1.00<br>
+   39 words read<br>
+Reset<br>
+00000  2000001e        LOADP    #1e             P: 1e<br>
+00004  31300005        LDN      B,#5            B: 0500000000000000000000000000000<br>
+00008  19431f00        MOV.W    C,B             C: 0500000000000000000000000000000<br>
+0000c  08331f00        ADD.D.W  B,B             B: 1000000000000000000000000000000<br>
+00010  08331f00        ADD.D.W  B,B             B: 2000000000000000000000000000000<br>
+00014  08341f00        ADD.D.W  B,C             B: 2500000000000000000000000000000<br>
+00018  19420400        MOV.A    C,A             C: 0500000000000000000000000000000<br>
+0001c  08440400        ADD.D.A  C,C             C: 0500000000000000000000000000000<br>
+00020  19401f00        MOV.W    C,0             C: 0000000000000000000000000000000<br>
+00024  5300000b        JNC      0002c<br>
