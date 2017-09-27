@@ -5,10 +5,10 @@
  * Uses 4 bit internal & external buses
  *
  */
-`include "llf2_defs.v"
+`include "saturn_defs.v"
 
 
-module llf2_core(
+module saturn_core(
     input wire          clk_in,
 	input wire          reset_in,
     input wire          irq_in,
@@ -17,11 +17,11 @@ module llf2_core(
     output wire [19:0]  addr_o,
     output wire         oe_o,
     output wire         we_o,
-    
-    output wire [3:0]   data_o,
-    input wire [3:0]    data_in,
+
+    output wire [15:0]  data_o,
+    input wire [15:0]   data_in,
     input wire          mem_ack_in,
-    
+
     output wire [11:0]  oport_o,            // output port
     input wire [15:0]   iport_in            // input port
 `ifdef HAS_TRACE_UNIT
@@ -31,235 +31,192 @@ module llf2_core(
 
     );
 
-wire [19:0] pc, fetch_addr, data_addr, curr_data_addr;
-wire irqen, irq_ack;
-wire mem_ack, execute, load_new_pc;
-wire exe_ack_branch, exe_ack_tfr;
-wire carry, clrst;
-wire [19:0] new_pc;
-wire [3:0] alu_op1, alu_op2, alu_q; // values 
-wire [3:0] reg_op1, reg_op2;
-wire [3:0] reg_dst; // addresses of registers
-wire [3:0] op1_nib, op2_nib, dst_nib, alu_lit;
-wire [3:0] alu_op, dmux;
-wire [3:0] field_start, field_end;
-wire [3:0] reg_p;
-wire [3:0] sequencer;
-wire push_ac, pop_ac;
-wire push_pc, pop_pc, decimal, sethex, setdec;
-wire reg_clr, reg_tfr, reg_ex, reg_we, use_alu_lit_1, use_alu_lit_2, data_reg;
-wire mem_we, mem_read, fetch_read, use_fetch_addr;
-wire alu_seq_last_nibble;
 
-wire [1:0] alu_seq;
-reg setsb;
-wire set_stickybit_from_alu;
-wire setxm, setmp, setsr, setint;
-wire clrxm, clrmp, clrsb, clrsr, clrint, clrhst;
-wire clr_carry, force_carry, force_hex;
-wire set_carry, set_carry_on_carry, set_carry_on_zero, set_carry_on_eq;
-wire set_carry_from_alu, clr_carry_from_alu, condtrue_from_alu;
-wire setstflag, clrstflag, tst_0_st, tst_1_st, test_cond_true_st;
-wire test_cond_true_hst, test_cond_false_st;
-wire tstxm, tstmp, tstsb, tstsr;
-wire tst_p_eq_lit, tst_p_neq_lit;
-`ifdef HAS_TRACE_UNIT
-wire trace_start;
-wire trace_end;
-wire [3:0] trace_op1_nib;
-wire [3:0] trace_reg_op1;
-`endif
+// External memory interface
+wire [19:0] bus_addr;
+wire bus_rd_n;
+wire bus_we_n;
+wire [15:0] bus_data_from_mem;
+wire [15:0] bus_data_to_mem;
+// Internal fetch bus
 
-assign addr_o = use_fetch_addr ? fetch_addr:curr_data_addr;
-assign data_o = alu_op1;
+wire ibus_flush_queue;  // asserted to indicate that the pre-fetch queue must be flush and a new address should be used
+wire ibus_fetch;        // asserted to indicate that a fetch is needed
+wire ibus_fetch_ack;    // fetch acknowledged
+wire [19:0] ibus_addr;  // address used when the queue has been flushed due to jump
+wire [83:0] ibus_pre_opcode; // pre-fetched opcode, can be decoded directly
+wire [4:0] ibus_pre_opcode_length; // length of opcode in the pre-fetched buffer
+wire [19:0] ibus_pre_fetched_opcode_addr;
+wire ibus_ready;        // the current pre-fetch buffer has a valid opcode
 
-assign we_o = !mem_we;
-assign oe_o = !(mem_read | fetch_read);
+// Internal Data interface
+wire [19:0] data_addr;  // address of the current transfer
+wire [3:0] data_size;   // size in nibbles of the current transfer
+wire [63:0] data_to_mem;// data register to write or read
+wire [63:0] data_from_mem;  // read data from memory, register aligned
+wire data_read;         // read data from memory strobe
+wire data_write;        // write data to memory strobe
+wire data_read_ready;   // read data from memory completed
+wire data_write_ready;  // write data to memory completed
 
-assign irq_ack_o = irq_ack;
-assign irq_en_o = irqen; // output interrupts enabled for keyboard handling
+assign data_read = 1'b0;
+assign data_write = 1'b0;
 
-llf2_fd_uint fd_unit(
-    .clk_in(clk_in),
-	.reset_in(reset_in),
-    .irq_in(irq_in),
-    .irqen_in(irqen),
-    .irq_ack_o(irq_ack),
-    // cpu interface
-    .pc_in(pc),
-    .reg_p_in(reg_p),
-    .carry_in(carry),
-    .condtrue_in(condtrue_from_alu | test_cond_true_st | test_cond_true_hst),
-    .exe_o(execute),
-	.cpu_state_o(sequencer),
-    // mem interface
-    .fetch_read_o(fetch_read),
-    .use_fetch_addr_o(use_fetch_addr),
-    .addr_o(fetch_addr),
-    .data_in(data_in),
-    .mem_ack_in(mem_ack_in), // asserted when data is available 
-    // decoded instruction enables
-    .push_pc_o(push_pc),
-    .pop_pc_o(pop_pc),
-    .push_ac_o(push_ac),
-    .pop_ac_o(pop_ac),
-    .load_new_pc_o(load_new_pc),
-    
-    .setdec_o(setdec),
-    .sethex_o(sethex),
-    .setxm_o(setxm),
-    .setint_o(setint),
-    .tstxm_o(tstxm),
-    .tstmp_o(tstmp),
-    .tstsb_o(tstsb),
-    .tstsr_o(tstsr),
-    .clrxm_o(clrxm),
-    .clrmp_o(clrmp),
-    .clrsb_o(clrsb),
-    .clrsr_o(clrsr),
-    .clrint_o(clrint),
-    .clrhst_o(clrhst),
+wire [ 0: 0] seq_write_dst         ;
+wire [ 0: 0] seq_write_op1         ;
+wire [ 0: 0] seq_latch_alu_regs    ;
+wire [ 0: 0] seq_forced_carry      ;
+wire [ 0: 0] seq_forced_hex        ;
+wire [ 5: 0] seq_op1_reg           ;
+wire [ 5: 0] seq_op2_reg           ;
+wire [ 5: 0] seq_dst_reg           ;
+wire [63: 0] seq_op_literal        ;
+wire [ 0: 0] seq_set_decimal       ;
+wire [ 0: 0] seq_set_hex           ;
+wire [63: 0] bus_data_from_memory  ;
+wire [63: 0] alru_data_to_memory   ;
+wire [ 3: 0] seq_field_left        ;
+wire [ 3: 0] seq_field_right       ;
+wire [ 4: 0] seq_alu_op            ;
+wire [19: 0] seq_addr              ;
+wire [ 0: 0] seq_write_carry       ;
+wire [ 0: 0] seq_write_sticky_bit  ;
+wire [ 0: 0] seq_clr_carry         ;
+wire [ 0: 0] seq_set_carry         ;
+wire [ 0: 0] alru_carry            ;
+wire [ 3: 0] alru_P                ;
+wire [ 0: 0] seq_shift_alu_q       ;
+wire [ 0: 0] seq_add_pc            ;
+wire [ 0: 0] seq_load_pc           ;
+wire [ 0: 0] seq_push_pc           ;
+wire [ 0: 0] seq_pop_pc            ;
+wire [19: 0] alru_PC               ;
+wire [15: 0] bus_IN                ;
+wire [11: 0] alru_OUT              ;
+wire [ 0: 0] seq_dp_sel_in         ;
+wire [19: 0] alru_Dn               ;
 
-    .clr_carry_o(clr_carry),
-    .set_carry_o(set_carry),
-    .set_carry_on_carry_o(set_carry_on_carry),
-    .set_carry_on_zero_o(set_carry_on_zero),
-    .set_carry_on_eq_o(set_carry_on_eq),
-    .force_carry_o(force_carry),
-    .force_hex_o(force_hex),
-    
-    .setstflag_o(setstflag),
-    .clrstflag_o(clrstflag),
-    .tst_0_st_flag_o(tst_0_st),
-    .tst_1_st_flag_o(tst_1_st),
-    .tst_p_eq_lit_o(tst_p_eq_lit),
-    .tst_p_neq_lit_o(tst_p_neq_lit),
-    
-    .dmux_o(dmux),
-    .alu_op_o(alu_op), 
-    .alu_reg1_o(reg_op1), 
-    .alu_reg2_o(reg_op2), 
-    .alu_dst_o(reg_dst),
+saturn_bus_controller bus_ctrl(
+    .clk_in                             (clk_in),           // BUS and cpu c
 
-    .alu_lit_o(alu_lit),
-    .use_alu_lit_as_1_o(use_alu_lit_1),
-    .use_alu_lit_as_2_o(use_alu_lit_2),
-    .alu_seq_last_nibble_o(alu_seq_last_nibble),
-    .new_pc_o(new_pc),
-    
-    // ALU sequencer
-    .seq_o(alu_seq),               // sequencer stage
-    // Register selection outputs
-    .data_reg_o(data_reg),      // current address register for 
-    .op1_nib_o(op1_nib),        // address of operand 1 nibble
-    .op2_nib_o(op2_nib),        // address of operand 2 nibble
-    .dst_nib_o(dst_nib),        // address of destination nibble
-    .clr_o(reg_clr),
-    .tfr_o(reg_tfr),
-    .ex_o(reg_ex),
-    .we_o(reg_we),
-    .mem_read_o(mem_read),
-    .mem_write_o(mem_we),
-    .data_addr_o(curr_data_addr),
-    .data_addr_in(data_addr)
-`ifdef HAS_TRACE_UNIT
-    ,
-    .trace_start_o(trace_start),
-    .trace_end_in(trace_end)
-`endif
+    .bus_addr_o                         (addr_o),           // address bus,
+    .bus_rd_o                           (oe_o),             // read strobe
+    .bus_we_o                           (we_o),             // write strobe
+
+    .bus_data_in                        (data_in),          // read data bus
+    .bus_data_o                         (data_o),           // write data bus
+
+    .bus_data_io                        (),    // bidirectional
+
+    .ibus_addr_in                       (ibus_addr),        // new fetch address
+    .ibus_flush_q_in                    (ibus_flush_queue), // force flush t
+    .ibus_fetch_in                      (ibus_fetch),       // fetch strobe,
+    .ibus_fetch_ack_in                  (ibus_fetch_ack),   // fetch acknowledge
+
+    .ibus_pre_fetched_opcode_o          (ibus_pre_opcode),  // pre fetched opcode
+    .ibus_pre_fetched_opcode_length_o   (ibus_pre_opcode_length), // length
+    .ibus_pre_fetched_opcode_addr_o     (ibus_pre_fetched_opcode_addr), // address
+    .ibus_ready_o                       (ibus_ready),       // asserted when opcode is fully loaded
+
+    .data_addr_in                       (data_addr),        // data address
+    .data_size_in                       (data_size),        // size of data
+    .data_data_in                       (data_to_mem),      // data to be written
+    .data_field_left_in                 (seq_field_left),  // data mask
+    .data_field_right_in                (seq_field_right), // data mask
+
+    .data_data_o                        (data_from_mem),    // read data
+    .data_read_in                       (data_read),
+    .data_write_in                      (data_write),
+    .data_read_ready_o                  (data_read_ready),
+    .data_write_ready_o                 (data_write_ready)
+);
+
+saturn_decoder_sequencer dec_seq(
+    .clk_in                 (clk_in),
+    .reset_in               (reset_in),
+    .irq_in                 (),
+    .irqen_in               (),
+    .irq_ack_o              (),
+
+    .ibus_addr_o            (ibus_addr),
+    .ibus_flush_q_o         (ibus_flush_queue),
+    .ibus_fetch_o           (ibus_fetch),
+    .ibus_fetch_ack_o       (ibus_fetch_ack),
+    .ibus_pre_fetched_opcode_in         (ibus_pre_opcode),
+    .ibus_pre_fetched_opcode_length_in  (ibus_pre_opcode_length),
+    .ibus_pre_fetched_opcode_addr_in    (ibus_pre_fetched_opcode_addr),
+    .ibus_ready_in          (ibus_ready),
+
+    .write_dst_o            (seq_write_dst),
+    .write_op1_o            (seq_write_op1),
+    .latch_alu_regs_o       (seq_latch_alu_regs),
+    .forced_carry_o         (seq_forced_carry),
+    .forced_hex_o           (seq_forced_hex        ),
+    .op1_reg_o              (seq_op1_reg),
+    .op2_reg_o              (seq_op2_reg),
+    .dst_reg_o              (seq_dst_reg),
+    .op_literal_o           (seq_op_literal),
+    .set_decimal_o          (seq_set_decimal),
+    .set_hexadecimal_o      (seq_set_hex),
+    .left_mask_o            (seq_field_left ),
+    .right_mask_o           (seq_field_right),
+    .alu_op_o               (seq_alu_op),
+    .addr_o                 (seq_addr),
+    .write_sticky_bit_o     (seq_write_sticky_bit),
+    .write_carry_o          (seq_write_carry),
+    .clr_carry_o            (seq_clr_carry),
+    .set_carry_o            (seq_set_carry),
+    .carry_in               (alru_carry),
+    .shift_alu_q_o          (seq_shift_alu_q       ),
+    .reg_P_in               (alru_P                ),
+    .add_pc_o               (seq_add_pc),
+    .load_pc_o              (seq_load_pc),
+    .push_pc_o              (seq_push_pc),
+    .pop_pc_o               (seq_pop_pc),
+    .PC_in                  (alru_PC),
+    .dp_sel_o               (seq_dp_sel_in),
+    .Dn_in                  (alru_Dn)
+);
+
+saturn_alru alru(
+	.clk_in                 (clk_in                ),
+    .write_dst_in           (seq_write_dst         ),
+    .write_op1_in           (seq_write_op1         ),
+    .latch_alu_regs_in      (seq_latch_alu_regs    ),
+    .forced_carry_in        (seq_forced_carry      ),
+    .forced_hex_in          (seq_forced_hex        ),
+    .op1_reg_in             (seq_op1_reg           ),
+    .op2_reg_in             (seq_op2_reg           ),
+    .dst_reg_in             (seq_dst_reg           ),
+    .set_decimal_in         (seq_set_decimal       ),
+    .set_hexadecimal_in     (seq_set_hex           ),
+    .data_in                (bus_data_from_memory  ),
+    .data_o                 (alru_data_to_memory   ),
+    .left_mask_in           (seq_field_left        ),
+    .right_mask_in          (seq_field_right       ),
+    .alu_op_in              (seq_alu_op            ),
+    .op_literal_in          (seq_op_literal        ),
+    .write_sticky_bit_in    (seq_write_sticky_bit),
+    .write_carry_in         (seq_write_carry),
+    .clr_carry_in           (seq_clr_carry         ),
+    .set_carry_in           (seq_set_carry         ),
+    .carry_o                (alru_carry            ),
+    .shift_alu_q_in         (seq_shift_alu_q       ),
+    .P_o                    (alru_P                ),
+    .add_pc_in              (seq_add_pc            ),
+    .push_pc_in             (seq_push_pc           ),
+    .pop_pc_in              (seq_pop_pc            ),
+    .bwrite_fetched_pc_in   (ibus_ready            ), // write back fetched PC
+    .fetched_PC_in          (ibus_pre_fetched_opcode_addr),
+    .PC_o                   (alru_PC               ),
+    .IN_in                  (bus_IN                ),
+    .OUT_o                  (alru_OUT              ),
+    .dp_sel_in              (seq_dp_sel_in         ),
+    .Dn_o                   (alru_Dn               )
     );
 
-llf2_regs regs(
-    .clk_in(clk_in),
-	.sequencer_in(sequencer), 
-    .data_reg_in(data_reg),
-`ifdef HAS_TRACE_UNIT
-    .op1_nib_in(trace_op1_nib),     // override to use tracer values when needed
-`else
-    .op1_nib_in(op1_nib),
-`endif
-    .op2_nib_in(op2_nib),
-    .dst_nib_in(dst_nib),
-`ifdef HAS_TRACE_UNIT
-    .op1_in(trace_reg_op1),     // override to use tracer values when needed
-`else
-    .op1_in(reg_op1),
-`endif
-    .op2_in(reg_op2),
-    .dst_in(reg_dst),
-    .we_in(reg_we),
-    .ex_in(reg_ex),
-    .tfr_in(reg_tfr),
-    .clr_in(reg_clr),
-    .latch_in(1'b1),
-    .op1_o(alu_op1),
-    .op2_o(alu_op2),
-    .oport_o(oport_o),
-    .iport_in(iport_in),
-    .data_in((mem_read | fetch_read) ? data_in:alu_q ),
-    .push_ac_in(push_ac),
-    .pop_ac_in(pop_ac),
-    .push_pc_in(push_pc),
-    .pop_pc_in(pop_pc),
-    .load_new_pc_in(load_new_pc),
-    .reg_p_o(reg_p),
-    .pc_o(pc),
-    .new_pc_in(new_pc),
-    .data_addr_o(data_addr),
-    .op_lit_in(alu_lit),
-    .setstflag_in(setstflag),
-    .clrstflag_in(clrstflag),
-    .tst_0_st_in(tst_0_st),
-    .tst_1_st_in(tst_1_st),
-    .tst_p_eq_lit_in(tst_p_eq_lit),
-    .tst_p_neq_lit_in(tst_p_neq_lit),
-    
-    .test_cond_true_o(test_cond_true_st),
-    .test_cond_false_o(test_cond_false_st)  // used to clear the carry when ?P=n and ?P#n
-    );
-// Sticky bit generation for shift right/left
-//
 
-always @(*)
-    begin
-        setsb = 1'b0;
-        if ((dmux == `DMUX_SR) && (alu_seq == `SEQ_INIT)) // register output already valid
-            begin
-                // op2 has the same nibble as dst, check for non-zero to set sticky bit
-                setsb = alu_op2 != 4'h0;
-            end
-        if ((dmux == `DMUX_SL) && alu_seq_last_nibble) // register output still valid
-            begin
-                // op2 has the same nibble as dst, check for non-zero to set sticky bit
-                setsb = alu_op2 != 4'h0;
-            end
-    
-    end
-
-llf2_alu alu(
-    .clk_in(clk_in),
-    .exe_in(execute),
-    .carry_in(carry),
-    .set_carry_on_carry_in(set_carry_on_carry),
-    .set_carry_on_zero_in(set_carry_on_zero),
-    .set_carry_on_eq_in(set_carry_on_eq),
-    .seq_in(alu_seq),
-    .alu_op_in(alu_op),
-    .alu_op1_in(alu_op1),
-    .alu_op2_in(alu_op2),
-    .alu_lit_in(alu_lit), // used in Dx=Dx+n
-    .use_alu_lit_as_1_in(use_alu_lit_1),
-    .use_alu_lit_as_2_in(use_alu_lit_2),
-    .alu_q_o(alu_q),
-    .dec_in(decimal),
-    .force_hex_in(force_hex),
-    .force_carry_in(force_carry),
-    .setstickybit_o(set_stickybit_from_alu),
-    .setcarry_o(set_carry_from_alu),
-    .clrcarry_o(clr_carry_from_alu),
-    .condtrue_o(condtrue_from_alu)
-    );  
-    
+/*
 llf2_flags_unit flags_unit(
     .clk_in(clk_in),
     .exe_in(execute),
@@ -293,23 +250,23 @@ llf2_flags_unit flags_unit(
 llf2_trace_unit tu(
     .clk_in(clk_in),
     .reset_in(reset_in),       // asserted high reset
-    
+
     .data_in(alu_op1),        // register data at current address
     .op1_nib_in(op1_nib),     // nibble address of register 1 from decoder unit
     .reg_op1_in(reg_op1),    // alu operand, register 1 from decoder unit
     .pc_in(pc),          // alu operand, register 1 from decoder unit
-    
+
     .op1_nib_o(trace_op1_nib),      // address of operand 1 nibble to register unit
     .reg_op1_o(trace_reg_op1),     // alu operand, register 1 to register unit
-    
+
     .trace_start_in(trace_start), // assert to start trace
     .trace_end_o(trace_end),    // wait for this signal to proceed with next intsruction
-    
+
     .txd_o(txd_o)    // serial data
     );
 `endif
-    
-    
+*/
+
 endmodule
 
 
@@ -320,7 +277,7 @@ endmodule
 module llf2_flags_unit(
     input wire          clk_in,
     input wire          exe_in,
-    
+
     input wire          sethex_in,
     input wire          setdec_in,
     input wire          setxm_in,
@@ -344,12 +301,12 @@ module llf2_flags_unit(
     output wire         dec_o,
     output wire         carry_o,
     output wire         test_cond_true_o
-    
+
     );
-    
+
 reg dec;
 reg carry;
-reg xm; // external module missing 
+reg xm; // external module missing
 reg mp; // module pulled
 reg sb; // sticky bit
 reg sr; // Service request
@@ -390,26 +347,26 @@ initial
     end
 endmodule
 
-/* 6 nibbles 1LG3 Timer 
- * 
+/* 6 nibbles 1LG3 Timer
+ *
  */
 
 module llg3_Timer #(parameter TimerNum = 0)
 (
     input wire          clk_in,     // processor clock
-    
+
     input wire          clk_512Hz_in,   // 512 Hz clock
     input wire          irq_enabled_in,
     input wire          irq_ack_in,
     input wire          read_in,
     input wire          write_in,
     input wire [3:0]    addr_in,
-    
+
     output reg [3:0]    data_o,
     input wire [3:0]    data_in,
     output wire         irq_o
     );
-    
+
 reg [3:0] timer[6:0];
 
 reg irq_pending, ozero;
@@ -423,7 +380,7 @@ always @(posedge clk_in)
         if (irq_ack_in)
             irq_pending <= 1'b0;
         oclk_512 <= clk_512Hz_in;
-        
+
         if (read_in)
             begin
                 data_o <= timer[addr_in];
@@ -434,8 +391,8 @@ always @(posedge clk_in)
                timer[addr_in] <= data_in;
                $display("WT%d: [%x]:%x", TimerNum, addr_in, data_in);
             end
-        
-        
+
+
         if ((oclk_512 == 1'b0) && (clk_512Hz_in == 1'b1))
             begin
                 ozero <= zero;
@@ -461,17 +418,17 @@ endmodule
 /* 800x600 60 Hz with 40 MHz clock */
 module vga_out(
 	input wire			clk_in,
-	
+
 	input wire [9:0] 	addr_in,
 	input wire 			we_in,
 	input wire [3:0]	data_in,
-	
+
 	output wire			vsync_o,
 	output wire			hsync_o,
-	
+
 	output wire			white_o
 	);
-	
+
 reg vsync, hsync, white;
 reg [10:0] vsync_cnt, hsync_cnt;
 
@@ -502,7 +459,7 @@ always @(posedge clk_in)
 				2'b10:lcdram2[addr_in[6:0]] <= data_in; // slave2 center columns
 				2'b11:lcdram3[addr_in[6:0]] <= data_in; // master rightmost columns
 			endcase
-		
+
 		if (hsync_cnt == 11'd1055)
 			begin
 				if (vsync_cnt == 11'd627)
@@ -513,24 +470,24 @@ always @(posedge clk_in)
 			end
 		else
 			hsync_cnt <= hsync_cnt + 11'd1;
-			
-	
+
+
 		if (hsync_cnt == 11'd839)
 			hsync <= 1'b1; // positive pulse
 		if (hsync_cnt == 11'd968)
 			hsync <= 1'b0;
-			
+
 		if (vsync_cnt == 11'd600)
 			vsync <= 1'b1; // positive pulse
 		if (vsync_cnt == 11'd604)
 			vsync <= 1'b0;
-			
+
 		// manage visible
 		white <= 1'b0;
-		// 136 x 8 48 + 
+		// 136 x 8 48 +
 		if (visible)
 			begin
-				
+
 				// border
 				if ((vsync_cnt == 11'd0) || (vsync_cnt == 11'd599))
 					white <= 1'b1;
@@ -556,7 +513,7 @@ always @(posedge clk_in)
 										2'd2:	white <= datas2[2];
 										2'd3:	white <= datas2[3];
 									endcase
-								end					
+								end
 							else
 								if (hsync_cnt < 11'd576)
 									begin
@@ -568,19 +525,19 @@ always @(posedge clk_in)
 										endcase
 									end
 					end
-				
+
 			end
-	
+
 	end
 
-initial 
+initial
     begin
         hsync_cnt = 0;
         vsync_cnt = 0;
         vsync = 0;
         hsync = 0;
     end
-	
+
 endmodule
 /**
  *
@@ -589,25 +546,25 @@ endmodule
  *
  *
  */
- 
+
 module llf2_trace_unit(
     input wire          clk_in,
     input wire          reset_in,       // asserted high reset
-    
+
     input wire [3:0]    data_in,        // register data at current address
     input wire [3:0]    op1_nib_in,     // nibble address of register 1 from decoder unit
     input wire [3:0]    reg_op1_in,     // alu operand, register 1 from decoder unit
     input wire [19:0]   pc_in,          // current PC
-    
+
     output wire [3:0]   op1_nib_o,      // address of operand 1 nibble to register unit
     output wire [3:0]   reg_op1_o,     // alu operand, register 1 to register unit
-    
+
     input wire          trace_start_in, // assert to start trace
     output reg          trace_end_o,    // wait for this signal to proceed with next intsruction
-    
+
     output  wire        txd_o           // serial data
     );
-    
+
 wire [7:0] tx_data;
 wire [7:0] hex_data;
 reg [6:0] state, next_state;
@@ -695,14 +652,14 @@ always @(*)
         4'h8: size = 4'hf;
         4'h9: size = 4'h4;
         4'ha: size = 4'h4; // D0
-        4'hb: size = 4'h3; 
+        4'hb: size = 4'h3;
         4'hc: size = 4'h4; // STK
         4'hd: size = 4'h3; // Input register 16 bits
         4'he: size = 4'h4; // PC
         4'hf: size = 4'h0; // P
     endcase
-  
-        
+
+
 always @(posedge clk_in)
     begin
         trace_end_o <= 1'b0;
@@ -769,7 +726,7 @@ always @(posedge clk_in)
                                 name_addr <= name_addr + 5'h1;
                                 state <= 6'h13;
                             end
-                    6'h13: 
+                    6'h13:
                         if (tx_busy)
                             begin
                                 state <= 6'h14;
@@ -782,7 +739,7 @@ always @(posedge clk_in)
                                 is_name <= 1'b0;
                                 is_colon <= 1'b1;
                             end
-                    6'h15: 
+                    6'h15:
                         if (tx_busy)
                             begin
                                 state <= 6'h16;
@@ -816,12 +773,12 @@ always @(posedge clk_in)
                                 tx_start <= 1'b1;
                                 state <= 6'h19;
                             end
-                    6'h19: 
+                    6'h19:
                         if (tx_busy)
                             begin
                                 state <= 6'h1a;
                             end
-                    6'h1a: 
+                    6'h1a:
                         if (reg_nibble != 4'h0)
                             begin
                                 reg_nibble <= reg_nibble - 4'h1;
@@ -851,9 +808,9 @@ always @(posedge clk_in)
                             end
                 endcase
             end
-            
+
     end
-    
+
 initial
     begin
         is_colon = 1'b0;
@@ -865,7 +822,7 @@ initial
         state = 'h0;
         tx_start = 1'b0;
     end
-    
+
 endmodule
 /**
  *

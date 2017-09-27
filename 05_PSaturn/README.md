@@ -1,3 +1,14 @@
+Parallel Saturn
+---------------
+
+A soft core of a parallel Saturn implementation written in verilog
+
+Features:
+
+- 16 bit data memory BUS
+- 64 bit ALU
+- Prefetch buffer
+
 Data Read/Write
 ---------------
 

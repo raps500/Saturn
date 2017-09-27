@@ -1,71 +1,9 @@
 /**
- *
+ * Parallel Saturn
  * 64 bit Parallel Arithmetic, logic and register unit
- * 
- *
- * TFR               EX
- *   A                A
- *   B                B
- *   C                C
- *   D                D
- *  Rn                Rn
- *   P                P
- *  ST                ST
- * RSTK               Dn
- *  PC
- *  ID
- *  IN
- *  Dn
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
+ * All registers and flags are contained here
  */
-`define ALU_OP_TFREX    5'h00
-`define ALU_OP_ADD      5'h01
-`define ALU_OP_SUB      5'h02
-`define ALU_OP_RSUB     5'h03
-`define ALU_OP_AND      5'h04
-`define ALU_OP_OR       5'h05
-`define ALU_OP_LSD      5'h06
-`define ALU_OP_RSD      5'h07
-`define ALU_OP_LSB      5'h08
-`define ALU_OP_RSB      5'h09
-`define ALU_OP_CLS      5'h0a
-`define ALU_OP_CRS      5'h0b
-`define ALU_OP_EQ       5'h0c
-`define ALU_OP_NEQ      5'h0d
-`define ALU_OP_GTEQ     5'h0e
-`define ALU_OP_GT       5'h0f
-`define ALU_OP_LT       5'h10
-`define ALU_OP_LTEQ     5'h11
+`include "saturn_defs.v"
 
 module saturn_alru(
     input wire          clk_in,
@@ -73,17 +11,18 @@ module saturn_alru(
     input wire          write_op1_in,       // write from alu register to extra register
 	input wire			latch_alu_regs_in,	// latch the masked input arguments to the alu
     input wire          forced_carry_in,
-    input wire [1:0]    op1_type_reg_in,    // OP1 Type input
-    input wire [2:0]    op1_reg_in,         // register of this type for op1
-    input wire [1:0]    dst_type_reg_in,    // DST/OP2 type
-    input wire [3:0]    dst_reg_in,         // DST/OP2 register, ST bit register for clr/test/set
+    input wire          forced_hex_in,
+    input wire [5:0]    op1_reg_in,         // register for operand 1
+    input wire [5:0]    op2_reg_in,         // Oerand 2
+    input wire [5:0]    dst_reg_in,         // DST register, ST bit register for clr/test/set
 
-    input wire [1:0]    alu_dest_mux_in,    // dest alu register source mux: ALU, data, extra reg
-
-    input wire          decimal_in,         // decimal or binary mode
+    input wire          set_decimal_in,         // set decimal mode
+    input wire          set_hexadecimal_in,         // set hexadecimal mode
     
+    input wire [63:0]   op_literal_in,      // Data embedded in an opcode: LC, LA and so on
     input wire [63:0]   data_in,
     output wire [63:0]  data_o,             // memory interface
+    input wire [19:0]   CONFIG_in,          // CONFIGID data
     
     input wire [3:0]    left_mask_in,       // read/write mask
     input wire [3:0]    right_mask_in,
@@ -91,56 +30,34 @@ module saturn_alru(
     input wire [4:0]    alu_op_in,          // alu operation
     
     input wire [19:0]   addr_in,            // address as argument for PC, Dn operations
-    
-    // bit test A/C
-    input wire          testeq_0_bit_a_in,  // bit test for equality with 0
-    input wire          testeq_0_bit_c_in,
-    input wire          testeq_1_bit_a_in,
-    input wire          testeq_1_bit_c_in,
-    //
-    input wire          testeq_0_bit_st_in, // Program status bit test
-    input wire          testeq_1_bit_st_in, // Program status bit test
-    
-    input wire          clr_bit_st_in,      // Program status bit clear
-    input wire          set_bit_st_in,      // Program status bit set
-    
-    //
+     //
+    input wire          write_sticky_bit_in,// write the sticky bit with the contents of the shifted bit/nibble
     input wire          write_carry_in,     // write ALU carry to carry
     input wire          clr_carry_in,       // carry clear
     input wire          set_carry_in,       // carry set
     output wire         carry_o,            // arithmetic carry
-    output wire         condition_true_o,   //
     // P register
-    input wire          inc_p_in,
-    input wire          dec_p_in,
-    input wire          tsteq_p_in,
-    input wire          tstneq_p_in,
-    input wire          write_p_in,
+    input wire          shift_alu_q_in,     // shift result before storing in P
+    output wire [ 3:0]  P_o,
     // PC
     input wire          add_pc_in,          // increment PC one nibble
-    input wire          load_pc_in,         // load PC
     input wire          push_pc_in,         // push onto the stack
     input wire          pop_pc_in,          // pull from stack
+    input wire          bwrite_fetched_pc_in, // to store newly fetched PC
+    input wire [19:0]   fetched_PC_in,      // fetched PC
     output wire [19:0]  PC_o,
     // IN/OUT
     input wire [15:0]   IN_in,
     output wire [11:0]  OUT_o,
     // DATA Pointer
-    input wire          write_d0_5_in,
-    input wire          write_d1_5_in,
-    input wire          write_d0_4_in,
-    input wire          write_d1_4_in,
     input wire          dp_sel_in,          // selected data pointer D1=1, D0=0
     output wire [19:0]  Dn_o
     
     
 );
-// 16*4*4 = 256 + 8*64 = 768 FFs
+// Register Set
 reg [63:0] ABCD[3:0];
 reg [63:0] R[7:0];
-reg [63:0] latched_src_reg = 64'h0;
-reg [63:0] latched_dest_reg = 64'h0;
-
 reg [19:0] D0 = 20'h00000;
 reg [19:0] D1 = 20'h00000;
 reg [19:0] PC = 20'h00000;
@@ -148,26 +65,45 @@ reg [19:0] STK[15:0];                       // 16 level hardware stack
 reg [15:0] ST = 16'h0000;
 reg [11:0] OUTR = 12'h000;
 reg [15:0] INR = 16'h0000;
-reg [3:0] P = 4'h0;
+reg [3:0]  P = 4'h0;
+reg [3:0]  HS = 4'h0; // HW registers { MP, SR, SB, XM }
 wire [15:0] mask;
+reg [63:0] latched_src_reg = 64'h0;
+reg [63:0] latched_op2_reg = 64'h0;
 reg [15:0] left_mask = 16'h0000;
 reg [15:0] right_mask = 16'h0000;
-reg [63:0] src_reg = 64'h0;
-reg [63:0] dest_reg = 64'h0;
-reg carry = 1'b0;
+reg [63:0] src_reg;
+reg [63:0] op2_reg;
+reg f_carry = 1'b0;
+reg f_decimal = 1'b0;   // starts in hexadecimal mode
 reg alu_carry;
-reg condition_true = 1'b0;
-wire [63:0] masked_src_reg, masked_dest_reg;
+reg alu_sticky_bit;
+
+wire [63:0] masked_src_reg, masked_op2_reg;
 
 wire [19:0] RSTK;
+
+wire [63:0] add_q, sub_q, rsub_q;
+reg [63:0] alu_q;
+wire add_qc, sub_qc, rsub_qc;
 wire gt, gteq, lt, lteq, eq, neq;
+wire [15:0] no_src_zero_nibs; // used for stick bit generation
+wire [15:0] no_src_zero_bits_l, no_src_zero_bits_r; // used for stick bit generation
+
+wire [63:0] RA, RB, RC, RD;
+
+assign RA = ABCD[0];
+assign RB = ABCD[1];
+assign RC = ABCD[2];
+assign RD = ABCD[3];
 
 assign RSTK = STK[0];
+assign P_o = P;
 assign PC_o = PC;
 assign OUT_o = OUTR;
 assign Dn_o = dp_sel_in ? D1:D0;
-assign carry_o = carry;
-assign condition_true_o = condition_true;
+assign carry_o = f_carry;
+
 always @(posedge clk_in)
     INR <= IN_in;
 
@@ -216,16 +152,19 @@ always @(*)
     end
 
 assign mask = left_mask & right_mask;
-
+// Source path MUX
+// All possible sources
+// 00 0 0 00
 always @(*)
     begin
         src_reg = 64'h0;
-        case (op1_type_reg_in)
-            2'b00: src_reg = ABCD[op1_reg_in[1:0]]; // Arithmetic registers
-            2'b01: src_reg = R[op1_reg_in[2:0]]; // Extra registers
-            2'b10: src_reg = data_in; // Memory
-            2'b11: 
-                case (op1_reg_in)
+        case (op1_reg_in[5:3])
+            3'b000: src_reg = ABCD[op1_reg_in[1:0]]; // Arithmetic registers
+            3'b001: src_reg = R[op1_reg_in[2:0]]; // Extra registers
+            3'b010: src_reg = data_in; // Memory
+            3'b011: src_reg = op_literal_in; // literal from opcode, already shifted
+            3'b100: 
+                case (op1_reg_in[2:0])
                     3'b000: src_reg[19: 0] = PC;
                     3'b001: src_reg[19: 0] = RSTK;
                     3'b010: src_reg[19: 0] = D0;
@@ -233,28 +172,33 @@ always @(*)
                     3'b100: src_reg[15: 0] = ST;
                     3'b101: src_reg[15: 0] = INR;
                     3'b110: src_reg = { P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P };
-                    3'b111: src_reg = 64'h0;
+                    3'b111: src_reg[19: 0] = CONFIG_in; // config instructions
                 endcase
+            3'b110: src_reg = f_decimal ? 64'h9999999999999999:64'hFFFFFFFFFFFFFFFF;
+            3'b111: src_reg = 64'h0;
         endcase
     end
-    
+// OP2 path mux: A, B, C, D, D0, D1, R0..R5(7), P, ST, PC 
 always @(*)
     begin
-        dest_reg = 64'h0;
-        case (dst_type_reg_in)
-            2'b00: dest_reg =  ABCD[dst_reg_in[1:0]];
-            2'b01: dest_reg = R[dst_reg_in[2:0]];
-            2'b11: 
-                case (op1_reg_in)
-                    3'b000: dest_reg[19: 0] = PC;
-                    3'b001: dest_reg[19: 0] = RSTK;
-                    3'b010: dest_reg[19: 0] = D0;
-                    3'b011: dest_reg[19: 0] = D1;
-                    3'b100: dest_reg[15: 0] = ST;
-                    3'b101: dest_reg[15: 0] = INR;
-                    3'b110: dest_reg = { P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P };
-                    3'b111: dest_reg = 64'h0;
+        op2_reg = 64'h0;
+        case (op2_reg_in[5:3])
+            3'b000: op2_reg =  ABCD[op2_reg_in[1:0]];
+            3'b001: op2_reg = R[op2_reg_in[2:0]];
+            3'b011: op2_reg = op_literal_in; // literal from opcode, already shifted
+            3'b100: 
+                case (op2_reg_in)
+                    3'b000: op2_reg[19: 0] = PC;
+                    3'b001: op2_reg[19: 0] = RSTK;
+                    3'b010: op2_reg[19: 0] = D0;
+                    3'b011: op2_reg[19: 0] = D1;
+                    3'b100: op2_reg[15: 0] = ST;
+                    3'b101: op2_reg[15: 0] = INR;
+                    3'b110: op2_reg = { P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P };
+                    
                 endcase
+            3'b110: op2_reg = f_decimal ? 64'h9999999999999999:64'hFFFFFFFFFFFFFFFF;
+            3'b111: op2_reg = 64'h0;
         endcase
     end
 
@@ -275,22 +219,22 @@ assign masked_src_reg = { mask[15] ? src_reg[63:60]:4'h0,
                           mask[ 1] ? src_reg[ 7: 4]:4'h0,  
                           mask[ 0] ? src_reg[ 3: 0]:4'h0 };
                           
-assign masked_dest_reg= { mask[15] ? dest_reg[63:60]:4'h0,
-                          mask[14] ? dest_reg[59:56]:4'h0,  
-                          mask[13] ? dest_reg[55:52]:4'h0,  
-                          mask[12] ? dest_reg[51:48]:4'h0,  
-                          mask[11] ? dest_reg[47:44]:4'h0,  
-                          mask[10] ? dest_reg[43:40]:4'h0,  
-                          mask[ 9] ? dest_reg[39:36]:4'h0,  
-                          mask[ 8] ? dest_reg[35:32]:4'h0,  
-                          mask[ 7] ? dest_reg[31:28]:4'h0,  
-                          mask[ 6] ? dest_reg[27:24]:4'h0,  
-                          mask[ 5] ? dest_reg[23:20]:4'h0,  
-                          mask[ 4] ? dest_reg[19:16]:4'h0,  
-                          mask[ 3] ? dest_reg[15:12]:4'h0,  
-                          mask[ 2] ? dest_reg[11: 8]:4'h0,  
-                          mask[ 1] ? dest_reg[ 7: 4]:4'h0,  
-                          mask[ 0] ? dest_reg[ 3: 0]:4'h0 };
+assign masked_op2_reg= { mask[15] ? op2_reg[63:60]:4'h0,
+                          mask[14] ? op2_reg[59:56]:4'h0,  
+                          mask[13] ? op2_reg[55:52]:4'h0,  
+                          mask[12] ? op2_reg[51:48]:4'h0,  
+                          mask[11] ? op2_reg[47:44]:4'h0,  
+                          mask[10] ? op2_reg[43:40]:4'h0,  
+                          mask[ 9] ? op2_reg[39:36]:4'h0,  
+                          mask[ 8] ? op2_reg[35:32]:4'h0,  
+                          mask[ 7] ? op2_reg[31:28]:4'h0,  
+                          mask[ 6] ? op2_reg[27:24]:4'h0,  
+                          mask[ 5] ? op2_reg[23:20]:4'h0,  
+                          mask[ 4] ? op2_reg[19:16]:4'h0,  
+                          mask[ 3] ? op2_reg[15:12]:4'h0,  
+                          mask[ 2] ? op2_reg[11: 8]:4'h0,  
+                          mask[ 1] ? op2_reg[ 7: 4]:4'h0,  
+                          mask[ 0] ? op2_reg[ 3: 0]:4'h0 };
 
 assign data_o = masked_src_reg;
                           
@@ -299,19 +243,23 @@ always @(posedge clk_in)
         if (latch_alu_regs_in)
             begin
                 latched_src_reg <= masked_src_reg;
-                latched_dest_reg <= masked_dest_reg;
+                latched_op2_reg <= masked_op2_reg;
             end
     end
 
-wire [63:0] add_q, sub_q, rsub_q;
-reg [63:0] alu_q;
-wire add_qc, sub_qc, rsub_qc;
-wire [15:0] no_src_zero_nibs;
-
-saturn_addbcd64  add64(latched_src_reg,  latched_dest_reg, decimal_in, forced_carry_in, left_mask_in, right_mask_in, add_q, add_qc);    
-saturn_subbcd64  sub64(latched_src_reg,  latched_dest_reg, decimal_in, forced_carry_in, left_mask_in, right_mask_in, sub_q, sub_qc);    
-saturn_subbcd64 rsub64(latched_dest_reg,  latched_src_reg, decimal_in, forced_carry_in, left_mask_in, right_mask_in, rsub_q, rsub_qc);        
-saturn_compare  cmp64(.a_in(latched_dest_reg), .b_in(latched_src_reg), .eq_o(eq), .neq_o(neq),
+saturn_addbcd64  add64(
+    latched_src_reg,  
+    latched_op2_reg, 
+    f_decimal & (~forced_hex_in), 
+    forced_carry_in, 
+    left_mask_in, 
+    right_mask_in, 
+    add_q, 
+    add_qc
+);    
+saturn_subbcd64  sub64(latched_src_reg,  latched_op2_reg, f_decimal & (~forced_hex_in), forced_carry_in, left_mask_in, right_mask_in, sub_q, sub_qc);    
+saturn_subbcd64 rsub64(latched_op2_reg,  latched_src_reg, f_decimal, forced_carry_in, left_mask_in, right_mask_in, rsub_q, rsub_qc);        
+saturn_compare  cmp64(.a_in(latched_op2_reg), .b_in(latched_src_reg), .eq_o(eq), .neq_o(neq),
     .gteq_o(gteq), .gt_o(gt), .lteq_o(lteq), .lt_o(lt));
     
 assign no_src_zero_nibs[15] = latched_src_reg[63:60] != 4'h0;
@@ -330,22 +278,60 @@ assign no_src_zero_nibs[ 3] = latched_src_reg[15:12] != 4'h0;
 assign no_src_zero_nibs[ 2] = latched_src_reg[11: 8] != 4'h0;
 assign no_src_zero_nibs[ 1] = latched_src_reg[ 7: 4] != 4'h0;
 assign no_src_zero_nibs[ 0] = latched_src_reg[ 3: 0] != 4'h0;    
-    
+
+assign no_src_zero_bits_l[15] = latched_src_reg[63];
+assign no_src_zero_bits_l[14] = latched_src_reg[59];
+assign no_src_zero_bits_l[13] = latched_src_reg[55];
+assign no_src_zero_bits_l[12] = latched_src_reg[51];
+assign no_src_zero_bits_l[11] = latched_src_reg[47];
+assign no_src_zero_bits_l[10] = latched_src_reg[43];
+assign no_src_zero_bits_l[ 9] = latched_src_reg[39];
+assign no_src_zero_bits_l[ 8] = latched_src_reg[35];
+assign no_src_zero_bits_l[ 7] = latched_src_reg[31];
+assign no_src_zero_bits_l[ 6] = latched_src_reg[27];
+assign no_src_zero_bits_l[ 5] = latched_src_reg[23];
+assign no_src_zero_bits_l[ 4] = latched_src_reg[19];
+assign no_src_zero_bits_l[ 3] = latched_src_reg[15];
+assign no_src_zero_bits_l[ 2] = latched_src_reg[11];
+assign no_src_zero_bits_l[ 1] = latched_src_reg[ 7];
+assign no_src_zero_bits_l[ 0] = latched_src_reg[ 3];
+
+assign no_src_zero_bits_r[15] = latched_src_reg[60];
+assign no_src_zero_bits_r[14] = latched_src_reg[56];
+assign no_src_zero_bits_r[13] = latched_src_reg[52];
+assign no_src_zero_bits_r[12] = latched_src_reg[48];
+assign no_src_zero_bits_r[11] = latched_src_reg[44];
+assign no_src_zero_bits_r[10] = latched_src_reg[40];
+assign no_src_zero_bits_r[ 9] = latched_src_reg[36];
+assign no_src_zero_bits_r[ 8] = latched_src_reg[32];
+assign no_src_zero_bits_r[ 7] = latched_src_reg[28];
+assign no_src_zero_bits_r[ 6] = latched_src_reg[24];
+assign no_src_zero_bits_r[ 5] = latched_src_reg[20];
+assign no_src_zero_bits_r[ 4] = latched_src_reg[16];
+assign no_src_zero_bits_r[ 3] = latched_src_reg[12];
+assign no_src_zero_bits_r[ 2] = latched_src_reg[ 8];
+assign no_src_zero_bits_r[ 1] = latched_src_reg[ 4];
+assign no_src_zero_bits_r[ 0] = latched_src_reg[ 0];
+
 always @(*)    
     begin
-        alu_q = latched_dest_reg;  // TFR, EX, CMP
+        alu_q = latched_src_reg;  // TFR, EX, CMP
         case (alu_op_in)
+            `ALU_OP_TFR, `ALU_OP_EX: alu_q = latched_src_reg;
             `ALU_OP_ADD: alu_q = add_q;
             `ALU_OP_SUB: alu_q = sub_q;
-            `ALU_OP_RSUB: alu_q = rsub_q;
-            `ALU_OP_AND: alu_q = latched_src_reg & latched_dest_reg;
-            `ALU_OP_OR: alu_q = latched_src_reg | latched_dest_reg;
-            `ALU_OP_LSD: alu_q = { latched_src_reg[51:0], 4'h0 };
-            `ALU_OP_RSD: alu_q = { 4'h0, latched_src_reg[55:4] };
-            `ALU_OP_LSB: alu_q = { latched_src_reg[54:0], 1'b0 };
-            `ALU_OP_RSB: alu_q = { 1'b0, latched_src_reg[55:1] };
-            `ALU_OP_CLS: alu_q = { latched_src_reg[51:0], latched_src_reg[55:52] }; // circular shift left
-            `ALU_OP_CRS: alu_q = { latched_src_reg[3:0], latched_src_reg[55:4] }; // circular shift right
+            `ALU_OP_RSUB:alu_q = rsub_q;
+            `ALU_OP_TST0, `ALU_OP_TST1,
+            `ALU_OP_AND: alu_q = latched_src_reg & latched_op2_reg;
+            `ALU_OP_OR:  alu_q = latched_src_reg | latched_op2_reg;
+            `ALU_OP_SL: alu_q = { latched_src_reg[51:0], 4'h0 };
+            `ALU_OP_SR: alu_q = { 4'h0, latched_src_reg[55:4] };
+            `ALU_OP_SLB: alu_q = { latched_src_reg[54:0], 1'b0 };
+            `ALU_OP_SRB: alu_q = { 1'b0, latched_src_reg[55:1] };
+            `ALU_OP_SLC: alu_q = { latched_src_reg[51:0], latched_src_reg[55:52] }; // circular shift left
+            `ALU_OP_SRC: alu_q = { latched_src_reg[3:0], latched_src_reg[55:4] }; // circular shift right
+            `ALU_OP_ANDN: alu_q = latched_src_reg & (~latched_op2_reg);
+            default: alu_q = latched_src_reg;
         endcase
     end
   
@@ -353,27 +339,67 @@ always @(*)
     begin
         alu_carry = 1'b0;
         case (alu_op_in)
-            `ALU_OP_ADD: alu_carry = add_qc;
-            `ALU_OP_SUB: alu_carry = sub_qc;
+            `ALU_OP_TFR:  alu_carry = 1'b0;
+            `ALU_OP_EX :  alu_carry = 1'b0;
+            `ALU_OP_ADD:  alu_carry = add_qc;
+            `ALU_OP_SUB:  alu_carry = sub_qc;
             `ALU_OP_RSUB: alu_carry = rsub_qc;
-            `ALU_OP_LSD: alu_carry = no_src_zero_nibs[left_mask_in];
-            `ALU_OP_RSD: alu_carry = no_src_zero_nibs[right_mask_in];
+            `ALU_OP_AND:  alu_carry = 1'b0;
+            `ALU_OP_OR :  alu_carry = 1'b0;
+            `ALU_OP_SL :  alu_carry = 1'b0;
+            `ALU_OP_SR :  alu_carry = 1'b0;
+            `ALU_OP_SLB:  alu_carry = 1'b0;
+            `ALU_OP_SRB:  alu_carry = 1'b0;
+            `ALU_OP_SLC:  alu_carry = 1'b0;
+            `ALU_OP_SRC:  alu_carry = 1'b0;
+            `ALU_OP_EQ:   alu_carry = eq;
+            `ALU_OP_NEQ:  alu_carry = neq;
+            `ALU_OP_GTEQ: alu_carry = gteq;
+            `ALU_OP_GT:   alu_carry = gt;  
+            `ALU_OP_LTEQ: alu_carry = lteq;
+            `ALU_OP_LT:   alu_carry = lt;
+            `ALU_OP_TST0: alu_carry = alu_q[15:0] == 16'h0; // bits are only tested on the first 16 bits
+            `ALU_OP_TST1: alu_carry = alu_q[15:0] != 16'h0;
+            `ALU_OP_ANDN:  alu_carry = 1'b0;
+            default: alu_carry = 1'b0;
         endcase
     end
+    
+always @(*)
+    begin
+        alu_sticky_bit = 1'b0;
+        case (alu_op_in)
+            `ALU_OP_SL: alu_sticky_bit = no_src_zero_nibs[left_mask_in];
+            `ALU_OP_SR: alu_sticky_bit = no_src_zero_nibs[right_mask_in];
+            `ALU_OP_SLB:alu_sticky_bit = no_src_zero_bits_l[left_mask_in];
+            `ALU_OP_SRB:alu_sticky_bit = no_src_zero_bits_r[right_mask_in];
+            default:    
+                        alu_sticky_bit = 1'b0;
+        endcase
+    end
+wire [3:0] shifted_alu_q, shifted_latched_op2;
+assign shifted_alu_q = (alu_q >> (right_mask_in << 2));
+assign shifted_latched_op2 = (latched_op2_reg >> (right_mask_in << 2));
+    
 // result write back, destination register                          
 always @(posedge clk_in)
     begin
         if (write_carry_in)
-            carry <= alu_carry;
+            f_carry <= alu_carry;
         if (set_carry_in)
-            carry <= 1'b1;
+            f_carry <= 1'b1;
         if (clr_carry_in)
-            carry <= 1'b0;
-            
+            f_carry <= 1'b0;
+        if (set_decimal_in)
+            f_decimal <= 1'b1;
+        if (set_hexadecimal_in)
+            f_decimal <= 1'b0;
+        if (write_sticky_bit_in)
+            HS[1] <= alu_sticky_bit;
         if (write_dst_in)
             begin
-                case (dst_type_reg_in)
-                    2'b00: 
+                case (dst_reg_in[5:3])
+                    3'b000: 
                         begin
                             if (mask[15]) ABCD[dst_reg_in[1:0]][63:60] <= alu_q[63:60];
                             if (mask[14]) ABCD[dst_reg_in[1:0]][59:56] <= alu_q[59:56];
@@ -392,7 +418,7 @@ always @(posedge clk_in)
                             if (mask[ 1]) ABCD[dst_reg_in[1:0]][ 7: 4] <= alu_q[ 7: 4];
                             if (mask[ 0]) ABCD[dst_reg_in[1:0]][ 3: 0] <= alu_q[ 3: 0];
                         end
-                    2'b01:
+                    3'b001:
                         begin
                             if (mask[15]) R[dst_reg_in[2:0]][63:60] <= alu_q[63:60];
                             if (mask[14]) R[dst_reg_in[2:0]][59:56] <= alu_q[59:56];
@@ -411,77 +437,86 @@ always @(posedge clk_in)
                             if (mask[ 1]) R[dst_reg_in[2:0]][ 7: 4] <= alu_q[ 7: 4];
                             if (mask[ 0]) R[dst_reg_in[2:0]][ 3: 0] <= alu_q[ 3: 0];
                         end
-                    2'b11:
-                        case (dst_reg_in)
+                    3'b100:
+                        case (dst_reg_in[2:0])
                             3'b000: PC <= alu_q[19:0];
                             3'b001: STK[0] <= alu_q[19:0];
-                            3'b010: D0 <= alu_q[19:0];
-                            3'b011: D1 <= alu_q[19:0];
+                            3'b010:
+                                begin
+                                    if (mask[ 4]) D0[19:16] <= alu_q[19:16];
+                                    if (mask[ 3]) D0[15:12] <= alu_q[15:12];
+                                    if (mask[ 2]) D0[11: 8] <= alu_q[11: 8];
+                                    if (mask[ 1]) D0[ 7: 4] <= alu_q[ 7: 4];
+                                    if (mask[ 0]) D0[ 3: 0] <= alu_q[ 3: 0];
+                                end
+                            3'b011:
+                                begin
+                                    if (mask[ 4]) D1[19:16] <= alu_q[19:16];
+                                    if (mask[ 3]) D1[15:12] <= alu_q[15:12];
+                                    if (mask[ 2]) D1[11: 8] <= alu_q[11: 8];
+                                    if (mask[ 1]) D1[ 7: 4] <= alu_q[ 7: 4];
+                                    if (mask[ 0]) D1[ 3: 0] <= alu_q[ 3: 0];
+                                end
                             3'b100: ST <= alu_q[15:0];
                             3'b101: OUTR <= alu_q[11:0];
+                            3'b110: P <= shift_alu_q_in ? shifted_alu_q:alu_q[3:0];
                         endcase
+                    3'b101: HS <= alu_q[ 3: 0];
                 endcase
             end
         if (write_op1_in) // used in exchanges
             begin
-                case (op1_type_reg_in)
-                    2'b00: 
+                case (op1_reg_in[5:3])
+                    3'b000: 
                         begin
-                            if (mask[15]) ABCD[op1_reg_in[1:0]][63:60] <= latched_dest_reg[63:60];
-                            if (mask[14]) ABCD[op1_reg_in[1:0]][59:56] <= latched_dest_reg[59:56];
-                            if (mask[13]) ABCD[op1_reg_in[1:0]][55:52] <= latched_dest_reg[55:52];
-                            if (mask[12]) ABCD[op1_reg_in[1:0]][51:48] <= latched_dest_reg[51:48];
-                            if (mask[11]) ABCD[op1_reg_in[1:0]][47:44] <= latched_dest_reg[47:44];
-                            if (mask[10]) ABCD[op1_reg_in[1:0]][43:40] <= latched_dest_reg[43:40];
-                            if (mask[ 9]) ABCD[op1_reg_in[1:0]][39:36] <= latched_dest_reg[39:36];
-                            if (mask[ 8]) ABCD[op1_reg_in[1:0]][35:32] <= latched_dest_reg[35:32];
-                            if (mask[ 7]) ABCD[op1_reg_in[1:0]][31:28] <= latched_dest_reg[31:28];
-                            if (mask[ 6]) ABCD[op1_reg_in[1:0]][27:24] <= latched_dest_reg[27:24];
-                            if (mask[ 5]) ABCD[op1_reg_in[1:0]][23:20] <= latched_dest_reg[23:20];
-                            if (mask[ 4]) ABCD[op1_reg_in[1:0]][19:16] <= latched_dest_reg[19:16];
-                            if (mask[ 3]) ABCD[op1_reg_in[1:0]][15:12] <= latched_dest_reg[15:12];
-                            if (mask[ 2]) ABCD[op1_reg_in[1:0]][11: 8] <= latched_dest_reg[11: 8];
-                            if (mask[ 1]) ABCD[op1_reg_in[1:0]][ 7: 4] <= latched_dest_reg[ 7: 4];
-                            if (mask[ 0]) ABCD[op1_reg_in[1:0]][ 3: 0] <= latched_dest_reg[ 3: 0];
+                            if (mask[15]) ABCD[op1_reg_in[1:0]][63:60] <= latched_op2_reg[63:60];
+                            if (mask[14]) ABCD[op1_reg_in[1:0]][59:56] <= latched_op2_reg[59:56];
+                            if (mask[13]) ABCD[op1_reg_in[1:0]][55:52] <= latched_op2_reg[55:52];
+                            if (mask[12]) ABCD[op1_reg_in[1:0]][51:48] <= latched_op2_reg[51:48];
+                            if (mask[11]) ABCD[op1_reg_in[1:0]][47:44] <= latched_op2_reg[47:44];
+                            if (mask[10]) ABCD[op1_reg_in[1:0]][43:40] <= latched_op2_reg[43:40];
+                            if (mask[ 9]) ABCD[op1_reg_in[1:0]][39:36] <= latched_op2_reg[39:36];
+                            if (mask[ 8]) ABCD[op1_reg_in[1:0]][35:32] <= latched_op2_reg[35:32];
+                            if (mask[ 7]) ABCD[op1_reg_in[1:0]][31:28] <= latched_op2_reg[31:28];
+                            if (mask[ 6]) ABCD[op1_reg_in[1:0]][27:24] <= latched_op2_reg[27:24];
+                            if (mask[ 5]) ABCD[op1_reg_in[1:0]][23:20] <= latched_op2_reg[23:20];
+                            if (mask[ 4]) ABCD[op1_reg_in[1:0]][19:16] <= latched_op2_reg[19:16];
+                            if (mask[ 3]) ABCD[op1_reg_in[1:0]][15:12] <= latched_op2_reg[15:12];
+                            if (mask[ 2]) ABCD[op1_reg_in[1:0]][11: 8] <= latched_op2_reg[11: 8];
+                            if (mask[ 1]) ABCD[op1_reg_in[1:0]][ 7: 4] <= latched_op2_reg[ 7: 4];
+                            if (mask[ 0]) ABCD[op1_reg_in[1:0]][ 3: 0] <= latched_op2_reg[ 3: 0];
                         end
-                    2'b01:
+                    3'b001:
                         begin
-                            if (mask[15]) R[op1_reg_in[2:0]][63:60] <= latched_dest_reg[63:60];
-                            if (mask[14]) R[op1_reg_in[2:0]][59:56] <= latched_dest_reg[59:56];
-                            if (mask[13]) R[op1_reg_in[2:0]][55:52] <= latched_dest_reg[55:52];
-                            if (mask[12]) R[op1_reg_in[2:0]][51:48] <= latched_dest_reg[51:48];
-                            if (mask[11]) R[op1_reg_in[2:0]][47:44] <= latched_dest_reg[47:44];
-                            if (mask[10]) R[op1_reg_in[2:0]][43:40] <= latched_dest_reg[43:40];
-                            if (mask[ 9]) R[op1_reg_in[2:0]][39:36] <= latched_dest_reg[39:36];
-                            if (mask[ 8]) R[op1_reg_in[2:0]][35:32] <= latched_dest_reg[35:32];
-                            if (mask[ 7]) R[op1_reg_in[2:0]][31:28] <= latched_dest_reg[31:28];
-                            if (mask[ 6]) R[op1_reg_in[2:0]][27:24] <= latched_dest_reg[27:24];
-                            if (mask[ 5]) R[op1_reg_in[2:0]][23:20] <= latched_dest_reg[23:20];
-                            if (mask[ 4]) R[op1_reg_in[2:0]][19:16] <= latched_dest_reg[19:16];
-                            if (mask[ 3]) R[op1_reg_in[2:0]][15:12] <= latched_dest_reg[15:12];
-                            if (mask[ 2]) R[op1_reg_in[2:0]][11: 8] <= latched_dest_reg[11: 8];
-                            if (mask[ 1]) R[op1_reg_in[2:0]][ 7: 4] <= latched_dest_reg[ 7: 4];
-                            if (mask[ 0]) R[op1_reg_in[2:0]][ 3: 0] <= latched_dest_reg[ 3: 0];
+                            if (mask[15]) R[op1_reg_in[2:0]][63:60] <= latched_op2_reg[63:60];
+                            if (mask[14]) R[op1_reg_in[2:0]][59:56] <= latched_op2_reg[59:56];
+                            if (mask[13]) R[op1_reg_in[2:0]][55:52] <= latched_op2_reg[55:52];
+                            if (mask[12]) R[op1_reg_in[2:0]][51:48] <= latched_op2_reg[51:48];
+                            if (mask[11]) R[op1_reg_in[2:0]][47:44] <= latched_op2_reg[47:44];
+                            if (mask[10]) R[op1_reg_in[2:0]][43:40] <= latched_op2_reg[43:40];
+                            if (mask[ 9]) R[op1_reg_in[2:0]][39:36] <= latched_op2_reg[39:36];
+                            if (mask[ 8]) R[op1_reg_in[2:0]][35:32] <= latched_op2_reg[35:32];
+                            if (mask[ 7]) R[op1_reg_in[2:0]][31:28] <= latched_op2_reg[31:28];
+                            if (mask[ 6]) R[op1_reg_in[2:0]][27:24] <= latched_op2_reg[27:24];
+                            if (mask[ 5]) R[op1_reg_in[2:0]][23:20] <= latched_op2_reg[23:20];
+                            if (mask[ 4]) R[op1_reg_in[2:0]][19:16] <= latched_op2_reg[19:16];
+                            if (mask[ 3]) R[op1_reg_in[2:0]][15:12] <= latched_op2_reg[15:12];
+                            if (mask[ 2]) R[op1_reg_in[2:0]][11: 8] <= latched_op2_reg[11: 8];
+                            if (mask[ 1]) R[op1_reg_in[2:0]][ 7: 4] <= latched_op2_reg[ 7: 4];
+                            if (mask[ 0]) R[op1_reg_in[2:0]][ 3: 0] <= latched_op2_reg[ 3: 0];
                         end
-                    2'b11:
-                        case (dst_reg_in)
-                            3'b010: D0 <= latched_dest_reg[19:0];
-                            3'b011: D1 <= latched_dest_reg[19:0];
+                    3'b100:
+                        case (dst_reg_in) // exchange only in whole register
+                            3'b010: D0 <= latched_op2_reg[19:0];
+                            3'b011: D1 <= latched_op2_reg[19:0];
+                            3'b110: P <= shift_alu_q_in ? shifted_latched_op2:latched_op2_reg[3:0];
                         endcase
                 endcase
             end
-        if (write_d0_5_in)
-            D0 <= addr_in;
-        if (write_d1_5_in)
-            D1 <= addr_in;
-        if (write_d0_4_in)
-            D0[15:0] <= addr_in[15:0];
-        if (write_d1_4_in)
-            D0[15:0] <= addr_in[15:0];
         if (add_pc_in)
             PC <= PC + addr_in;
-        if (load_pc_in)
-            PC <= addr_in;
+        if (bwrite_fetched_pc_in) // keeps track 
+            PC <= fetched_PC_in;
         if (push_pc_in)
             begin
                 STK[15] <= STK[14]; STK[14] <= STK[13]; STK[13] <= STK[12]; STK[12] <= STK[11];
@@ -496,22 +531,6 @@ always @(posedge clk_in)
                 STK[ 6] <= STK[ 7]; STK[ 5] <= STK[ 6]; STK[ 4] <= STK[ 5]; STK[ 3] <= STK[ 4];
                 STK[ 2] <= STK[ 3]; STK[ 1] <= STK[ 2]; STK[ 0] <= STK[ 1]; PC <= STK[ 0];
             end
-        if (clr_bit_st_in)
-            ST[dst_reg_in] <= 1'b0;
-        if (set_bit_st_in)
-            ST[dst_reg_in] <= 1'b1;
-        if (alu_op_in == `ALU_OP_EQ)
-            condition_true <= eq;
-        if (alu_op_in == `ALU_OP_NEQ)
-            condition_true <= neq;
-        if (alu_op_in == `ALU_OP_GTEQ)
-            condition_true <= lteq;
-        if (alu_op_in == `ALU_OP_GT)
-            condition_true <= gt;
-        if (alu_op_in == `ALU_OP_LTEQ)
-            condition_true <= lteq;
-        if (alu_op_in == `ALU_OP_LT)
-            condition_true <= lt;
     end
 
 initial
@@ -727,7 +746,7 @@ input wire c_in, dec_in;
 output wire qc_out;
 
 wire [4:0] a_plus_b_plus_c;
-wire a_p_b_p_c_c;
+
 
 assign a_plus_b_plus_c = { 1'b0, a_in } + { 1'b0, b_in } + { 4'h0, c_in };
 assign qc_out = dec_in ? (a_plus_b_plus_c > 5'h09):a_plus_b_plus_c[4];
@@ -749,7 +768,7 @@ output wire [3:0] q_out;
 input wire c_in, dec_in;
 output wire qc_out;
 
-wire [3:0] c9, a_m_b_s1;
+wire [3:0] c9;
 wire [4:0] sub;
 assign sub = { 1'b0, a_in } - { 1'b0, b_in } - { 4'b0, c_in };
 assign c9 = sub[4] ? sub[3:0] - 4'h6:sub[3:0];
@@ -834,6 +853,7 @@ assign neq_o = ~eq;
 
 always @(*)
     begin
+        gt = 1'b0;
         if (gf) gt = 1'b1;
         else
         if (ef) 
@@ -880,11 +900,10 @@ always @(*)
         else
         if (e1) 
         if (g0) gt = 1'b1;
-        else
-            gt = 1'b0;
     end
 always @(*)
     begin
+        lt = 1'b0;
         if (lf) lt = 1'b1;
         else
         if (ef) 
@@ -931,8 +950,6 @@ always @(*)
         else
         if (e1) 
         if (l0) lt = 1'b1;
-        else
-            lt = 1'b0;
     end
 
 

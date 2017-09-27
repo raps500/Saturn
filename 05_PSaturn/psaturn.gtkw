@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.66 (w)1999-2015 BSI
-[*] Sun Sep 24 11:32:49 2017
+[*] Wed Sep 27 10:41:16 2017
 [*]
-[dumpfile] "C:\02_Elektronik\041_1LF2\10_Public\05_PALU\tb_saturn_top.vcd"
-[dumpfile_mtime] "Sun Sep 24 09:39:18 2017"
-[dumpfile_size] 306150
-[savefile] "C:\02_Elektronik\041_1LF2\10_Public\05_PALU\psaturn.gtkw"
-[timestart] 0
-[size] 2560 1377
-[pos] -1 -1
-*-10.294227 300 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[dumpfile] "C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\tb_saturn_top.vcd"
+[dumpfile_mtime] "Wed Sep 27 08:42:42 2017"
+[dumpfile_size] 254565
+[savefile] "C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\psaturn.gtkw"
+[timestart] 6744
+[size] 2133 1368
+[pos] -105 -1
+*-10.294227 9500 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_saturn_top.
 [treeopen] tb_saturn_top.top.
 [treeopen] tb_saturn_top.top.core.
@@ -17,23 +17,59 @@
 [sst_width] 211
 [signals_width] 302
 [sst_expanded] 1
-[sst_vpaned_height] 418
+[sst_vpaned_height] 336
+@28
+tb_saturn_top.top.core.clk_in
 @22
 tb_saturn_top.top.core.addr_o[19:0]
+tb_saturn_top.top.core.ibus_pre_fetched_opcode_addr[19:0]
+@820
+tb_saturn_top.top.core.dec_seq.ascii_opcode[63:0]
+@23
+tb_saturn_top.top.core.dec_seq.state[3:0]
+@800200
+-ALRU
+@22
 tb_saturn_top.top.core.alru_Dn[19:0]
 tb_saturn_top.top.core.alru_OUT[11:0]
 tb_saturn_top.top.core.alru_PC[19:0]
 tb_saturn_top.top.core.alru_P[3:0]
 @28
 tb_saturn_top.top.core.alru_carry
-tb_saturn_top.top.core.alru_condition_true
 @22
+tb_saturn_top.top.core.alru.alu_op_in[4:0]
 tb_saturn_top.top.core.alru_data_to_memory[63:0]
+@28
+tb_saturn_top.top.core.alru.forced_carry_in
+tb_saturn_top.top.core.alru.f_carry
+@22
+tb_saturn_top.top.core.alru.latched_src_reg[63:0]
+tb_saturn_top.top.core.alru.latched_op2_reg[63:0]
+tb_saturn_top.top.core.alru.alu_q[63:0]
+tb_saturn_top.top.core.alru.mask[15:0]
+tb_saturn_top.top.core.alru.D0[19:0]
+tb_saturn_top.top.core.alru.D1[19:0]
+tb_saturn_top.top.core.alru.P[3:0]
+tb_saturn_top.top.core.alru.RA[63:0]
+tb_saturn_top.top.core.alru.RB[63:0]
+tb_saturn_top.top.core.alru.RC[63:0]
+tb_saturn_top.top.core.alru.RD[63:0]
+tb_saturn_top.top.core.alru.RSTK[19:0]
+tb_saturn_top.top.core.alru.ST[15:0]
+@28
+tb_saturn_top.top.core.alru.eq
+tb_saturn_top.top.core.alru.gt
+tb_saturn_top.top.core.alru.write_carry_in
+@22
+tb_saturn_top.top.core.alru.dst_reg_in[5:0]
+@28
+tb_saturn_top.top.core.alru.write_dst_in
+tb_saturn_top.top.core.alru.write_op1_in
+@1000200
+-ALRU
+@22
 tb_saturn_top.top.core.bus_IN[15:0]
 tb_saturn_top.top.core.bus_data_from_memory[63:0]
-@28
-tb_saturn_top.top.core.clk_in
-@22
 tb_saturn_top.top.core.data_addr[19:0]
 tb_saturn_top.top.core.data_from_mem[63:0]
 tb_saturn_top.top.core.data_in[15:0]
@@ -47,16 +83,25 @@ tb_saturn_top.top.core.data_to_mem[63:0]
 @28
 tb_saturn_top.top.core.data_write
 tb_saturn_top.top.core.data_write_ready
-@29
-tb_saturn_top.top.core.ibus_fetch
+@800200
+-BUS_CTRL
+@22
+tb_saturn_top.top.core.bus_ctrl.bus_addr[19:0]
 @28
 tb_saturn_top.top.core.ibus_flush_queue
+tb_saturn_top.top.core.ibus_fetch
+tb_saturn_top.top.core.ibus_ready
 @22
-tb_saturn_top.top.core.ibus_pre_fetched_opcode_addr[19:0]
+tb_saturn_top.top.core.dec_seq.ibus_addr_o[19:0]
 tb_saturn_top.top.core.ibus_pre_opcode[83:0]
 tb_saturn_top.top.core.ibus_pre_opcode_length[4:0]
-@28
-tb_saturn_top.top.core.ibus_ready
+tb_saturn_top.top.core.bus_ctrl.nibbles_in_queue[4:0]
+tb_saturn_top.top.core.bus_ctrl.pre_fetched_opcode_addr[19:0]
+tb_saturn_top.top.core.bus_ctrl.next_prefetch_addr[19:0]
+tb_saturn_top.top.core.bus_ctrl.size_in_prefetch[4:0]
+tb_saturn_top.top.core.bus_ctrl.bus_state[3:0]
+@1000200
+-BUS_CTRL
 @22
 tb_saturn_top.top.core.iport_in[15:0]
 @28
@@ -69,14 +114,16 @@ tb_saturn_top.top.core.oe_o
 tb_saturn_top.top.core.oport_o[11:0]
 @28
 tb_saturn_top.top.core.reset_in
+@800200
+-DEC_SEQ
+@28
+tb_saturn_top.top.core.dec_seq.op_goto_on_cond_set
 tb_saturn_top.top.core.seq_add_pc
 @22
 tb_saturn_top.top.core.seq_addr[19:0]
 tb_saturn_top.top.core.seq_alu_op[4:0]
 @28
-tb_saturn_top.top.core.seq_clr_bit_st
 tb_saturn_top.top.core.seq_clr_carry
-tb_saturn_top.top.core.seq_dec_p
 tb_saturn_top.top.core.seq_dp_sel_in
 @22
 tb_saturn_top.top.core.seq_dst_reg[5:0]
@@ -84,7 +131,6 @@ tb_saturn_top.top.core.seq_field_left[3:0]
 tb_saturn_top.top.core.seq_field_right[3:0]
 @28
 tb_saturn_top.top.core.seq_forced_carry
-tb_saturn_top.top.core.seq_inc_p
 tb_saturn_top.top.core.seq_latch_alu_regs
 tb_saturn_top.top.core.seq_load_pc
 @22
@@ -93,24 +139,23 @@ tb_saturn_top.top.core.seq_op2_reg[5:0]
 @28
 tb_saturn_top.top.core.seq_pop_pc
 tb_saturn_top.top.core.seq_push_pc
-tb_saturn_top.top.core.seq_set_bit_st
 tb_saturn_top.top.core.seq_set_carry
 tb_saturn_top.top.core.seq_set_decimal
 tb_saturn_top.top.core.seq_set_hex
-tb_saturn_top.top.core.seq_testeq_0_bit_a
-tb_saturn_top.top.core.seq_testeq_0_bit_c
-tb_saturn_top.top.core.seq_testeq_0_bit_st
-tb_saturn_top.top.core.seq_testeq_1_bit_a
-tb_saturn_top.top.core.seq_testeq_1_bit_c
-tb_saturn_top.top.core.seq_testeq_1_bit_st
-tb_saturn_top.top.core.seq_tsteq_p
-tb_saturn_top.top.core.seq_tstneq_p
 tb_saturn_top.top.core.seq_write_carry
 tb_saturn_top.top.core.seq_write_dst
 tb_saturn_top.top.core.seq_write_op1
-tb_saturn_top.top.core.seq_write_p
-tb_saturn_top.top.core.we_o
 @22
-tb_saturn_top.top.core.dec_seq.state[3:0]
+tb_saturn_top.top.core.dec_seq.op_literal[63:0]
+@1000200
+-DEC_SEQ
+@28
+tb_saturn_top.top.core.we_o
+tb_saturn_top.top.core.dec_seq.op_jrel3
+@22
+tb_saturn_top.top.core.dec_seq.jump_target_addr[19:0]
+tb_saturn_top.top.core.dec_seq.new_pc_jump[19:0]
+@28
+tb_saturn_top.top.core.dec_seq.carry_in
 [pattern_trace] 1
 [pattern_trace] 0
