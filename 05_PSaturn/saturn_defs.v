@@ -64,4 +64,7 @@
 `define ST_EXE_END      4'h4
 `define ST_INT_ACK_PUSH 4'h5
 `define ST_INT_ACK_JUMP 4'h6
-`define ST_FLUSH_QUEUE  4'h7
+`define ST_RTN_LATCH    4'h7
+`define ST_RTN_ALU      4'h8
+`define ST_RTN_JMP      4'h9
+`define ST_FLUSH_QUEUE  4'hA

@@ -88,8 +88,8 @@ wire [ 3: 0] alru_P                ;
 wire [ 0: 0] seq_shift_alu_q       ;
 wire [ 0: 0] seq_add_pc            ;
 wire [ 0: 0] seq_load_pc           ;
-wire [ 0: 0] seq_push_pc           ;
-wire [ 0: 0] seq_pop_pc            ;
+wire [ 0: 0] seq_push_rstk         ;
+wire [ 0: 0] seq_pull_rstk         ;
 wire [19: 0] alru_PC               ;
 wire [15: 0] bus_IN                ;
 wire [11: 0] alru_OUT              ;
@@ -171,8 +171,8 @@ saturn_decoder_sequencer dec_seq(
     .reg_P_in               (alru_P                ),
     .add_pc_o               (seq_add_pc),
     .load_pc_o              (seq_load_pc),
-    .push_pc_o              (seq_push_pc),
-    .pop_pc_o               (seq_pop_pc),
+    .push_rstk_o            (seq_push_rstk         ),
+    .pull_rstk_o            (seq_pull_rstk         ),
     .PC_in                  (alru_PC),
     .dp_sel_o               (seq_dp_sel_in),
     .Dn_in                  (alru_Dn)
@@ -204,8 +204,8 @@ saturn_alru alru(
     .shift_alu_q_in         (seq_shift_alu_q       ),
     .P_o                    (alru_P                ),
     .add_pc_in              (seq_add_pc            ),
-    .push_pc_in             (seq_push_pc           ),
-    .pop_pc_in              (seq_pop_pc            ),
+    .push_rstk_in           (seq_push_rstk         ),
+    .pull_rstk_in           (seq_pull_rstk         ),
     .bwrite_fetched_pc_in   (ibus_ready            ), // write back fetched PC
     .fetched_PC_in          (ibus_pre_fetched_opcode_addr),
     .PC_o                   (alru_PC               ),

@@ -41,8 +41,8 @@ module saturn_alru(
     output wire [ 3:0]  P_o,
     // PC
     input wire          add_pc_in,          // increment PC one nibble
-    input wire          push_pc_in,         // push onto the stack
-    input wire          pop_pc_in,          // pull from stack
+    input wire          push_rstk_in,       // push onto the stack
+    input wire          pull_rstk_in,       // pull from stack
     input wire          bwrite_fetched_pc_in, // to store newly fetched PC
     input wire [19:0]   fetched_PC_in,      // fetched PC
     output wire [19:0]  PC_o,
@@ -440,7 +440,7 @@ always @(posedge clk_in)
                     3'b100:
                         case (dst_reg_in[2:0])
                             3'b000: PC <= alu_q[19:0];
-                            3'b001: STK[0] <= alu_q[19:0];
+                            3'b001: STK[0] <= alu_q[19:0]; // Used for GOSUBs too
                             3'b010:
                                 begin
                                     if (mask[ 4]) D0[19:16] <= alu_q[19:16];
@@ -517,19 +517,20 @@ always @(posedge clk_in)
             PC <= PC + addr_in;
         if (bwrite_fetched_pc_in) // keeps track 
             PC <= fetched_PC_in;
-        if (push_pc_in)
+        if (push_rstk_in)
             begin
                 STK[15] <= STK[14]; STK[14] <= STK[13]; STK[13] <= STK[12]; STK[12] <= STK[11];
                 STK[11] <= STK[10]; STK[10] <= STK[ 9]; STK[ 9] <= STK[ 8]; STK[ 8] <= STK[ 7];
                 STK[ 7] <= STK[ 6]; STK[ 6] <= STK[ 5]; STK[ 5] <= STK[ 4]; STK[ 4] <= STK[ 3];
-                STK[ 3] <= STK[ 2]; STK[ 2] <= STK[ 1]; STK[ 1] <= STK[ 0]; STK[ 0] <= PC;
+                STK[ 3] <= STK[ 2]; STK[ 2] <= STK[ 1]; STK[ 1] <= STK[ 0];// STK[ 0] <= 20'h0;
             end
-        if (pop_pc_in)
+        if (pull_rstk_in)
             begin
+                STK[15] <= 20'h0; // insert zeroes
                 STK[14] <= STK[15]; STK[13] <= STK[14]; STK[12] <= STK[13]; STK[11] <= STK[12];
                 STK[10] <= STK[11]; STK[ 9] <= STK[10]; STK[ 8] <= STK[ 9]; STK[ 7] <= STK[ 8];
                 STK[ 6] <= STK[ 7]; STK[ 5] <= STK[ 6]; STK[ 4] <= STK[ 5]; STK[ 3] <= STK[ 4];
-                STK[ 2] <= STK[ 3]; STK[ 1] <= STK[ 2]; STK[ 0] <= STK[ 1]; PC <= STK[ 0];
+                STK[ 2] <= STK[ 3]; STK[ 1] <= STK[ 2]; STK[ 0] <= STK[ 1];
             end
     end
 
@@ -547,6 +548,22 @@ initial
         R[5] = 64'h0;
         R[6] = 64'h0;
         R[7] = 64'h0;
+        STK[ 0] <= 20'h0;
+        STK[ 1] <= 20'h0;
+        STK[ 2] <= 20'h0;
+        STK[ 3] <= 20'h0;
+        STK[ 4] <= 20'h0;
+        STK[ 5] <= 20'h0;
+        STK[ 6] <= 20'h0;
+        STK[ 7] <= 20'h0;
+        STK[ 8] <= 20'h0;
+        STK[ 9] <= 20'h0;
+        STK[10] <= 20'h0;
+        STK[11] <= 20'h0;
+        STK[12] <= 20'h0;
+        STK[13] <= 20'h0;
+        STK[14] <= 20'h0;
+        STK[15] <= 20'h0;
     end
     
     

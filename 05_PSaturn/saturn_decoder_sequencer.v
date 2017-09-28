@@ -50,8 +50,8 @@ module saturn_decoder_sequencer(
     input wire [ 3:0]    reg_P_in,          // actual P register
     output wire          add_pc_o,          // increment PC one nibble
     output wire          load_pc_o,         // load PC
-    output wire          push_pc_o,         // push onto the stack
-    output wire          pop_pc_o,          // pull from stack
+    output wire          push_rstk_o,       // push onto the stack
+    output wire          pull_rstk_o,       // pull from stack
     input wire [19:0]    PC_in,
     output wire          dp_sel_o,          // selected data pointer D1=1, D0=0
     input wire [19:0]    Dn_in
@@ -80,6 +80,8 @@ reg write_dst = 1'b0;
 reg write_op1 = 1'b0;
 reg write_sticky_bit = 1'b0;
 reg write_carry = 1'b0;
+reg push_rstk = 1'b0;
+reg pull_rstk = 1'b0;
 
 wire [2:0] op_field_left;
 wire [5:0] op_alu_reg1;
@@ -96,28 +98,29 @@ reg ibus_fetch_ack = 1'b0;
 // Decoding
 wire [3:0] op0, op1, op2, op3, op4, op5, op6;
 wire op_is_alu, op_has_read, op_has_write;
-wire op_goc, op_gonc, op_jrel3, op_jrel4, op_jabs;
+wire op_goc, op_gonc, op_jrel3, op_jrel4, op_govlng;
 wire op_gosub, op_gosubl, op_gosbvl;
 
-wire op_rtn_on_carry_set, op_goto_on_cond_set; /* for tests */
-wire op_goto_on_acbit;
+wire op_goto_on_cond_set; // for tests with 5 nibbles opcodes 
+wire op_goto_on_acbit; // ?ABIT & ?CBIT
 wire [19:0] ofs_pc_rel2, ofs_pc_rel3, ofs_pc_rel4, new_pc_abs;
 wire [19:0] ofs_pc_rel2_ab;
 
-wire op_push_ac; // RSTK=C
-wire op_pop_ac;  // C=RSTK
-wire op_push_pc;
-wire op_pop_pc;                         /* rtn */
 wire op_setdec, op_sethex, op_uncnfg, op_config, op_shutdn;
 wire op_intoff, op_inton, op_reset;
 wire op_data_reg; // Selects data register (D0/D1) for address output during memory read/write
 wire op_is_lc, op_is_la;
 wire op_is_let_ex_cp;
 wire op_rw_with_lit_size; // DAT0=A/C n DAT1=A/C n A/C=DAT0 n A/C=DAT1 n used to select op3 as field_end
-
+wire op_alu_and_rtn_on_cs;
+wire op_rti;
+wire op_rtn;
+wire op_rtn_on_carry_clr;
+wire op_rtn_on_carry_set;
 wire op_set_xm, op_set_carry;
 wire op_clr_carry;
-
+wire op_push_ac;
+wire op_pull_ac;
 wire [2:0] field;
 wire [3:0] field_decoded_right, field_decoded_left;
 
@@ -292,12 +295,12 @@ assign op_is_alu =  ~((op0_0 & (op1_0 | op1_1 | op1_2 | op1_3 | op1_4 | op1_5 | 
                       (op0_4) | // GOC
                       (op0_5) | // GONC
                       (op0_6) | // GOTO
-                      (op0_7) | // GOSUB
+                      //(op0_7) | // GOSUB
                       (op0_8 & op1_0 & (op2_4 | op2_5 | op2_7)) |
                       (op0_8 & op1_0 & op2_8 & (op3_0 | op3_1)) |
                       (op0_8 & op1_0 & op2_8 & op3_F) |
                       (op0_8 & op1_0 & (op2_9 | op2_A | op2_E)) |
-                      (op0_8 & (op1_C | op1_D | op2_E | op2_F)));// GOLONG GOVLNG GOSUBL GOSBVL
+                      (op0_8 & (op1_C | op1_D /*| op2_E | op2_F*/)));// GOLONG GOVLNG GOSUBL GOSBVL
                       
                       
                       
@@ -319,8 +322,13 @@ assign op_goto_on_cond_set = ((op0_8) && ((op1_3) || (op1_6) || // ?HS, ?ST
                                           (op1_A) || (op1_B))) || // ?A
                              (op0_9); // ?A
 
+assign op_alu_and_rtn_on_cs= (op_goto_on_cond_set && (op3 == 4'h0) && (op4 == 4'h0)) ||
+                             (op_goto_on_acbit    && (op5 == 4'h0) && (op6 == 4'h0));
                              
-assign op_rtn_on_carry_set = op_goto_on_cond_set && (op3 == 4'h9) && (op4 == 4'h9);
+assign op_rtn_on_carry_set = op0_4 & op1_0 & op2_0;
+assign op_rtn_on_carry_clr = op0_5 & op1_0 & op2_0;
+assign op_rtn              = op0_0 & (op1_0 | op1_1 | op1_2 | op1_3); // RTNSXM, RTN RTNSC RTNCC
+assign op_rti              = op0_0 & op1_F; // RTNI
 
 assign op_has_write = ((op0_1) && (op1[3:1] == 3'b010)) && (op2[1] == 1'b0);
 assign op_has_read  = ((op0_1) && (op1[3:1] == 3'b010)) && (op2[1] == 1'b1);
@@ -337,16 +345,12 @@ assign op_gosub = (op0_7); // GOSUB
 assign op_jrel4 = (op0_8 && op1_C); // GOLONG
 assign op_gosubl = (op0_8 && op1_E); // GOSUBL
 
-assign op_jabs   = (op0_8) && (op1_D); // GOVLNG
+assign op_govlng = (op0_8) && (op1_D); // GOVLNG
 assign op_gosbvl = (op0_8) && (op1_F); // GOSBVL
 
 assign op_push_ac = (op0_0 && op1_6); // RSTK=C
-assign op_push_pc = op_gosub || op_gosubl ||
-                    (op0_8 && op1_F); // GOSUBL GOSBVL
 
-assign op_pop_pc =  (op0_0) && ((op1_0) || (op1_1) || (op1_2) ||
-                                      (op1_3) || (op1_F));
-assign op_pop_ac =  (op0_0 && op1_7);
+assign op_pull_ac =  (op0_0 && op1_7);
 
 assign op_setdec = (op0_0) && (op1_5);
 assign op_sethex = (op0_0) && (op1_4);
@@ -401,9 +405,6 @@ assign jump_target_addr = ibus_pre_fetched_opcode_addr_in +
 // Sequencer
 always @(posedge clk_in)
     begin
-        load_new_pc <= 1'b0; // not exe dependant
-        irq_ack <= 1'b0;
-
 		if (reset_in == 1'b1)
             begin
                 state <= `ST_INIT;
@@ -440,11 +441,11 @@ always @(posedge clk_in)
                             if (op_goto_on_cond_set | op_goc | op_gonc | op_jrel3 |
                                 op_jrel4 | op_gosub | op_gosubl)
                                 new_pc_jump <= jump_target_addr;
-                            if (op_jabs | op_gosbvl)
+                            if (op_govlng | op_gosbvl)
                                 new_pc_jump <= jump_target_addr;
                             // Process jumps that do not need the ALU
                             if ((op_goc & carry_in) || (op_gonc & (~carry_in)) ||
-                                op_jrel3 | op_jrel4 | op_jabs)
+                                op_jrel3 | op_jrel4 | op_govlng)
                                 state <= `ST_FLUSH_QUEUE; // jump directly
                             
                             // field size
@@ -549,12 +550,13 @@ always @(posedge clk_in)
                                 op_literal[3: 0] <= op1;
                             if (op_is_QP_CNT) // ?P=n ?P#n
                                 op_literal[3: 0] <= op2;
-
-                            //if (op_push_pc) // force write-back of next PC for pushing onto the stack
-                            //    begin
-                            //        new_pc_jump <= fetch_addr;
-                            //        load_new_pc <= 1'b1; // now load
-                            //    end
+                            if (op_gosub | op_gosubl | op_gosbvl) // use ALU to update RSTK
+                                begin
+                                    push_rstk <= 1'b1; // make place on stack
+                                    op_literal[19: 0] <= ibus_pre_fetched_opcode_addr_in + (op_gosub ? 20'h4:op_gosubl ? 20'h5:20'h7);                            
+                                end
+                            if (op_push_ac)
+                                push_rstk <= 1'b1; // make place on stack
                         end
                     `ST_INT_ACK_PUSH:
                         begin // Push actual PC
@@ -562,13 +564,22 @@ always @(posedge clk_in)
                             irq_ack <= 1'b1;
                         end
                     `ST_INT_ACK_JUMP:
-                        begin // load new PC actual PC
-                            state <= `ST_FLUSH_QUEUE;
-                            load_new_pc <= 20'h0000F;
-                            //load_new_pc <= 1'b1; // now load
+                        begin // jump to interrupt handler, use ALU path with jump
+                            state <= `ST_EXE_LATCH;
+                            // repeat this instruction
+                            op_literal[19: 0] <= ibus_pre_fetched_opcode_addr_in;
+                            new_pc_jump <= 20'h0000F;
+                            op1_reg_o    <= `OP_LIT;
+                            dst_reg_o    <= `OP_STK;
+                            alu_op       <= `ALU_OP_TFR; // copy address to RSTK
+                            left_mask_o  <= 4'h4;
+                            right_mask_o <= 4'h0;
+                            push_rstk <= 1'b1; // and make place on stack 
                         end
                     `ST_EXE_LATCH: // latch source registers
                         begin
+                            push_rstk <= 1'b0;
+                            pull_rstk <= 1'b0;
                             state <= `ST_EXE_ALU;
                             write_dst <= (op_alu_op == `ALU_OP_TFR) ||
                                          (op_alu_op == `ALU_OP_EX) ||
@@ -610,20 +621,53 @@ always @(posedge clk_in)
                         end
                     `ST_EXE_END:
                         begin
-                            // Process gosubs
-                            if ((op_gosub | op_gosubl | op_gosbvl) |
-                            // process ALU-dependant relative jumps
-                                (op_goto_on_acbit & carry_in) | // ?ABIT, ?CBIT
-                                (op_goto_on_cond_set & carry_in) | // ?HS, ?ST, ?P, ?A
-                                (op_goc & carry_in) | // GOC
-                                (op_gonc & (~carry_in)) | // GONC
-                                (op_pop_pc))
-                                state <= `ST_FLUSH_QUEUE;
+                            if (op_pull_ac)
+                                pull_rstk <= 1'b1; // adjust stack
+                            // Process returns
+                            if ((op_alu_and_rtn_on_cs & carry_in) |
+                                (op_rtn_on_carry_set & carry_in) |
+                                (op_rtn_on_carry_clr & (~carry_in)) | op_rtn | op_rti)
+                                begin // Pop PC from Stack using the ALU
+                                    op1_reg_o    <= `OP_STK;
+                                    dst_reg_o    <= `OP_PC;
+                                    alu_op       <= `ALU_OP_TFR; // copy RSTK to PC
+                                    left_mask_o  <= 4'h4;
+                                    right_mask_o <= 4'h0;
+                                    state <= `ST_RTN_LATCH;
+                                end
                             else
                                 begin
-                                    state <= `ST_INIT; // no jump
-                                    ibus_fetch <= 1'b1;
-                                end                            
+                                    if ((op_gosub | op_gosubl | op_gosbvl) |
+                                    // process ALU-dependant relative jumps
+                                        (op_goto_on_acbit & carry_in) | // ?ABIT, ?CBIT
+                                        (op_goto_on_cond_set & carry_in) | // ?HS, ?ST, ?P, ?A
+                                        (op_goc & carry_in) | // GOC
+                                        (op_gonc & (~carry_in)) | // GONC
+                                         irq_ack) // if interrupt jump too
+                                        state <= `ST_FLUSH_QUEUE;
+                                    else
+                                        begin
+                                            state <= `ST_INIT; // no jump
+                                            ibus_fetch <= 1'b1;
+                                        end
+                                end
+                            irq_ack <= 1'b0;
+                        end
+                    `ST_RTN_LATCH:
+                        begin // latch arguments
+                            write_dst <= 1'b1;
+                            state <= `ST_RTN_ALU;
+                        end
+                    `ST_RTN_ALU:
+                        begin // write back PC
+                            write_dst <= 1'b0;
+                            state <= `ST_RTN_JMP;
+                            pull_rstk <= 1'b1; // adjust stack                            
+                        end
+                    `ST_RTN_JMP:
+                        begin
+                            new_pc_jump <= PC_in; // get recovered PC
+                            state <= `ST_FLUSH_QUEUE;
                         end
                     `ST_FLUSH_QUEUE:
                         begin
@@ -641,7 +685,7 @@ assign ibus_fetch_ack_o     = ibus_fetch_ack;
 assign ibus_addr_o          = new_pc_jump; // used with queue flush
 assign write_dst_o          = write_dst;
 assign write_op1_o          = write_op1;
-assign latch_alu_regs_o     = (state == `ST_EXE_LATCH);
+assign latch_alu_regs_o     = (state == `ST_EXE_LATCH) || (state == `ST_RTN_LATCH);
 assign forced_carry_o       = force_carry;
 assign forced_hex_o         = force_hex;
 
@@ -655,38 +699,11 @@ assign clr_carry_o          = op_clr_carry;
 assign set_carry_o          = op_set_carry;
 assign shift_alu_q_o        = op_is_let_ex_cp; // indicate that the result should be shifted
 assign add_pc_o             = 1'b0;
-
+assign push_rstk_o          = push_rstk;
+assign pull_rstk_o          = pull_rstk;
 assign dp_sel_o             = 1'b0;
-
 assign irq_ack_o            = irq_ack;
-
-assign push_pc_o            = (op_push_pc && (state == `ST_EXE_END)) || (state == `ST_INT_ACK_PUSH);
-assign pop_pc_o             = op_pop_pc && (state == `ST_EXE_END);
-//assign push_ac_o = op_push_ac && (state == `ST_EXE_INIT); // make place first and then move
-//assign pop_ac_o = op_pop_ac && (state == `ST_EXE_END);
 assign load_pc_o            = load_new_pc;
-
-//assign setxm_o = op_set_xm;
-
-//assign setint_o = op_inton && (state == `ST_EXE_END);
-//assign clrxm_o = op_clr_xm && (state == `ST_EXE_END);
-//assign clrmp_o = op_clr_mp && (state == `ST_EXE_END);
-//assign clrsb_o = op_clr_sb && (state == `ST_EXE_END);
-//assign clrsr_o = op_clr_sr && (state == `ST_EXE_END);
-//assign clrint_o = op_intoff && (state == `ST_EXE_END);
-//assign clrhst_o = op_clr_hst && (state == `ST_EXE_END);
-//assign force_hex_o = op_force_hex;
-
-//assign tstxm_o       = op_tstxm;
-//assign tstmp_o       = op_tstmp;
-//assign tstsb_o       = op_tstsb;
-//assign tstsr_o       = op_tstsr;
-//
-//
-//assign set_carry_on_zero_o = op_set_carry_on_zero;
-//assign set_carry_on_eq_o = op_set_carry_on_eq;
-//assign data_reg_o = op_data_reg;
-
 
 `ifdef HAS_TRACE_UNIT
 assign trace_start_o = trace_start;
@@ -1627,6 +1644,8 @@ always @(*)
         //  2, 3
         24'b0010_xxxx_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_LIT, `OP_A  , `OP_P   }; // P=n
         24'b0011_xxxx_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_LIT, `OP_A  , `OP_C   }; // LC(n)
+        // 7xx GOSUB
+        24'b0111_xxxx_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR, `OP_LIT, `OP_A  , `OP_STK  }; // GOSUB
         // 80x                                                        reg1    reg2      dst
         24'b1000_0000_0000_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_OUT }; // OUT=C
         24'b1000_0000_0001_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_OUT }; // OUT=C
@@ -1761,6 +1780,9 @@ always @(*)
         24'b1000_1011_1101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LTEQ, `OP_B  , `OP_C  , `OP_A   };
         24'b1000_1011_1110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LTEQ, `OP_C  , `OP_A  , `OP_A   };
         24'b1000_1011_1111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LTEQ, `OP_D  , `OP_C  , `OP_A   };
+        // 8E, 8F
+        24'b1000_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR, `OP_LIT, `OP_A  , `OP_STK  }; // GOSUBL
+        24'b1000_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR, `OP_LIT, `OP_A  , `OP_STK  }; // GOSBVL
         // 9a
         24'b1001_0xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_A  , `OP_B  , `OP_A   };
         24'b1001_0xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_B  , `OP_C  , `OP_A   };
