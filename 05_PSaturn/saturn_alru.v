@@ -7,6 +7,7 @@
 
 module saturn_alru(
     input wire          clk_in,
+    input wire          showregs_in,
     input wire          write_dst_in,       // write back the alu operation/memory dat or extra register to the destination register
     input wire          write_op1_in,       // write from alu register to extra register
 	input wire			latch_alu_regs_in,	// latch the masked input arguments to the alu
@@ -237,7 +238,7 @@ assign masked_op2_reg= { mask[15] ? op2_reg[63:60]:4'h0,
                           mask[ 0] ? op2_reg[ 3: 0]:4'h0 };
 
 assign data_o = masked_src_reg;
-                          
+
 always @(posedge clk_in)
     begin
         if (latch_alu_regs_in)
@@ -246,7 +247,12 @@ always @(posedge clk_in)
                 latched_op2_reg <= masked_op2_reg;
             end
     end
-
+/*    
+always @(*)
+    begin
+        latched_src_reg = masked_src_reg;
+        latched_op2_reg = masked_op2_reg;
+    end*/
 saturn_addbcd64  add64(
     latched_src_reg,  
     latched_op2_reg, 
@@ -324,12 +330,12 @@ always @(*)
             `ALU_OP_TST0, `ALU_OP_TST1,
             `ALU_OP_AND: alu_q = latched_src_reg & latched_op2_reg;
             `ALU_OP_OR:  alu_q = latched_src_reg | latched_op2_reg;
-            `ALU_OP_SL: alu_q = { latched_src_reg[51:0], 4'h0 };
-            `ALU_OP_SR: alu_q = { 4'h0, latched_src_reg[55:4] };
-            `ALU_OP_SLB: alu_q = { latched_src_reg[54:0], 1'b0 };
-            `ALU_OP_SRB: alu_q = { 1'b0, latched_src_reg[55:1] };
-            `ALU_OP_SLC: alu_q = { latched_src_reg[51:0], latched_src_reg[55:52] }; // circular shift left
-            `ALU_OP_SRC: alu_q = { latched_src_reg[3:0], latched_src_reg[55:4] }; // circular shift right
+            `ALU_OP_SL: alu_q = { latched_src_reg[59:0], 4'h0 };
+            `ALU_OP_SR: alu_q = { 4'h0, latched_src_reg[63:4] };
+            `ALU_OP_SLB: alu_q = { latched_src_reg[62:0], 1'b0 };
+            `ALU_OP_SRB: alu_q = { 1'b0, latched_src_reg[63:1] };
+            `ALU_OP_SLC: alu_q = { latched_src_reg[59:0], latched_src_reg[63:60] }; // circular shift left
+            `ALU_OP_SRC: alu_q = { latched_src_reg[3:0], latched_src_reg[63:4] }; // circular shift right
             `ALU_OP_ANDN: alu_q = latched_src_reg & (~latched_op2_reg);
             default: alu_q = latched_src_reg;
         endcase
@@ -384,6 +390,8 @@ assign shifted_latched_op2 = (latched_op2_reg >> (right_mask_in << 2));
 // result write back, destination register                          
 always @(posedge clk_in)
     begin
+        if (showregs_in)
+            $display("                    PC: %05X P:%X A:%016X B:%016X C:%016X D:%016X  %t", PC, P, RA, RB, RC, RD, $time);
         if (write_carry_in)
             f_carry <= alu_carry;
         if (set_carry_in)

@@ -15,6 +15,8 @@ module saturn_decoder_sequencer(
     input wire           irq_in,
     input wire           irqen_in,       // flag for interrupt enable
     output wire          irq_ack_o,
+    //
+    output wire          showregs_o,
     // Fetch Bus interface
     output wire [19:0]   ibus_addr_o,    // fetch address
     output wire          ibus_flush_q_o,// force flush the queue
@@ -246,9 +248,9 @@ wire op_is_ACBIT; // ABIT=0/1 ?CBIT=0/1
 wire op_is_STHSBIT; // HS=0 ?HS ST=x ?ST
 wire op_8_1_89A;
 wire op_forced_carry;
-wire op_is_P_CNT;
-wire op_is_QP_CNT;
-
+wire op_is_P_CNT; // P=n
+wire op_is_QP_CNT; // ?P
+wire op_is_P_INC_DEC; // P=P-1 P=P+1
 assign op_is_load_Dn = op0_1 & (op1_9 | op1_A | op1_B | op1_D | op1_E | op1_F); // Dn=hh
 assign op_is_Dn_P_CON = op0_1 & (op1_6 | op1_7 | op1_8 | op1_C); // D0=D0+CON, D1=D1-CON
 assign op_is_A_A_PM_CON = op0_8 & op1_1 & op2_8; // A=A+CON, C=C-CON
@@ -262,6 +264,8 @@ assign op_is_let_ex_cp = (op0_8) && ((op1_0) && ((op2_C) || (op2_D) ||
                                                          (op2_F))); // C=P n P=C n CPEX n
 assign op_is_P_CNT = (op0_2); // op1 is literal
 assign op_is_QP_CNT = (op0_8) && ((op1_8) || (op1_9)); // op2 is literal
+assign op_is_P_INC_DEC = (op0_0) && ((op1_D) || (op1_E)); // to force hex mode
+
 // Use forced carry as operand and 0 as operand 2
 assign op_forced_carry =
             (op0_0 && (op1_C || op1_D)) || // P=P+/-1
@@ -419,6 +423,7 @@ always @(posedge clk_in)
                         begin
                             ibus_flush_q <= 1'b0;
                             ibus_fetch <= 1'b0;
+                            
                             if (ibus_ready_in == 1'b1)
                                 begin
                                     ibus_fetch_ack <= 1'b1;
@@ -442,7 +447,7 @@ always @(posedge clk_in)
                                 op_jrel4 | op_gosub | op_gosubl)
                                 new_pc_jump <= jump_target_addr;
                             if (op_govlng | op_gosbvl)
-                                new_pc_jump <= jump_target_addr;
+                                new_pc_jump <= new_pc_abs;
                             // Process jumps that do not need the ALU
                             if ((op_goc & carry_in) || (op_gonc & (~carry_in)) ||
                                 op_jrel3 | op_jrel4 | op_govlng)
@@ -480,7 +485,7 @@ always @(posedge clk_in)
                             alu_op       <= op_alu_op;
                             curr_data_addr <= Dn_in; // sample data address
                             force_carry <= op_forced_carry;
-                            force_hex <= op_is_Dn_P_CON;
+                            force_hex <= op_is_Dn_P_CON | op_is_P_INC_DEC;
                             // literal handling, shift to correct position
                             if (op_is_lc)
                                 case (reg_P_in)
@@ -595,6 +600,7 @@ always @(posedge clk_in)
                                          (op_alu_op == `ALU_OP_SLC) ||
                                          (op_alu_op == `ALU_OP_SRC) ||
                                          (op_alu_op == `ALU_OP_RD);
+                            write_op1 <= (op_alu_op == `ALU_OP_EX);
                             write_carry <=(op_alu_op == `ALU_OP_ADD) ||
                                          (op_alu_op == `ALU_OP_SUB) ||
                                          (op_alu_op == `ALU_OP_RSUB) ||
@@ -614,8 +620,17 @@ always @(posedge clk_in)
                         end
                     `ST_EXE_ALU: // write back results, do memory read/write
                         begin
-                            state <= `ST_EXE_END;
+                            if (op_alu_and_rtn_on_cs | op_goto_on_acbit |
+                                op_goto_on_cond_set | // need extra cycle to catch new carry
+                                op_gosub | op_gosubl | op_gosbvl) // these use the alu path too
+                                state <= `ST_EXE_END;
+                            else
+                                begin // fetch next opcode if no test is needed
+                                    state <= `ST_INIT;
+                                    ibus_fetch <= 1'b1;
+                                end
                             write_dst <= 1'b0;
+                            write_op1 <= 1'b0;
                             write_carry <= 1'b0;
                             write_sticky_bit <= 1'b0;
                         end
@@ -655,6 +670,7 @@ always @(posedge clk_in)
                         end
                     `ST_RTN_LATCH:
                         begin // latch arguments
+                            pull_rstk <= 1'b0;
                             write_dst <= 1'b1;
                             state <= `ST_RTN_ALU;
                         end
@@ -666,6 +682,7 @@ always @(posedge clk_in)
                         end
                     `ST_RTN_JMP:
                         begin
+                            pull_rstk <= 1'b0;
                             new_pc_jump <= PC_in; // get recovered PC
                             state <= `ST_FLUSH_QUEUE;
                         end
@@ -678,7 +695,7 @@ always @(posedge clk_in)
         end
     end
 /* Module outputs */
-
+assign showregs_o           = (state == `ST_EXE_END) | (state == `ST_EXE_ALU);
 assign ibus_flush_q_o       = ibus_flush_q;
 assign ibus_fetch_o         = ibus_fetch;
 assign ibus_fetch_ack_o     = ibus_fetch_ack;
@@ -1869,14 +1886,14 @@ always @(*)
         24'b1011_0xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `OP_C  , `OP_C   };
         24'b1011_0xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `OP_D  , `OP_D   }; // D=C-D
         //Bb
-        24'b1011_1xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `OP_A  , `OP_A   }; // ASL
-        24'b1011_1xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `OP_B  , `OP_B   }; // BSL
-        24'b1011_1xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `OP_C  , `OP_C   }; // CSL
-        24'b1011_1xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_D  , `OP_D  , `OP_D   }; // DSL
-        24'b1011_1xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `OP_A  , `OP_A   }; // ASR
-        24'b1011_1xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `OP_B  , `OP_B   }; // BSR
-        24'b1011_1xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `OP_C  , `OP_C   }; // CSR
-        24'b1011_1xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_D  , `OP_D  , `OP_D   }; // DSR
+        24'b1011_1xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_A  , `OP_A  , `OP_A   }; // ASL
+        24'b1011_1xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_B  , `OP_B  , `OP_B   }; // BSL
+        24'b1011_1xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_C  , `OP_C  , `OP_C   }; // CSL
+        24'b1011_1xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_D  , `OP_D  , `OP_D   }; // DSL
+        24'b1011_1xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_A  , `OP_A  , `OP_A   }; // ASR
+        24'b1011_1xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_B  , `OP_B  , `OP_B   }; // BSR
+        24'b1011_1xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_C  , `OP_C  , `OP_C   }; // CSR
+        24'b1011_1xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_D  , `OP_D  , `OP_D   }; // DSR
         24'b1011_1xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_Z  , `OP_A  , `OP_A   }; // A=0-A
         24'b1011_1xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_Z  , `OP_B  , `OP_B   }; // B=0-B
         24'b1011_1xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_Z  , `OP_C  , `OP_C   }; // C=0-C

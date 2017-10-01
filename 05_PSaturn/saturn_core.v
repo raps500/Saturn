@@ -61,7 +61,7 @@ wire data_write_ready;  // write data to memory completed
 
 assign data_read = 1'b0;
 assign data_write = 1'b0;
-
+wire [ 0: 0] seq_showregs           ;
 wire [ 0: 0] seq_write_dst         ;
 wire [ 0: 0] seq_write_op1         ;
 wire [ 0: 0] seq_latch_alu_regs    ;
@@ -98,7 +98,8 @@ wire [19: 0] alru_Dn               ;
 
 saturn_bus_controller bus_ctrl(
     .clk_in                             (clk_in),           // BUS and cpu c
-
+    .reset_in                           (reset_in),
+    
     .bus_addr_o                         (addr_o),           // address bus,
     .bus_rd_o                           (oe_o),             // read strobe
     .bus_we_o                           (we_o),             // write strobe
@@ -137,7 +138,7 @@ saturn_decoder_sequencer dec_seq(
     .irq_in                 (),
     .irqen_in               (),
     .irq_ack_o              (),
-
+    .showregs_o             (seq_showregs       ),
     .ibus_addr_o            (ibus_addr),
     .ibus_flush_q_o         (ibus_flush_queue),
     .ibus_fetch_o           (ibus_fetch),
@@ -180,6 +181,7 @@ saturn_decoder_sequencer dec_seq(
 
 saturn_alru alru(
 	.clk_in                 (clk_in                ),
+	.showregs_in            (seq_showregs          ),
     .write_dst_in           (seq_write_dst         ),
     .write_op1_in           (seq_write_op1         ),
     .latch_alu_regs_in      (seq_latch_alu_regs    ),
