@@ -30,8 +30,18 @@
 `define OP_9       6'h30 // 9s or Fs depending on the decimal flag
 `define OP_Z       6'h38
 `define OP_1       6'h39 // must be 39 because it uses the force carry flag
+// short form used in most f the microcode
+`define K_A        3'h0
+`define K_B        3'h1
+`define K_C        3'h2
+`define K_D        3'h3
+`define K_9        3'h4 // 9s or Fs depending on the decimal flag
+`define K_Z        3'h5
+`define K_1        3'h6 // must be 39 because it uses the force carry flag
+`define K_LIT      3'h7 // literal from opcode
 
 // ALU operations
+`define ALU_OP_NONE 5'h00
 `define ALU_OP_TFR  5'h01
 `define ALU_OP_EX   5'h02
 `define ALU_OP_ADD  5'h03

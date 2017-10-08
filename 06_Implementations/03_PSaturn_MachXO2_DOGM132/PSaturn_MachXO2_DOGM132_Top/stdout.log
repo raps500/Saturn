@@ -1,0 +1,113 @@
+Running in Lattice mode
+
+
+Starting:    C:\lscc\diamond\3.9_x64\synpbase\bin64\mbin\synbatch.exe
+Install:     C:\lscc\diamond\3.9_x64\synpbase
+Hostname:    ALEV7
+Date:        Sat Oct 07 14:47:51 2017
+Version:     L-2016.09L
+
+Arguments:   -product synplify_pro -batch PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top_synplify.tcl
+ProductType: synplify_pro
+
+
+
+
+
+Technology initialized from device list to: LATTICE-XP
+
+log file: "C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\PSaturn_MachXO2_DOGM132_Top\PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.srr"
+
+Running: PSaturn_MachXO2_DOGM132_Top in foreground
+
+
+
+Running proj_1|PSaturn_MachXO2_DOGM132_Top
+
+
+Running: compile (Compile) on proj_1|PSaturn_MachXO2_DOGM132_Top
+# Sat Oct 07 14:47:51 2017
+
+
+Running: compile_flow (Compile Process) on proj_1|PSaturn_MachXO2_DOGM132_Top
+# Sat Oct 07 14:47:51 2017
+
+
+Running: compiler (Compile Input) on proj_1|PSaturn_MachXO2_DOGM132_Top
+# Sat Oct 07 14:47:51 2017
+
+Copied C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\PSaturn_MachXO2_DOGM132_Top\synwork\PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top_comp.srs to C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\PSaturn_MachXO2_DOGM132_Top\PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.srs
+
+
+compiler completed
+# Sat Oct 07 14:48:27 2017
+
+Return Code: 0
+Run Time:00h:00m:36s
+
+
+Running: multi_srs_gen (Multi-srs Generator) on proj_1|PSaturn_MachXO2_DOGM132_Top
+# Sat Oct 07 14:48:27 2017
+
+
+multi_srs_gen completed
+# Sat Oct 07 14:48:27 2017
+
+Return Code: 0
+Run Time:00h:00m:00s
+
+Copied C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\PSaturn_MachXO2_DOGM132_Top\synwork\PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top_mult.srs to C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\PSaturn_MachXO2_DOGM132_Top\PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.srs
+
+Copied C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\PSaturn_MachXO2_DOGM132_Top\PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.srr to C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\PSaturn_MachXO2_DOGM132_Top\PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.srf
+
+Complete: Compile Process on proj_1|PSaturn_MachXO2_DOGM132_Top
+
+
+Running: premap (Pre-mapping) on proj_1|PSaturn_MachXO2_DOGM132_Top
+# Sat Oct 07 14:48:27 2017
+
+
+premap completed with warnings
+# Sat Oct 07 14:48:29 2017
+
+Return Code: 1
+Run Time:00h:00m:02s
+
+Complete: Compile on proj_1|PSaturn_MachXO2_DOGM132_Top
+
+
+Running: map (Map) on proj_1|PSaturn_MachXO2_DOGM132_Top
+# Sat Oct 07 14:48:29 2017
+
+License granted for 4 parallel jobs
+
+
+Running: fpga_mapper (Map & Optimize) on proj_1|PSaturn_MachXO2_DOGM132_Top
+# Sat Oct 07 14:48:29 2017
+
+Copied C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\PSaturn_MachXO2_DOGM132_Top\synwork\PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top_m.srm to C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\PSaturn_MachXO2_DOGM132_Top\PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.srm
+
+
+fpga_mapper completed with warnings
+# Sat Oct 07 14:49:26 2017
+
+Return Code: 1
+Run Time:00h:00m:57s
+
+Complete: Map on proj_1|PSaturn_MachXO2_DOGM132_Top
+
+Copied C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\PSaturn_MachXO2_DOGM132_Top\PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.srr to C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\PSaturn_MachXO2_DOGM132_Top\PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.srf
+
+Complete: Logic Synthesis on proj_1|PSaturn_MachXO2_DOGM132_Top
+
+TCL script complete: "PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top_synplify.tcl"
+
+exit status=0
+
+exit status=0
+
+Save changes for project:
+C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\PSaturn_MachXO2_DOGM132_Top\proj_1.prj
+
+batch mode default:no
+

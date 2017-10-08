@@ -5,7 +5,8 @@
  */
 `include "saturn_defs.v"
 
-module saturn_alru(
+module saturn_alru //#(parameter STD_REGS )
+(
     input wire          clk_in,
     input wire          showregs_in,
     input wire          write_dst_in,       // write back the alu operation/memory dat or extra register to the destination register
@@ -58,11 +59,11 @@ module saturn_alru(
 );
 // Register Set
 reg [63:0] ABCD[3:0];
-reg [63:0] R[7:0];
+reg [63:0] R[4:0];
 reg [19:0] D0 = 20'h00000;
 reg [19:0] D1 = 20'h00000;
 reg [19:0] PC = 20'h00000;
-reg [19:0] STK[15:0];                       // 16 level hardware stack
+reg [19:0] STK[7:0];                       // 16 level hardware stack
 reg [15:0] ST = 16'h0000;
 reg [11:0] OUTR = 12'h000;
 reg [15:0] INR = 16'h0000;
@@ -179,27 +180,19 @@ always @(*)
             3'b111: src_reg = 64'h0;
         endcase
     end
-// OP2 path mux: A, B, C, D, D0, D1, R0..R5(7), P, ST, PC 
+// OP2 path mux: A, B, C, D, 9(F) and literal from opcode
 always @(*)
     begin
         op2_reg = 64'h0;
-        case (op2_reg_in[5:3])
-            3'b000: op2_reg =  ABCD[op2_reg_in[1:0]];
-            3'b001: op2_reg = R[op2_reg_in[2:0]];
-            3'b011: op2_reg = op_literal_in; // literal from opcode, already shifted
-            3'b100: 
-                case (op2_reg_in)
-                    3'b000: op2_reg[19: 0] = PC;
-                    3'b001: op2_reg[19: 0] = RSTK;
-                    3'b010: op2_reg[19: 0] = D0;
-                    3'b011: op2_reg[19: 0] = D1;
-                    3'b100: op2_reg[15: 0] = ST;
-                    3'b101: op2_reg[15: 0] = INR;
-                    3'b110: op2_reg = { P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P };
-                    
-                endcase
-            3'b110: op2_reg = f_decimal ? 64'h9999999999999999:64'hFFFFFFFFFFFFFFFF;
-            3'b111: op2_reg = 64'h0;
+        case (op2_reg_in[2:0])
+            3'b000,
+            3'b001,
+            3'b010,
+            3'b011: op2_reg =  ABCD[op2_reg_in[1:0]];
+            3'b100: op2_reg = f_decimal ? 64'h9999999999999999:64'hFFFFFFFFFFFFFFFF;
+            3'b101: op2_reg = 64'h0;
+            3'b110: op2_reg = 64'h0;
+            3'b111: op2_reg = op_literal_in; // literal from opcode, already shifted
         endcase
     end
 
@@ -263,8 +256,8 @@ saturn_addbcd64  add64(
     add_q, 
     add_qc
 );    
-saturn_subbcd64  sub64(latched_src_reg,  latched_op2_reg, f_decimal & (~forced_hex_in), forced_carry_in, left_mask_in, right_mask_in, sub_q, sub_qc);    
-saturn_subbcd64 rsub64(latched_op2_reg,  latched_src_reg, f_decimal, forced_carry_in, left_mask_in, right_mask_in, rsub_q, rsub_qc);        
+saturn_subbcd64  sub64(masked_src_reg,  masked_op2_reg, f_decimal & (~forced_hex_in), forced_carry_in, left_mask_in, right_mask_in, sub_q, sub_qc);    
+saturn_subbcd64 rsub64(masked_op2_reg,  masked_src_reg, f_decimal, forced_carry_in, left_mask_in, right_mask_in, rsub_q, rsub_qc);        
 saturn_compare  cmp64(.a_in(latched_op2_reg), .b_in(latched_src_reg), .eq_o(eq), .neq_o(neq),
     .gteq_o(gteq), .gt_o(gt), .lteq_o(lteq), .lt_o(lt));
     
@@ -527,16 +520,16 @@ always @(posedge clk_in)
             PC <= fetched_PC_in;
         if (push_rstk_in)
             begin
-                STK[15] <= STK[14]; STK[14] <= STK[13]; STK[13] <= STK[12]; STK[12] <= STK[11];
-                STK[11] <= STK[10]; STK[10] <= STK[ 9]; STK[ 9] <= STK[ 8]; STK[ 8] <= STK[ 7];
+                //STK[15] <= STK[14]; STK[14] <= STK[13]; STK[13] <= STK[12]; STK[12] <= STK[11];
+                //STK[11] <= STK[10]; STK[10] <= STK[ 9]; STK[ 9] <= STK[ 8]; STK[ 8] <= STK[ 7];
                 STK[ 7] <= STK[ 6]; STK[ 6] <= STK[ 5]; STK[ 5] <= STK[ 4]; STK[ 4] <= STK[ 3];
                 STK[ 3] <= STK[ 2]; STK[ 2] <= STK[ 1]; STK[ 1] <= STK[ 0];// STK[ 0] <= 20'h0;
             end
         if (pull_rstk_in)
             begin
-                STK[15] <= 20'h0; // insert zeroes
-                STK[14] <= STK[15]; STK[13] <= STK[14]; STK[12] <= STK[13]; STK[11] <= STK[12];
-                STK[10] <= STK[11]; STK[ 9] <= STK[10]; STK[ 8] <= STK[ 9]; STK[ 7] <= STK[ 8];
+                STK[7] <= 20'h0; // insert zeroes
+                //STK[14] <= STK[15]; STK[13] <= STK[14]; STK[12] <= STK[13]; STK[11] <= STK[12];
+                //STK[10] <= STK[11]; STK[ 9] <= STK[10]; STK[ 8] <= STK[ 9]; STK[ 7] <= STK[ 8];
                 STK[ 6] <= STK[ 7]; STK[ 5] <= STK[ 6]; STK[ 4] <= STK[ 5]; STK[ 3] <= STK[ 4];
                 STK[ 2] <= STK[ 3]; STK[ 1] <= STK[ 2]; STK[ 0] <= STK[ 1];
             end
@@ -553,9 +546,9 @@ initial
         R[2] = 64'h0;
         R[3] = 64'h0;
         R[4] = 64'h0;
-        R[5] = 64'h0;
-        R[6] = 64'h0;
-        R[7] = 64'h0;
+        //R[5] = 64'h0;
+        //R[6] = 64'h0;
+        //R[7] = 64'h0;
         STK[ 0] <= 20'h0;
         STK[ 1] <= 20'h0;
         STK[ 2] <= 20'h0;
@@ -564,14 +557,14 @@ initial
         STK[ 5] <= 20'h0;
         STK[ 6] <= 20'h0;
         STK[ 7] <= 20'h0;
-        STK[ 8] <= 20'h0;
-        STK[ 9] <= 20'h0;
-        STK[10] <= 20'h0;
-        STK[11] <= 20'h0;
-        STK[12] <= 20'h0;
-        STK[13] <= 20'h0;
-        STK[14] <= 20'h0;
-        STK[15] <= 20'h0;
+        //STK[ 8] <= 20'h0;
+        //STK[ 9] <= 20'h0;
+        //STK[10] <= 20'h0;
+        //STK[11] <= 20'h0;
+        //STK[12] <= 20'h0;
+        //STK[13] <= 20'h0;
+        //STK[14] <= 20'h0;
+        //STK[15] <= 20'h0;
     end
     
     

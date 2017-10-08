@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DiamondModule name="mcrom" module="ROM" VendorName="Lattice Semiconductor Corporation" generator="IPexpress" date="2017 10 07 14:39:45.524" version="5.4" type="Module" synthesis="synplify" source_format="Verilog">
+  <Package>
+		<File name="" type="" modified="2017 10 07 14:39:45.524"/>
+		<File name="c:/02_elektronik/041_1lf2/10_public/06_implementations/03_psaturn_machxo2_dogm132/mc_tbl.bin" type="mem" modified="2017 10 07 13:48:24.023"/>
+		<File name="mcrom.lpc" type="lpc" modified="2017 10 07 14:39:41.685"/>
+		<File name="mcrom.v" type="top_level_verilog" modified="2017 10 07 14:39:41.772"/>
+		<File name="mcrom_tmpl.v" type="template_verilog" modified="2017 10 07 14:39:41.775"/>
+		<File name="tb_mcrom_tmpl.v" type="testbench_verilog" modified="2017 10 07 14:39:41.849"/>
+  </Package>
+</DiamondModule>

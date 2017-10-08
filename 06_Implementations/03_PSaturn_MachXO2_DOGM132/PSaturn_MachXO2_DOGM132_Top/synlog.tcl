@@ -1,0 +1,1 @@
+run_tcl -fg PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top_synplify.tcl

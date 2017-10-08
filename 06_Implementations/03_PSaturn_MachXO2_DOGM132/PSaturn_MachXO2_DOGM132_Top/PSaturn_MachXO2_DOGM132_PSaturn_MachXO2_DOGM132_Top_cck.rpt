@@ -1,0 +1,123 @@
+# Synopsys Constraint Checker, version maplat, Build 1612R, built Dec  5 2016
+# Copyright (C) 1994-2016 Synopsys, Inc. All rights reserved. This Synopsys software and all associated documentation are proprietary to Synopsys, Inc. and may only be used pursuant to the terms and conditions of a written license agreement with Synopsys, Inc. All other use, reproduction, modification, or distribution of the Synopsys software or the associated documentation is strictly prohibited.
+
+# Written on Sat Oct 07 14:48:28 2017
+
+
+##### DESIGN INFO #######################################################
+
+Top View:                "PSaturn_MachXO2_DOGM132"
+Constraint File(s):      (none)
+
+
+
+
+##### SUMMARY ############################################################
+
+Found 0 issues in 0 out of 0 constraints
+
+
+##### DETAILS ############################################################
+
+
+
+Clock Relationships
+*******************
+
+Starting                                          Ending                                            |     rise to rise     |     fall to fall     |     rise to fall     |     fall to rise                     
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     |     480.769          |     No paths         |     No paths         |     No paths                         
+===============================================================================================================================================================================================================
+ Note: 'No paths' indicates there are no paths in the design for that pair of clock edges.
+       'Diff grp' indicates that paths exist but the starting clock and ending clock are in different clock groups.
+
+
+Unconstrained Start/End Points
+******************************
+
+p:addr_o[0]
+p:addr_o[1]
+p:addr_o[2]
+p:addr_o[3]
+p:addr_o[4]
+p:addr_o[5]
+p:addr_o[6]
+p:addr_o[7]
+p:addr_o[8]
+p:addr_o[9]
+p:addr_o[10]
+p:addr_o[11]
+p:addr_o[12]
+p:addr_o[13]
+p:addr_o[14]
+p:addr_o[15]
+p:addr_o[16]
+p:addr_o[17]
+p:addr_o[18]
+p:addr_o[19]
+p:clk_512Hz_o
+p:data_io[0] (bidir end point)
+p:data_io[0] (bidir start point)
+p:data_io[1] (bidir end point)
+p:data_io[1] (bidir start point)
+p:data_io[2] (bidir end point)
+p:data_io[2] (bidir start point)
+p:data_io[3] (bidir end point)
+p:data_io[3] (bidir start point)
+p:data_io[4] (bidir end point)
+p:data_io[4] (bidir start point)
+p:data_io[5] (bidir end point)
+p:data_io[5] (bidir start point)
+p:data_io[6] (bidir end point)
+p:data_io[6] (bidir start point)
+p:data_io[7] (bidir end point)
+p:data_io[7] (bidir start point)
+p:data_io[8] (bidir end point)
+p:data_io[8] (bidir start point)
+p:data_io[9] (bidir end point)
+p:data_io[9] (bidir start point)
+p:data_io[10] (bidir end point)
+p:data_io[10] (bidir start point)
+p:data_io[11] (bidir end point)
+p:data_io[11] (bidir start point)
+p:data_io[12] (bidir end point)
+p:data_io[12] (bidir start point)
+p:data_io[13] (bidir end point)
+p:data_io[13] (bidir start point)
+p:data_io[14] (bidir end point)
+p:data_io[14] (bidir start point)
+p:data_io[15] (bidir end point)
+p:data_io[15] (bidir start point)
+p:disp_addr_o
+p:disp_cs_n_o
+p:disp_data_o
+p:disp_res_n_o
+p:disp_sck_o
+p:oe_o
+p:reset_in
+p:we_o
+
+
+Inapplicable constraints
+************************
+
+(none)
+
+
+Applicable constraints with issues
+**********************************
+
+(none)
+
+
+Constraints with matching wildcard expressions
+**********************************************
+
+(none)
+
+
+Library Report
+**************
+
+
+# End of Constraint Checker Report

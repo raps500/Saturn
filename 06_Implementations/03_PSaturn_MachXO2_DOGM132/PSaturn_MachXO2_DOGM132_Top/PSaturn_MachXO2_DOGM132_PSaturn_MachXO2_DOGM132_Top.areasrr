@@ -1,0 +1,1022 @@
+----------------------------------------------------------------------
+Report for cell PSaturn_MachXO2_DOGM132.verilog
+
+Register bits: 1381 of 6864 (20%)
+PIC Latch:       0
+I/O cells:       46
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D      320       100.0
+                              DP8KC        2       100.0
+                           DPR16X4C        1       100.0
+                            FD1P3AX      642       100.0
+                            FD1P3IX       65       100.0
+                            FD1P3JX        4       100.0
+                            FD1S3AX      632       100.0
+                            FD1S3IX       35       100.0
+                            FD1S3JX        1       100.0
+                                GSR        1       100.0
+                                 IB       17       100.0
+                           IFS1P3DX        1       100.0
+                                INV       40       100.0
+                            L6MUX21       65       100.0
+                                 OB       27       100.0
+                                OBZ        2       100.0
+                           OFS1P3DX        1       100.0
+                           ORCALUT4     5308       100.0
+                               OSCH        1       100.0
+                              PFUMX      534       100.0
+                                PUR        1       100.0
+                              SP8KC       16       100.0
+                                VHI       41       100.0
+                                VLO       61       100.0
+SUB MODULES 
+                          async_rom        1       100.0
+                    display_dogm132        1       100.0
+                              mcrom        1       100.0
+                      saturn_addbcd        1       100.0
+                    saturn_addbcd64        1       100.0
+                    saturn_addbcd_0        1       100.0
+                    saturn_addbcd_1        1       100.0
+                   saturn_addbcd_10        1       100.0
+                   saturn_addbcd_11        1       100.0
+                   saturn_addbcd_12        1       100.0
+                   saturn_addbcd_13        1       100.0
+                   saturn_addbcd_14        1       100.0
+                    saturn_addbcd_2        1       100.0
+                    saturn_addbcd_3        1       100.0
+                    saturn_addbcd_4        1       100.0
+                    saturn_addbcd_5        1       100.0
+                    saturn_addbcd_6        1       100.0
+                    saturn_addbcd_7        1       100.0
+                    saturn_addbcd_8        1       100.0
+                    saturn_addbcd_9        1       100.0
+                        saturn_alru        1       100.0
+              saturn_bus_controller        1       100.0
+                     saturn_compare        1       100.0
+                        saturn_core        1       100.0
+           saturn_decoder_sequencer        1       100.0
+               saturn_field_decoder        1       100.0
+                   saturn_microcode        1       100.0
+                  saturn_predecoder        1       100.0
+                      saturn_subbcd        1       100.0
+                  saturn_subbcd64_1        1       100.0
+                saturn_subbcd64_1_0        1       100.0
+                    saturn_subbcd_0        1       100.0
+                    saturn_subbcd_1        1       100.0
+                   saturn_subbcd_10        1       100.0
+                   saturn_subbcd_11        1       100.0
+                   saturn_subbcd_12        1       100.0
+                   saturn_subbcd_13        1       100.0
+                   saturn_subbcd_14        1       100.0
+                   saturn_subbcd_15        1       100.0
+                   saturn_subbcd_16        1       100.0
+                   saturn_subbcd_17        1       100.0
+                   saturn_subbcd_18        1       100.0
+                   saturn_subbcd_19        1       100.0
+                    saturn_subbcd_2        1       100.0
+                   saturn_subbcd_20        1       100.0
+                   saturn_subbcd_21        1       100.0
+                   saturn_subbcd_22        1       100.0
+                   saturn_subbcd_23        1       100.0
+                   saturn_subbcd_24        1       100.0
+                   saturn_subbcd_25        1       100.0
+                   saturn_subbcd_26        1       100.0
+                   saturn_subbcd_27        1       100.0
+                   saturn_subbcd_28        1       100.0
+                   saturn_subbcd_29        1       100.0
+                    saturn_subbcd_3        1       100.0
+                   saturn_subbcd_30        1       100.0
+                    saturn_subbcd_4        1       100.0
+                    saturn_subbcd_5        1       100.0
+                    saturn_subbcd_6        1       100.0
+                    saturn_subbcd_7        1       100.0
+                    saturn_subbcd_8        1       100.0
+                    saturn_subbcd_9        1       100.0
+                            
+                         TOTAL          7880           
+----------------------------------------------------------------------
+Report for cell async_rom.netlist
+     Instance path:  rom
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              SP8KC       16       100.0
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            18           
+----------------------------------------------------------------------
+Report for cell saturn_core.netlist
+     Instance path:  core
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D      304        95.0
+                              DP8KC        2       100.0
+                            FD1P3AX      626        97.5
+                            FD1P3IX       65       100.0
+                            FD1P3JX        4       100.0
+                            FD1S3AX      624        98.7
+                            FD1S3IX       13        37.1
+                            FD1S3JX        1       100.0
+                                INV       38        95.0
+                            L6MUX21       65       100.0
+                           ORCALUT4     5209        98.1
+                              PFUMX      534       100.0
+                                VHI       38        92.7
+                                VLO       58        95.1
+SUB MODULES 
+                              mcrom        1       100.0
+                      saturn_addbcd        1       100.0
+                    saturn_addbcd64        1       100.0
+                    saturn_addbcd_0        1       100.0
+                    saturn_addbcd_1        1       100.0
+                   saturn_addbcd_10        1       100.0
+                   saturn_addbcd_11        1       100.0
+                   saturn_addbcd_12        1       100.0
+                   saturn_addbcd_13        1       100.0
+                   saturn_addbcd_14        1       100.0
+                    saturn_addbcd_2        1       100.0
+                    saturn_addbcd_3        1       100.0
+                    saturn_addbcd_4        1       100.0
+                    saturn_addbcd_5        1       100.0
+                    saturn_addbcd_6        1       100.0
+                    saturn_addbcd_7        1       100.0
+                    saturn_addbcd_8        1       100.0
+                    saturn_addbcd_9        1       100.0
+                        saturn_alru        1       100.0
+              saturn_bus_controller        1       100.0
+                     saturn_compare        1       100.0
+           saturn_decoder_sequencer        1       100.0
+               saturn_field_decoder        1       100.0
+                   saturn_microcode        1       100.0
+                  saturn_predecoder        1       100.0
+                      saturn_subbcd        1       100.0
+                  saturn_subbcd64_1        1       100.0
+                saturn_subbcd64_1_0        1       100.0
+                    saturn_subbcd_0        1       100.0
+                    saturn_subbcd_1        1       100.0
+                   saturn_subbcd_10        1       100.0
+                   saturn_subbcd_11        1       100.0
+                   saturn_subbcd_12        1       100.0
+                   saturn_subbcd_13        1       100.0
+                   saturn_subbcd_14        1       100.0
+                   saturn_subbcd_15        1       100.0
+                   saturn_subbcd_16        1       100.0
+                   saturn_subbcd_17        1       100.0
+                   saturn_subbcd_18        1       100.0
+                   saturn_subbcd_19        1       100.0
+                    saturn_subbcd_2        1       100.0
+                   saturn_subbcd_20        1       100.0
+                   saturn_subbcd_21        1       100.0
+                   saturn_subbcd_22        1       100.0
+                   saturn_subbcd_23        1       100.0
+                   saturn_subbcd_24        1       100.0
+                   saturn_subbcd_25        1       100.0
+                   saturn_subbcd_26        1       100.0
+                   saturn_subbcd_27        1       100.0
+                   saturn_subbcd_28        1       100.0
+                   saturn_subbcd_29        1       100.0
+                    saturn_subbcd_3        1       100.0
+                   saturn_subbcd_30        1       100.0
+                    saturn_subbcd_4        1       100.0
+                    saturn_subbcd_5        1       100.0
+                    saturn_subbcd_6        1       100.0
+                    saturn_subbcd_7        1       100.0
+                    saturn_subbcd_8        1       100.0
+                    saturn_subbcd_9        1       100.0
+                            
+                         TOTAL          7640           
+----------------------------------------------------------------------
+Report for cell saturn_alru.netlist
+     Instance path:  core.alru
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D      240        75.0
+                            FD1P3AX      348        54.2
+                            FD1P3IX       20        30.8
+                            FD1S3AX      578        91.5
+                                INV       38        95.0
+                            L6MUX21       65       100.0
+                           ORCALUT4     3401        64.1
+                              PFUMX      355        66.5
+                                VHI       35        85.4
+                                VLO       53        86.9
+SUB MODULES 
+                      saturn_addbcd        1       100.0
+                    saturn_addbcd64        1       100.0
+                    saturn_addbcd_0        1       100.0
+                    saturn_addbcd_1        1       100.0
+                   saturn_addbcd_10        1       100.0
+                   saturn_addbcd_11        1       100.0
+                   saturn_addbcd_12        1       100.0
+                   saturn_addbcd_13        1       100.0
+                   saturn_addbcd_14        1       100.0
+                    saturn_addbcd_2        1       100.0
+                    saturn_addbcd_3        1       100.0
+                    saturn_addbcd_4        1       100.0
+                    saturn_addbcd_5        1       100.0
+                    saturn_addbcd_6        1       100.0
+                    saturn_addbcd_7        1       100.0
+                    saturn_addbcd_8        1       100.0
+                    saturn_addbcd_9        1       100.0
+                     saturn_compare        1       100.0
+                      saturn_subbcd        1       100.0
+                  saturn_subbcd64_1        1       100.0
+                saturn_subbcd64_1_0        1       100.0
+                    saturn_subbcd_0        1       100.0
+                    saturn_subbcd_1        1       100.0
+                   saturn_subbcd_10        1       100.0
+                   saturn_subbcd_11        1       100.0
+                   saturn_subbcd_12        1       100.0
+                   saturn_subbcd_13        1       100.0
+                   saturn_subbcd_14        1       100.0
+                   saturn_subbcd_15        1       100.0
+                   saturn_subbcd_16        1       100.0
+                   saturn_subbcd_17        1       100.0
+                   saturn_subbcd_18        1       100.0
+                   saturn_subbcd_19        1       100.0
+                    saturn_subbcd_2        1       100.0
+                   saturn_subbcd_20        1       100.0
+                   saturn_subbcd_21        1       100.0
+                   saturn_subbcd_22        1       100.0
+                   saturn_subbcd_23        1       100.0
+                   saturn_subbcd_24        1       100.0
+                   saturn_subbcd_25        1       100.0
+                   saturn_subbcd_26        1       100.0
+                   saturn_subbcd_27        1       100.0
+                   saturn_subbcd_28        1       100.0
+                   saturn_subbcd_29        1       100.0
+                    saturn_subbcd_3        1       100.0
+                   saturn_subbcd_30        1       100.0
+                    saturn_subbcd_4        1       100.0
+                    saturn_subbcd_5        1       100.0
+                    saturn_subbcd_6        1       100.0
+                    saturn_subbcd_7        1       100.0
+                    saturn_subbcd_8        1       100.0
+                    saturn_subbcd_9        1       100.0
+                            
+                         TOTAL          5185           
+----------------------------------------------------------------------
+Report for cell saturn_compare.netlist
+     Instance path:  core.alru.cmp64
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D       96        30.0
+                                INV       38        95.0
+                           ORCALUT4       82         1.5
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL           218           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd64_1_0.netlist
+  Original Cell name saturn_subbcd64_1
+     Instance path:  core.alru.rsub64
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D       48        15.0
+                            L6MUX21        1         1.5
+                           ORCALUT4      159         3.0
+                              PFUMX        3         0.6
+                                VHI       16        39.0
+                                VLO       17        27.9
+SUB MODULES 
+                   saturn_subbcd_15        1       100.0
+                   saturn_subbcd_16        1       100.0
+                   saturn_subbcd_17        1       100.0
+                   saturn_subbcd_18        1       100.0
+                   saturn_subbcd_19        1       100.0
+                   saturn_subbcd_20        1       100.0
+                   saturn_subbcd_21        1       100.0
+                   saturn_subbcd_22        1       100.0
+                   saturn_subbcd_23        1       100.0
+                   saturn_subbcd_24        1       100.0
+                   saturn_subbcd_25        1       100.0
+                   saturn_subbcd_26        1       100.0
+                   saturn_subbcd_27        1       100.0
+                   saturn_subbcd_28        1       100.0
+                   saturn_subbcd_29        1       100.0
+                   saturn_subbcd_30        1       100.0
+                            
+                         TOTAL           260           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_30.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.sf
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        9         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            14           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_29.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.se
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_28.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.sd
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_27.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.sc
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_26.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.sb
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_25.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.sa
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_24.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.s9
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_23.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.s8
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_22.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.s7
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_21.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.s6
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        8         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            13           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_20.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.s5
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_19.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.s4
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_18.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.s3
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        9         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            14           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_17.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.s2
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        8         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            13           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_16.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.s1
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        6         0.1
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            11           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_15.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.rsub64.s0
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        5         0.1
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            10           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd64_1.netlist
+  Original Cell name saturn_subbcd64
+     Instance path:  core.alru.sub64
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D       48        15.0
+                            L6MUX21        1         1.5
+                           ORCALUT4      178         3.4
+                              PFUMX        3         0.6
+                                VHI       16        39.0
+                                VLO       17        27.9
+SUB MODULES 
+                      saturn_subbcd        1       100.0
+                    saturn_subbcd_0        1       100.0
+                    saturn_subbcd_1        1       100.0
+                   saturn_subbcd_10        1       100.0
+                   saturn_subbcd_11        1       100.0
+                   saturn_subbcd_12        1       100.0
+                   saturn_subbcd_13        1       100.0
+                   saturn_subbcd_14        1       100.0
+                    saturn_subbcd_2        1       100.0
+                    saturn_subbcd_3        1       100.0
+                    saturn_subbcd_4        1       100.0
+                    saturn_subbcd_5        1       100.0
+                    saturn_subbcd_6        1       100.0
+                    saturn_subbcd_7        1       100.0
+                    saturn_subbcd_8        1       100.0
+                    saturn_subbcd_9        1       100.0
+                            
+                         TOTAL           279           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_14.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.sf
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_13.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.se
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       11         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            16           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_12.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.sd
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       11         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            16           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_11.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.sc
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       11         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            16           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_10.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.sb
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_9.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.sa
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_8.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.s9
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       11         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            16           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_7.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.s8
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       11         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            16           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_6.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.s7
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       11         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            16           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_5.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.s6
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_4.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.s5
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       11         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            16           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_3.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.s4
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       11         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            16           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_2.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.s3
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        8         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            13           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_1.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.s2
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       11         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            16           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd_0.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.s1
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_subbcd.netlist
+  Original Cell name saturn_subbcd
+     Instance path:  core.alru.sub64.s0
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4       10         0.2
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            15           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd64.netlist
+     Instance path:  core.alru.add64
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D       48        15.0
+                            L6MUX21       63        96.9
+                           ORCALUT4     2861        53.9
+                              PFUMX      344        64.4
+                                VHI        1         2.4
+                                VLO       17        27.9
+SUB MODULES 
+                      saturn_addbcd        1       100.0
+                    saturn_addbcd_0        1       100.0
+                    saturn_addbcd_1        1       100.0
+                   saturn_addbcd_10        1       100.0
+                   saturn_addbcd_11        1       100.0
+                   saturn_addbcd_12        1       100.0
+                   saturn_addbcd_13        1       100.0
+                   saturn_addbcd_14        1       100.0
+                    saturn_addbcd_2        1       100.0
+                    saturn_addbcd_3        1       100.0
+                    saturn_addbcd_4        1       100.0
+                    saturn_addbcd_5        1       100.0
+                    saturn_addbcd_6        1       100.0
+                    saturn_addbcd_7        1       100.0
+                    saturn_addbcd_8        1       100.0
+                    saturn_addbcd_9        1       100.0
+                            
+                         TOTAL          3350           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd_14.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.af
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        7         0.1
+                                VLO        1         1.6
+                            
+                         TOTAL            11           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd_13.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.ae
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        7         0.1
+                                VLO        1         1.6
+                            
+                         TOTAL            11           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd_12.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.ad
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        6         0.1
+                                VLO        1         1.6
+                            
+                         TOTAL            10           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd_11.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.ac
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        5         0.1
+                                VLO        1         1.6
+                            
+                         TOTAL             9           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd_10.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.ab
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        4         0.1
+                                VLO        1         1.6
+                            
+                         TOTAL             8           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd_9.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.aa
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        6         0.1
+                                VLO        1         1.6
+                            
+                         TOTAL            10           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd_8.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.a9
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        9         0.2
+                                VLO        1         1.6
+                            
+                         TOTAL            13           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd_7.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.a8
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        5         0.1
+                                VLO        1         1.6
+                            
+                         TOTAL             9           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd_6.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.a7
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        5         0.1
+                                VLO        1         1.6
+                            
+                         TOTAL             9           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd_5.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.a6
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        5         0.1
+                                VLO        1         1.6
+                            
+                         TOTAL             9           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd_4.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.a5
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        5         0.1
+                                VLO        1         1.6
+                            
+                         TOTAL             9           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd_3.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.a4
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        5         0.1
+                                VLO        1         1.6
+                            
+                         TOTAL             9           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd_2.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.a3
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        6         0.1
+                                VLO        1         1.6
+                            
+                         TOTAL            10           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd_1.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.a2
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        5         0.1
+                                VLO        1         1.6
+                            
+                         TOTAL             9           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd_0.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.a1
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        7         0.1
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL            12           
+----------------------------------------------------------------------
+Report for cell saturn_addbcd.netlist
+  Original Cell name saturn_addbcd
+     Instance path:  core.alru.add64.a0
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        3         0.9
+                           ORCALUT4        5         0.1
+                                VLO        1         1.6
+                            
+                         TOTAL             9           
+----------------------------------------------------------------------
+Report for cell saturn_decoder_sequencer.netlist
+     Instance path:  core.dec_seq
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D       36        11.3
+                              DP8KC        2       100.0
+                            FD1P3AX       70        10.9
+                            FD1P3IX       45        69.2
+                            FD1P3JX        4       100.0
+                            FD1S3AX        2         0.3
+                            FD1S3IX        8        22.9
+                            FD1S3JX        1       100.0
+                           ORCALUT4      747        14.1
+                              PFUMX       94        17.6
+                                VHI        2         4.9
+                                VLO        3         4.9
+SUB MODULES 
+                              mcrom        1       100.0
+               saturn_field_decoder        1       100.0
+                   saturn_microcode        1       100.0
+                            
+                         TOTAL          1017           
+----------------------------------------------------------------------
+Report for cell saturn_field_decoder.netlist
+     Instance path:  core.dec_seq.field_decoder
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                           ORCALUT4        9         0.2
+                            
+                         TOTAL             9           
+----------------------------------------------------------------------
+Report for cell saturn_microcode.netlist
+     Instance path:  core.dec_seq.mc
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D       11         3.4
+                              DP8KC        2       100.0
+                           ORCALUT4      666        12.5
+                              PFUMX       84        15.7
+                                VHI        1         2.4
+                                VLO        2         3.3
+SUB MODULES 
+                              mcrom        1       100.0
+                            
+                         TOTAL           767           
+----------------------------------------------------------------------
+Report for cell mcrom.netlist
+     Instance path:  core.dec_seq.mc.mcrom_i
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              DP8KC        2       100.0
+                           ORCALUT4        1         0.0
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL             5           
+----------------------------------------------------------------------
+Report for cell saturn_bus_controller.netlist
+     Instance path:  core.bus_ctrl
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D       28         8.8
+                            FD1P3AX      208        32.4
+                            FD1S3AX       44         7.0
+                            FD1S3IX        5        14.3
+                           ORCALUT4     1061        20.0
+                              PFUMX       85        15.9
+                                VHI        1         2.4
+                                VLO        2         3.3
+SUB MODULES 
+                  saturn_predecoder        1       100.0
+                            
+                         TOTAL          1435           
+----------------------------------------------------------------------
+Report for cell saturn_predecoder.netlist
+     Instance path:  core.bus_ctrl.predec
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                           ORCALUT4      636        12.0
+                              PFUMX       55        10.3
+                                VLO        1         1.6
+                            
+                         TOTAL           692           
+----------------------------------------------------------------------
+Report for cell display_dogm132.netlist
+     Instance path:  disp_ctrl
+                                          Cell usage:
+                               cell       count    Res Usage(%)
+                              CCU2D        9         2.8
+                           DPR16X4C        1       100.0
+                            FD1P3AX       15         2.3
+                            FD1S3AX        3         0.5
+                            FD1S3IX       15        42.9
+                           ORCALUT4       91         1.7
+                                VHI        1         2.4
+                                VLO        1         1.6
+                            
+                         TOTAL           136           

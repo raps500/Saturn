@@ -148,6 +148,8 @@ assign op5 = ibus_pre_fetched_opcode_in[23:20];
 assign op6 = ibus_pre_fetched_opcode_in[27:24];
 
 saturn_microcode mc(
+    .clk_in(clk_in),
+    .rom_en_in(state == `ST_INIT),
     .op0(op0),
     .op1(op1),
     .op2(op2),
@@ -277,24 +279,7 @@ assign op_forced_carry =
             (op0_E && (op1_4 || op1_5 || op1_6 || op1_7));                // A=A+1
 
 // these opcodes need the alu execute path, use either ABCD,RxDx,ST,STK
-/*
-assign op_is_alu =    ((op0_0) && ((op1_6) || (op1_7) || (op1_8) ||
-                                         (op1_9) || (op1_A) || (op1_B) ||
-                                         (op1_C) || (op1_D) || (op1_E))) ||
-                      (op0_1) ||
-                      (op0_2) || // P=n
-                      (op0_3) || // LC
-                      ((op0_8) && (((op1_0) && ((op2[3:2] == 2'h0) || (op2_6) || (op2_8 && op3 == 4'h2) ||
-                                                (op2_9) || (op2_C) || (op2_D) || (op2_F))) ||
-                                   (op1_1) || (op1_A) || (op1_B))) ||
-                      (op0_9) ||
-                      (op0_A) ||
-                      (op0_B) ||
-                      (op0_C) ||
-                      (op0_D) ||
-                      (op0_E) ||
-                      (op0_F);
-                   */
+
 assign op_is_alu =  ~((op0_0 & (op1_0 | op1_1 | op1_2 | op1_3 | op1_4 | op1_5 | op1_F)) |
                       (op0_4) | // GOC
                       (op0_5) | // GONC
@@ -305,15 +290,6 @@ assign op_is_alu =  ~((op0_0 & (op1_0 | op1_1 | op1_2 | op1_3 | op1_4 | op1_5 | 
                       (op0_8 & op1_0 & op2_8 & op3_F) |
                       (op0_8 & op1_0 & (op2_9 | op2_A | op2_E)) |
                       (op0_8 & (op1_C | op1_D /*| op2_E | op2_F*/)));// GOLONG GOVLNG GOSUBL GOSBVL
-                      
-                      
-                      
-                      
-                      
-                      
-                      
-// this signal is used to recognize all conditional jumps during decoding
-
 
 // these opcodes are 7 nibbles long
 assign op_goto_on_acbit    = ((op0_8) && ((op1_0) && (op2_8) && (op3_6))) || // ?ABIT
@@ -400,12 +376,29 @@ assign jump_target_addr = ibus_pre_fetched_opcode_addr_in +
                            (op_jrel4)            ? 20'h00002:
                            (op_goto_on_cond_set) ? 20'h00003:
                            (op_gosub)            ? 20'h00004:
-                           (op_goto_on_acbit)    ? 20'h00005:20'h0000) +
+                           (op_goto_on_acbit)    ? 20'h00005:
+                           (op_gosubl)           ? 20'h00006:20'h0000) +
                           ((op_goto_on_cond_set | op_goc | op_gonc) ? ofs_pc_rel2:
                            (op_goto_on_acbit) ? ofs_pc_rel2_ab:
                            (op_jrel3 | op_gosub) ? ofs_pc_rel3:
                            (op_jrel4 | op_gosubl)? ofs_pc_rel4:20'h00000);
 
+reg [63:0] unshifted_op_literal;
+reg [3:0] op_literal_shift;
+always @(*)
+    begin
+        unshifted_op_literal[63: 0] <= ibus_pre_fetched_opcode_in[71: 8];
+        op_literal_shift = reg_P_in;
+        if (op_is_la)
+            unshifted_op_literal[63: 0] <= ibus_pre_fetched_opcode_in[83:20];
+        if (op_is_A_A_PM_CON) // A=A+CON C=C-CON
+            begin
+                unshifted_op_literal[ 3: 0] <= ibus_pre_fetched_opcode_in[23:20];
+                op_literal_shift = field_decoded_right;
+            end
+    end
+                           
+                           
 // Sequencer
 always @(posedge clk_in)
     begin
@@ -449,8 +442,9 @@ always @(posedge clk_in)
                             if (op_govlng | op_gosbvl)
                                 new_pc_jump <= new_pc_abs;
                             // Process jumps that do not need the ALU
-                            if ((op_goc & carry_in) || (op_gonc & (~carry_in)) ||
-                                op_jrel3 | op_jrel4 | op_govlng)
+                            if (((op_goc & carry_in) | (op_gonc & (~carry_in)) |
+                                op_jrel3 | op_jrel4 | op_govlng) &
+                                (~(op_rtn_on_carry_clr | op_rtn_on_carry_set))) // RTNNC & RTNC must go through the ALU
                                 state <= `ST_FLUSH_QUEUE; // jump directly
                             
                             // field size
@@ -487,63 +481,8 @@ always @(posedge clk_in)
                             force_carry <= op_forced_carry;
                             force_hex <= op_is_Dn_P_CON | op_is_P_INC_DEC;
                             // literal handling, shift to correct position
-                            if (op_is_lc)
-                                case (reg_P_in)
-                                    4'h0: op_literal[63: 0] <= ibus_pre_fetched_opcode_in[71: 8];
-                                    4'h1: op_literal[63: 4] <= ibus_pre_fetched_opcode_in[67: 8];
-                                    4'h2: op_literal[63: 8] <= ibus_pre_fetched_opcode_in[63: 8];
-                                    4'h3: op_literal[63:12] <= ibus_pre_fetched_opcode_in[59: 8];
-                                    4'h4: op_literal[63:16] <= ibus_pre_fetched_opcode_in[55: 8];
-                                    4'h5: op_literal[63:20] <= ibus_pre_fetched_opcode_in[51: 8];
-                                    4'h6: op_literal[63:24] <= ibus_pre_fetched_opcode_in[47: 8];
-                                    4'h7: op_literal[63:28] <= ibus_pre_fetched_opcode_in[43: 8];
-                                    4'h8: op_literal[63:32] <= ibus_pre_fetched_opcode_in[39: 8];
-                                    4'h9: op_literal[63:36] <= ibus_pre_fetched_opcode_in[35: 8];
-                                    4'hA: op_literal[63:40] <= ibus_pre_fetched_opcode_in[31: 8];
-                                    4'hB: op_literal[63:44] <= ibus_pre_fetched_opcode_in[27: 8];
-                                    4'hC: op_literal[63:48] <= ibus_pre_fetched_opcode_in[23: 8];
-                                    4'hD: op_literal[63:52] <= ibus_pre_fetched_opcode_in[19: 8];
-                                    4'hE: op_literal[63:56] <= ibus_pre_fetched_opcode_in[15: 8];
-                                    4'hF: op_literal[63:60] <= ibus_pre_fetched_opcode_in[11: 8];
-                                endcase
-                            if (op_is_la)
-                                case (reg_P_in)
-                                    4'h0: op_literal[63: 0] <= ibus_pre_fetched_opcode_in[83:20];
-                                    4'h1: op_literal[63: 4] <= ibus_pre_fetched_opcode_in[79:20];
-                                    4'h2: op_literal[63: 8] <= ibus_pre_fetched_opcode_in[75:20];
-                                    4'h3: op_literal[63:12] <= ibus_pre_fetched_opcode_in[71:20];
-                                    4'h4: op_literal[63:16] <= ibus_pre_fetched_opcode_in[67:20];
-                                    4'h5: op_literal[63:20] <= ibus_pre_fetched_opcode_in[63:20];
-                                    4'h6: op_literal[63:24] <= ibus_pre_fetched_opcode_in[59:20];
-                                    4'h7: op_literal[63:28] <= ibus_pre_fetched_opcode_in[55:20];
-                                    4'h8: op_literal[63:32] <= ibus_pre_fetched_opcode_in[51:20];
-                                    4'h9: op_literal[63:36] <= ibus_pre_fetched_opcode_in[47:20];
-                                    4'hA: op_literal[63:40] <= ibus_pre_fetched_opcode_in[43:20];
-                                    4'hB: op_literal[63:44] <= ibus_pre_fetched_opcode_in[39:20];
-                                    4'hC: op_literal[63:48] <= ibus_pre_fetched_opcode_in[35:20];
-                                    4'hD: op_literal[63:52] <= ibus_pre_fetched_opcode_in[31:20];
-                                    4'hE: op_literal[63:56] <= ibus_pre_fetched_opcode_in[27:20];
-                                    4'hF: op_literal[63:60] <= ibus_pre_fetched_opcode_in[23:20];
-                                endcase
-                            if (op_is_A_A_PM_CON) // A=A+CON C=C-CON
-                                case (field_decoded_right)
-                                    4'h0: op_literal[ 3: 0] <= ibus_pre_fetched_opcode_in[23:20];
-                                    4'h1: op_literal[ 7: 4] <= ibus_pre_fetched_opcode_in[23:20];
-                                    4'h2: op_literal[11: 8] <= ibus_pre_fetched_opcode_in[23:20];
-                                    4'h3: op_literal[15:12] <= ibus_pre_fetched_opcode_in[23:20];
-                                    4'h4: op_literal[19:16] <= ibus_pre_fetched_opcode_in[23:20];
-                                    4'h5: op_literal[23:20] <= ibus_pre_fetched_opcode_in[23:20];
-                                    4'h6: op_literal[27:24] <= ibus_pre_fetched_opcode_in[23:20];
-                                    4'h7: op_literal[31:28] <= ibus_pre_fetched_opcode_in[23:20];
-                                    4'h8: op_literal[35:32] <= ibus_pre_fetched_opcode_in[23:20];
-                                    4'h9: op_literal[39:36] <= ibus_pre_fetched_opcode_in[23:20];
-                                    4'hA: op_literal[43:40] <= ibus_pre_fetched_opcode_in[23:20];
-                                    4'hB: op_literal[47:44] <= ibus_pre_fetched_opcode_in[23:20];
-                                    4'hC: op_literal[51:48] <= ibus_pre_fetched_opcode_in[23:20];
-                                    4'hD: op_literal[55:52] <= ibus_pre_fetched_opcode_in[23:20];
-                                    4'hE: op_literal[59:56] <= ibus_pre_fetched_opcode_in[23:20];
-                                    4'hF: op_literal[63:60] <= ibus_pre_fetched_opcode_in[23:20];
-                                endcase
+                            if (op_is_lc | op_is_la | op_is_A_A_PM_CON)
+                                op_literal[63: 0] <= unshifted_op_literal << { op_literal_shift, 2'b00 };
                             if (op_is_ACBIT) // ABIT=0/1 ?CBIT=0/1
                                 op_literal[15: 0] <= (16'h1 << op4); // shift bit to test/set/clear position
 
@@ -558,7 +497,7 @@ always @(posedge clk_in)
                             if (op_gosub | op_gosubl | op_gosbvl) // use ALU to update RSTK
                                 begin
                                     push_rstk <= 1'b1; // make place on stack
-                                    op_literal[19: 0] <= ibus_pre_fetched_opcode_addr_in + (op_gosub ? 20'h4:op_gosubl ? 20'h5:20'h7);                            
+                                    op_literal[19: 0] <= ibus_pre_fetched_opcode_addr_in + (op_gosub ? 20'h4:op_gosubl ? 20'h6:20'h7);                            
                                 end
                             if (op_push_ac)
                                 push_rstk <= 1'b1; // make place on stack
@@ -1495,6 +1434,8 @@ endmodule
  * 7 : Word field
  */
 module saturn_microcode(
+    input wire          clk_in,
+    input wire          rom_en_in,
     input wire  [3:0] op0,
     input wire  [3:0] op1,
     input wire  [3:0] op2,
@@ -1508,472 +1449,543 @@ module saturn_microcode(
     output wire [4:0] op_alu_op
     );
 
-reg [25:0] mc;
+wire [31:0] mc;
 
-assign op_field_left     = mc[25:23];
-assign op_alu_op         = mc[22:18];
-assign op_alu_reg1       = mc[17:12];
-assign op_alu_reg2       = mc[11: 6];
+assign op_field_left     = mc[22:20];
+assign op_alu_op         = mc[19:15];
+assign op_alu_reg1       = mc[14: 9];
+assign op_alu_reg2       = mc[ 8: 6];
 assign op_alu_dst        = mc[ 5: 0];
-/*
-wire op_0_E = (op0 == 4'h0) && (op1 == 4'h0E);
-wire op_1_0 = (op0 == 4'h1) && (op1 == 4'h00);
-wire op_1_1 = (op0 == 4'h1) && (op1 == 4'h01);
-wire op_1_2 = (op0 == 4'h1) && (op1 == 4'h02);
-wire op_1_3 = (op0 == 4'h1) && (op1 == 4'h03);
-wire op_1_4 = (op0 == 4'h1) && (op1 == 4'h04);
-wire op_1_5 = (op0 == 4'h1) && (op1 == 4'h05);
-wire op_1_4 = (op0 == 4'h1) && (op1 == 4'h04);
-wire op_1_4 = (op0 == 4'h1) && (op1 == 4'h04);
-wire op_1_4 = (op0 == 4'h1) && (op1 == 4'h04);
-wire op_1_4 = (op0 == 4'h1) && (op1 == 4'h04);
+
+reg [8:0] mca; // microcode address
 
 always @(*)
     begin
-        mc = 'h0;
-        if ((op0 == 4'h0) && (op1 == 4'h0E))
-            case
+        mca = 9'h0;
+        case (op0)
+            4'h0:
+                if (op1 == 4'hE) mca = { 5'h00, op3 }; 
+                else mca = { 5'h01, op1 };
+            4'h1: case (op1)
+                    4'h0: mca = { 5'h02, op2 };
+                    4'h1: mca = { 5'h03, op2 };
+                    4'h2: mca = { 5'h04, op2 };
+                    4'h3: mca = { 5'h05, op2 };
+                    4'h4: mca = { 5'h06, op2 };
+                    4'h5: mca = { 5'h07, op2 };
+                    default: mca = { 5'h08, op1 };
+                endcase
+            4'h2: mca = 9'h1F2;
+            4'h3: mca = 9'h1F3;
+            4'h4: mca = 9'h1F4;
+            4'h5: mca = 9'h1F5;
+            4'h6: mca = 9'h1F6;
+            4'h7: mca = 9'h1F7;
+            4'h8: case (op1)
+                    4'h0: if (op2 == 4'h8) mca = { 5'h09, op3 }; else mca = { 5'h0A, op2 };
+                    4'h1: case (op2)
+                            4'h8: mca = { 5'h0B, op4 };
+                            4'h9: mca = { 5'h0C, op4 };
+                            4'hA: 
+                                case (op4)
+                                    4'h0: mca = { 5'h0D, op5 };
+                                    4'h1: mca = { 5'h0E, op5 };
+                                    4'h2: mca = { 5'h0F, op5 };
+                                endcase
+                            4'hB: mca = { 5'h10, op3 };
+                            default: mca = { 5'h11, op2 };
+                          endcase
+                    4'hA: mca = { 5'h12, op2 };
+                    4'hB: mca = { 5'h13, op2 };
+                    default: mca = { 5'h14, op1 };
+                  endcase
+            4'h9: mca = (op1[3]) ? { 5'h16, op2 }:{ 5'h15, op2 };
+            4'hA: mca = (op1[3]) ? { 5'h18, op2 }:{ 5'h17, op2 };
+            4'hB: mca = (op1[3]) ? { 5'h1A, op2 }:{ 5'h19, op2 };
+            4'hC: mca = { 5'h1B, op1 };
+            4'hD: mca = { 5'h1C, op1 };
+            4'hE: mca = { 5'h1D, op1 };
+            4'hF: mca = { 5'h1E, op1 };
+        endcase
+    end
+
+mcrom mcrom_i(
+    .Address(mca),
+    .OutClock(clk_in),
+    .OutClockEn(rom_en_in),
+    .Reset(1'b0),
+    .Q(mc)
+    );
+    
+/*
+reg [31:0] mcrom[511:0];
+
+assign mc = mcrom[mca];
+
+initial
+    $readmemb("C:/02_Elektronik/041_1LF2/10_Public/05_PSaturn/mc_tbl.bin", mcrom);
 */
+/*
 always @(*)
     casex ({op0, op1, op2, op3, op4, op5})
         //                                        fend     alu_op     reg1     reg2     dst
-        24'b0000_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_STK };//RSTK=C
-        24'b0000_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_STK, `OP_A  , `OP_C   };//C=RSTK
-        24'b0000_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_TFR , `OP_Z  , `OP_ST , `OP_ST  };//CLRST
-        24'b0000_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_TFR , `OP_ST , `OP_ST , `OP_C   };//C=ST
-        24'b0000_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_TFR , `OP_C  , `OP_C  , `OP_ST  };//ST=C
-        24'b0000_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_EX  , `OP_ST , `OP_C  , `OP_C   };//CSTEX
-        24'b0000_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_ADD , `OP_P  , `OP_1  , `OP_P   };//P=P+1
-        24'b0000_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_SUB , `OP_P  , `OP_1  , `OP_P   };//P=P-1
+        24'b0000_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_STK };//RSTK=C
+        24'b0000_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_STK, `K_A  , `OP_C   };//C=RSTK
+        24'b0000_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_ST  };//CLRST
+        24'b0000_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_TFR , `OP_ST , `K_A  , `OP_C   };//C=ST
+        24'b0000_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_TFR , `OP_C  , `K_C  , `OP_ST  };//ST=C
+        24'b0000_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_EX  , `OP_ST , `K_C  , `OP_C   };//CSTEX
+        24'b0000_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_ADD , `OP_P  , `K_1  , `OP_P   };//P=P+1
+        24'b0000_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_SUB , `OP_P  , `K_1  , `OP_P   };//P=P-1
         // 0Ean 0EFn
-        24'b0000_1110_xxxx_0000_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_A  , `OP_B  , `OP_A   };//A=A&B
-        24'b0000_1110_xxxx_0001_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_B  , `OP_C  , `OP_B   };//B=B&C
-        24'b0000_1110_xxxx_0010_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_C  , `OP_A  , `OP_C   };//A=A&B
-        24'b0000_1110_xxxx_0011_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_D  , `OP_C  , `OP_D   };//B=B&C
-        24'b0000_1110_xxxx_0100_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_B  , `OP_A  , `OP_B   };//A=A&B
-        24'b0000_1110_xxxx_0101_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_C  , `OP_B  , `OP_C   };//B=B&C
-        24'b0000_1110_xxxx_0110_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_A  , `OP_C  , `OP_A   };//A=A&B
-        24'b0000_1110_xxxx_0111_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_C  , `OP_D  , `OP_C   };//B=B&C
-        24'b0000_1110_xxxx_1000_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_A  , `OP_B  , `OP_A   };//A=A!B
-        24'b0000_1110_xxxx_1001_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_B  , `OP_C  , `OP_B   };//B=B!C
-        24'b0000_1110_xxxx_1010_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_C  , `OP_A  , `OP_C   };//A=A!B
-        24'b0000_1110_xxxx_1011_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_D  , `OP_C  , `OP_D   };//B=B!C
-        24'b0000_1110_xxxx_1100_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_B  , `OP_A  , `OP_B   };//A=A!B
-        24'b0000_1110_xxxx_1101_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_C  , `OP_B  , `OP_C   };//B=B!C
-        24'b0000_1110_xxxx_1110_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_A  , `OP_C  , `OP_A   };//A=A!B
-        24'b0000_1110_xxxx_1111_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_C  , `OP_D  , `OP_C   };//B=B!C
-        // 10 Rn=A Rn=C                                               reg1     reg2     dst
-        24'b0001_0000_0000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R0 , `OP_A  , `OP_A   };//A=R0
-        24'b0001_0000_0001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R1 , `OP_A  , `OP_A   };
-        24'b0001_0000_0010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R2 , `OP_A  , `OP_A   };
-        24'b0001_0000_0011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R3 , `OP_A  , `OP_A   };
-        24'b0001_0000_0100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R4 , `OP_A  , `OP_A   };
-        24'b0001_0000_1000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R0 , `OP_A  , `OP_C   };//C=R0
-        24'b0001_0000_1001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R1 , `OP_A  , `OP_C   };
-        24'b0001_0000_1010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R2 , `OP_A  , `OP_C   };
-        24'b0001_0000_1011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R3 , `OP_A  , `OP_C   };
-        24'b0001_0000_1100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R4 , `OP_A  , `OP_C   };
-        // 11n A=Rn C=Rn
-        24'b0001_0001_0000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_R0  };
-        24'b0001_0001_0001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_R1  };
-        24'b0001_0001_0010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_R2  };
-        24'b0001_0001_0011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_R3  };
-        24'b0001_0001_0100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_R4  };
-        24'b0001_0001_1000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_R0  };
-        24'b0001_0001_1001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_R1  };
-        24'b0001_0001_1010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_R2  };
-        24'b0001_0001_1011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_R3  };
-        24'b0001_0001_1100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_R4  };
+        24'b0000_1110_xxxx_0000_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_A  , `K_B  , `OP_A   };//A=A&B
+        24'b0000_1110_xxxx_0001_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_B  , `K_C  , `OP_B   };//B=B&C
+        24'b0000_1110_xxxx_0010_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_C  , `K_A  , `OP_C   };//A=A&B
+        24'b0000_1110_xxxx_0011_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_D  , `K_C  , `OP_D   };//B=B&C
+        24'b0000_1110_xxxx_0100_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_B  , `K_A  , `OP_B   };//A=A&B
+        24'b0000_1110_xxxx_0101_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_C  , `K_B  , `OP_C   };//B=B&C
+        24'b0000_1110_xxxx_0110_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_A  , `K_C  , `OP_A   };//A=A&B
+        24'b0000_1110_xxxx_0111_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_C  , `K_D  , `OP_C   };//B=B&C
+        24'b0000_1110_xxxx_1000_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_A  , `K_B  , `OP_A   };//A=A!B
+        24'b0000_1110_xxxx_1001_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_B  , `K_C  , `OP_B   };//B=B!C
+        24'b0000_1110_xxxx_1010_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_C  , `K_A  , `OP_C   };//A=A!B
+        24'b0000_1110_xxxx_1011_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_D  , `K_C  , `OP_D   };//B=B!C
+        24'b0000_1110_xxxx_1100_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_B  , `K_A  , `OP_B   };//A=A!B
+        24'b0000_1110_xxxx_1101_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_C  , `K_B  , `OP_C   };//B=B!C
+        24'b0000_1110_xxxx_1110_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_A  , `K_C  , `OP_A   };//A=A!B
+        24'b0000_1110_xxxx_1111_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_C  , `K_D  , `OP_C   };//B=B!C
+        // 10n Rn=A Rn=C
+        24'b0001_0000_0000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R0  };
+        24'b0001_0000_0001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R1  };
+        24'b0001_0000_0010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R2  };
+        24'b0001_0000_0011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R3  };
+        24'b0001_0000_0100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R4  };
+        24'b0001_0000_1000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R0  };
+        24'b0001_0000_1001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R1  };
+        24'b0001_0000_1010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R2  };
+        24'b0001_0000_1011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R3  };
+        24'b0001_0000_1100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R4  };
+        // 11n A=Rn C=Rn                                               reg1     reg2     dst
+        24'b0001_0001_0000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_A   };//A=R0
+        24'b0001_0001_0001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_A   };
+        24'b0001_0001_0010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_A   };
+        24'b0001_0001_0011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_A   };
+        24'b0001_0001_0100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_A   };
+        24'b0001_0001_1000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_C   };//C=R0
+        24'b0001_0001_1001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_C   };
+        24'b0001_0001_1010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_C   };
+        24'b0001_0001_1011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_C   };
+        24'b0001_0001_1100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_C   };
         // 12n ARnEX CRnEX                                            reg1     reg2     dst
-        24'b0001_0010_0000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R0 , `OP_A  , `OP_A   };
-        24'b0001_0010_0001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R1 , `OP_A  , `OP_A   };
-        24'b0001_0010_0010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R2 , `OP_A  , `OP_A   };
-        24'b0001_0010_0011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R3 , `OP_A  , `OP_A   };
-        24'b0001_0010_0100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R4 , `OP_A  , `OP_A   };
-        24'b0001_0010_1000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R0 , `OP_C  , `OP_C   };
-        24'b0001_0010_1001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R1 , `OP_C  , `OP_C   };
-        24'b0001_0010_1010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R2 , `OP_C  , `OP_C   };
-        24'b0001_0010_1011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R3 , `OP_C  , `OP_C   };
-        24'b0001_0010_1100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R4 , `OP_C  , `OP_C   };
+        24'b0001_0010_0000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R0 , `K_A  , `OP_A   };
+        24'b0001_0010_0001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R1 , `K_A  , `OP_A   };
+        24'b0001_0010_0010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R2 , `K_A  , `OP_A   };
+        24'b0001_0010_0011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R3 , `K_A  , `OP_A   };
+        24'b0001_0010_0100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_A   };
+        24'b0001_0010_1000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R0 , `K_C  , `OP_C   };
+        24'b0001_0010_1001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R1 , `K_C  , `OP_C   };
+        24'b0001_0010_1010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R2 , `K_C  , `OP_C   };
+        24'b0001_0010_1011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R3 , `K_C  , `OP_C   };
+        24'b0001_0010_1100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R4 , `K_C  , `OP_C   };
         // 13n
-        24'b0001_0011_0000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_D0  };
-        24'b0001_0011_0001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_D1  };
-        24'b0001_0011_0010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D0 , `OP_A  , `OP_A   };
-        24'b0001_0011_0011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D1 , `OP_A  , `OP_A   };
-        24'b0001_0011_0100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_D0  };
-        24'b0001_0011_0101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_D1  };
-        24'b0001_0011_0110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D0 , `OP_C  , `OP_C   };
-        24'b0001_0011_0111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D1 , `OP_C  , `OP_C   };
-        24'b0001_0011_1000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_D0  };
-        24'b0001_0011_1001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_D1  };
-        24'b0001_0011_1010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D0 , `OP_A  , `OP_A   };
-        24'b0001_0011_1011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D1 , `OP_A  , `OP_A   };
-        24'b0001_0011_1100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_D0  };
-        24'b0001_0011_1101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_D1  };
-        24'b0001_0011_1110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D0 , `OP_C  , `OP_C   };
-        24'b0001_0011_1111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D1 , `OP_C  , `OP_C   };
+        24'b0001_0011_0000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D0  };
+        24'b0001_0011_0001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D1  };
+        24'b0001_0011_0010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D0 , `K_A  , `OP_A   };
+        24'b0001_0011_0011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D1 , `K_A  , `OP_A   };
+        24'b0001_0011_0100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D0  };
+        24'b0001_0011_0101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D1  };
+        24'b0001_0011_0110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D0 , `K_C  , `OP_C   };
+        24'b0001_0011_0111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D1 , `K_C  , `OP_C   };
+        24'b0001_0011_1000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D0  };
+        24'b0001_0011_1001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D1  };
+        24'b0001_0011_1010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D0 , `K_A  , `OP_A   };
+        24'b0001_0011_1011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D1 , `K_A  , `OP_A   };
+        24'b0001_0011_1100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D0  };
+        24'b0001_0011_1101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D1  };
+        24'b0001_0011_1110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D0 , `K_C  , `OP_C   };
+        24'b0001_0011_1111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D1 , `K_C  , `OP_C   };
         // 14 DATn=A/C  A/C=DATn                                      reg1     reg2     dst
-        24'b0001_0100_0000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_WR  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0100_0001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_WR  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0100_0010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0100_0011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0100_0100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_WR  , `OP_C  , `OP_A  , `OP_A   };
-        24'b0001_0100_0101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_WR  , `OP_C  , `OP_A  , `OP_A   };
-        24'b0001_0100_0110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_C   };
-        24'b0001_0100_0111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_C   };
-        24'b0001_0100_1000_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_WR  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0100_1001_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_WR  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0100_1010_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0100_1011_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0100_1100_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_WR  , `OP_C  , `OP_A  , `OP_A   };
-        24'b0001_0100_1101_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_WR  , `OP_C  , `OP_A  , `OP_A   };
-        24'b0001_0100_1110_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_C   };
-        24'b0001_0100_1111_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_C   };
+        24'b0001_0100_0000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0100_0001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0100_0010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0100_0011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0100_0100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
+        24'b0001_0100_0101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
+        24'b0001_0100_0110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
+        24'b0001_0100_0111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
+        24'b0001_0100_1000_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0100_1001_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0100_1010_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0100_1011_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0100_1100_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
+        24'b0001_0100_1101_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
+        24'b0001_0100_1110_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
+        24'b0001_0100_1111_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
         // 15 DATn=A/C  A/C=DATn
-        24'b0001_0101_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_WR  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0101_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_WR  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0101_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0101_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0101_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_WR  , `OP_C  , `OP_A  , `OP_A   };
-        24'b0001_0101_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_WR  , `OP_C  , `OP_A  , `OP_A   };
-        24'b0001_0101_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_C   };
-        24'b0001_0101_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_C   };
-        24'b0001_0101_1000_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_WR  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0101_1001_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_WR  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0101_1010_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0101_1011_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_A   };
-        24'b0001_0101_1100_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_WR  , `OP_C  , `OP_A  , `OP_A   };
-        24'b0001_0101_1101_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_WR  , `OP_C  , `OP_A  , `OP_A   };
-        24'b0001_0101_1110_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_C   };
-        24'b0001_0101_1111_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_RD  , `OP_A  , `OP_A  , `OP_C   };
+        24'b0001_0101_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0101_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0101_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0101_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0101_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
+        24'b0001_0101_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
+        24'b0001_0101_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
+        24'b0001_0101_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
+        24'b0001_0101_1000_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0101_1001_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0101_1010_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0101_1011_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
+        24'b0001_0101_1100_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
+        24'b0001_0101_1101_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
+        24'b0001_0101_1110_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
+        24'b0001_0101_1111_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
         // 1, 17, 18, D0+D0+n                                         reg1     reg2     dst
-        24'b0001_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_D0 , `OP_LIT, `OP_D0  }; // D0=D0+n
-        24'b0001_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_D1 , `OP_LIT, `OP_D1  }; // D1=D1+n
-        24'b0001_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_D0 , `OP_LIT, `OP_D0  }; // D0=D0-n
+        24'b0001_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_D0 , `K_LIT, `OP_D0  }; // D0=D0+n
+        24'b0001_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_D1 , `K_LIT, `OP_D1  }; // D1=D1+n
+        24'b0001_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_D0 , `K_LIT, `OP_D0  }; // D0=D0-n
         // 19..1F Dx=(n)
-        24'b0001_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_LIT, `OP_A  , `OP_D0  };
-        24'b0001_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_RD  , `OP_LIT, `OP_A  , `OP_D0  };
-        24'b0001_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_LIT, `OP_A  , `OP_D0  };
-        24'b0001_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_LIT, `OP_A  , `OP_D1  }; // D1=D1-n
-        24'b0001_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_LIT, `OP_A  , `OP_D1  };
-        24'b0001_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_RD  , `OP_LIT, `OP_A  , `OP_D1  };
-        24'b0001_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_LIT, `OP_A  , `OP_D1  };
+        24'b0001_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D0  };
+        24'b0001_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D0  };
+        24'b0001_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D0  };
+        24'b0001_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_LIT, `K_A  , `OP_D1  }; // D1=D1-n
+        24'b0001_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D1  };
+        24'b0001_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D1  };
+        24'b0001_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D1  };
         //  2, 3
-        24'b0010_xxxx_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_LIT, `OP_A  , `OP_P   }; // P=n
-        24'b0011_xxxx_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_LIT, `OP_A  , `OP_C   }; // LC(n)
+        24'b0010_xxxx_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_P   }; // P=n
+        24'b0011_xxxx_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_C   }; // LC(n)
         // 7xx GOSUB
-        24'b0111_xxxx_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR, `OP_LIT, `OP_A  , `OP_STK  }; // GOSUB
+        24'b0111_xxxx_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_STK  }; // GOSUB
         // 80x                                                        reg1    reg2      dst
-        24'b1000_0000_0000_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_OUT }; // OUT=C
-        24'b1000_0000_0001_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_OUT }; // OUT=C
-        24'b1000_0000_0010_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TFR , `OP_IN , `OP_A  , `OP_A   }; // A=IN
-        24'b1000_0000_0011_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TFR , `OP_IN , `OP_A  , `OP_C   }; // C=IN
-        24'b1000_0000_0110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_ID , `OP_A  , `OP_C   }; // C=ID,
+        24'b1000_0000_0000_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_OUT }; // OUT=C
+        24'b1000_0000_0001_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_OUT }; // OUT=C
+        24'b1000_0000_0010_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TFR , `OP_IN , `K_A  , `OP_A   }; // A=IN
+        24'b1000_0000_0011_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TFR , `OP_IN , `K_A  , `OP_C   }; // C=IN
+        24'b1000_0000_0110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_ID , `K_A  , `OP_C   }; // C=ID,
         // 8082 LA(n) starting at P witath
-        24'b1000_0000_1000_0010_xxxx_xxxx: mc = { 3'h5,`ALU_OP_TFR , `OP_LIT, `OP_A  , `OP_A   };
-        24'b1000_0000_1000_0100_xxxx_xxxx: mc = { 3'h3,`ALU_OP_ANDN, `OP_A  , `OP_LIT, `OP_A   };// 8084 ABIT=0
-        24'b1000_0000_1000_0101_xxxx_xxxx: mc = { 3'h3,`ALU_OP_OR  , `OP_A  , `OP_LIT, `OP_A   };// 8085 ABIT=1
-        24'b1000_0000_1000_0110_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST0, `OP_A  , `OP_LIT, `OP_A   };// 8086 ?ABIT=0
-        24'b1000_0000_1000_0111_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST1, `OP_A  , `OP_LIT, `OP_A   };// 8087 ?ABIT=1
-        24'b1000_0000_1000_1000_xxxx_xxxx: mc = { 3'h3,`ALU_OP_ANDN, `OP_C  , `OP_LIT, `OP_C   };// 8088 CBIT=0
-        24'b1000_0000_1000_1001_xxxx_xxxx: mc = { 3'h3,`ALU_OP_OR  , `OP_C  , `OP_LIT, `OP_C   };// 8089 CBIT=1
-        24'b1000_0000_1000_1010_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST0, `OP_C  , `OP_LIT, `OP_C   };// 808A ?CBIT=0
-        24'b1000_0000_1000_1011_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST1, `OP_C  , `OP_LIT, `OP_C   };// 808B ?CBIT=1
-        24'b1000_0000_1000_1100_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_MEM, `OP_A  , `OP_PC  };// 808C PC=(A)
-        24'b1000_0000_1000_1101_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_ID , `OP_D  , `OP_A   };// 808D BUSCD
-        24'b1000_0000_1000_1110_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_MEM, `OP_C  , `OP_PC  };// 808E PC=(C)
-        24'b1000_0000_1001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `OP_P  , `OP_C   }; // C=C+P+1 on field A sets carry
-        24'b1000_0000_1011_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_ID , `OP_C  , `OP_A   }; // BUSCC
-        24'b1000_0000_1100_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_P  , `OP_A  , `OP_C   }; // C=P n
-        24'b1000_0000_1101_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_P   }; // P=C n
-        24'b1000_0000_1111_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_EX  , `OP_C  , `OP_P  , `OP_P   }; // CPEX n
+        24'b1000_0000_1000_0010_xxxx_xxxx: mc = { 3'h5,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_A   };
+        24'b1000_0000_1000_0100_xxxx_xxxx: mc = { 3'h3,`ALU_OP_ANDN, `OP_A  , `K_LIT, `OP_A   };// 8084 ABIT=0
+        24'b1000_0000_1000_0101_xxxx_xxxx: mc = { 3'h3,`ALU_OP_OR  , `OP_A  , `K_LIT, `OP_A   };// 8085 ABIT=1
+        24'b1000_0000_1000_0110_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST0, `OP_A  , `K_LIT, `OP_A   };// 8086 ?ABIT=0
+        24'b1000_0000_1000_0111_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST1, `OP_A  , `K_LIT, `OP_A   };// 8087 ?ABIT=1
+        24'b1000_0000_1000_1000_xxxx_xxxx: mc = { 3'h3,`ALU_OP_ANDN, `OP_C  , `K_LIT, `OP_C   };// 8088 CBIT=0
+        24'b1000_0000_1000_1001_xxxx_xxxx: mc = { 3'h3,`ALU_OP_OR  , `OP_C  , `K_LIT, `OP_C   };// 8089 CBIT=1
+        24'b1000_0000_1000_1010_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST0, `OP_C  , `K_LIT, `OP_C   };// 808A ?CBIT=0
+        24'b1000_0000_1000_1011_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST1, `OP_C  , `K_LIT, `OP_C   };// 808B ?CBIT=1
+        24'b1000_0000_1000_1100_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_MEM, `K_A  , `OP_PC  };// 808C PC=(A)
+        24'b1000_0000_1000_1101_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_ID , `K_D  , `OP_A   };// 808D BUSCD
+        24'b1000_0000_1000_1110_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_MEM, `K_C  , `OP_PC  };// 808E PC=(C)
+        24'b1000_0000_1001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_P  , `K_C  , `OP_C   }; // C=C+P+1 on field A sets carry
+        24'b1000_0000_1011_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_ID , `K_C  , `OP_A   }; // BUSCC
+        24'b1000_0000_1100_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_P  , `K_A  , `OP_C   }; // C=P n
+        24'b1000_0000_1101_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_P   }; // P=C n
+        24'b1000_0000_1111_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_EX  , `OP_P  , `K_C  , `OP_C   }; // CPEX n
         // 81x ASLC/ASRC/ASRB Word
-        24'b1000_0001_0000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SLC , `OP_A  , `OP_A  , `OP_A   }; // ASLC
-        24'b1000_0001_0001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SLC , `OP_B  , `OP_B  , `OP_B   }; // BSLC
-        24'b1000_0001_0010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SLC , `OP_C  , `OP_C  , `OP_C   }; // CSLC
-        24'b1000_0001_0011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SLC , `OP_D  , `OP_D  , `OP_D   }; // DSLC
-        24'b1000_0001_0100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRC , `OP_A  , `OP_A  , `OP_A   };
-        24'b1000_0001_0101_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRC , `OP_B  , `OP_A  , `OP_B   };
-        24'b1000_0001_0110_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRC , `OP_C  , `OP_A  , `OP_C   };
-        24'b1000_0001_0111_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRC , `OP_D  , `OP_A  , `OP_D   };
+        24'b1000_0001_0000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SLC , `OP_A  , `K_A  , `OP_A   }; // ASLC
+        24'b1000_0001_0001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SLC , `OP_B  , `K_B  , `OP_B   }; // BSLC
+        24'b1000_0001_0010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SLC , `OP_C  , `K_C  , `OP_C   }; // CSLC
+        24'b1000_0001_0011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SLC , `OP_D  , `K_D  , `OP_D   }; // DSLC
+        24'b1000_0001_0100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRC , `OP_A  , `K_A  , `OP_A   };
+        24'b1000_0001_0101_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRC , `OP_B  , `K_A  , `OP_B   };
+        24'b1000_0001_0110_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRC , `OP_C  , `K_A  , `OP_C   };
+        24'b1000_0001_0111_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRC , `OP_D  , `K_A  , `OP_D   };
         // 818fnm A=A+CON/A=A-CON
-        24'b1000_0001_1000_xxxx_0000_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `OP_LIT, `OP_A   }; // A=A+CON
-        24'b1000_0001_1000_xxxx_0001_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `OP_LIT, `OP_B   }; // B=B+CON
-        24'b1000_0001_1000_xxxx_0010_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `OP_LIT, `OP_C   }; //
-        24'b1000_0001_1000_xxxx_0011_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_D  , `OP_LIT, `OP_D   }; //
-        24'b1000_0001_1000_xxxx_1000_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `OP_LIT, `OP_A   }; // A=A-CON
-        24'b1000_0001_1000_xxxx_1001_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_B  , `OP_LIT, `OP_B   }; //
-        24'b1000_0001_1000_xxxx_1010_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `OP_LIT, `OP_C   }; //
-        24'b1000_0001_1000_xxxx_1011_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_D  , `OP_LIT, `OP_D   }; //
+        24'b1000_0001_1000_xxxx_0000_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `K_LIT, `OP_A   }; // A=A+CON
+        24'b1000_0001_1000_xxxx_0001_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `K_LIT, `OP_B   }; // B=B+CON
+        24'b1000_0001_1000_xxxx_0010_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `K_LIT, `OP_C   }; //
+        24'b1000_0001_1000_xxxx_0011_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_D  , `K_LIT, `OP_D   }; //
+        24'b1000_0001_1000_xxxx_1000_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `K_LIT, `OP_A   }; // A=A-CON
+        24'b1000_0001_1000_xxxx_1001_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_B  , `K_LIT, `OP_B   }; //
+        24'b1000_0001_1000_xxxx_1010_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_LIT, `OP_C   }; //
+        24'b1000_0001_1000_xxxx_1011_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_D  , `K_LIT, `OP_D   }; //
         // 819fn ASRB.f
-        24'b1000_0001_1001_xxxx_0000_xxxx: mc = { 3'h6,`ALU_OP_SRB , `OP_A  , `OP_A  , `OP_A   };
-        24'b1000_0001_1001_xxxx_0001_xxxx: mc = { 3'h6,`ALU_OP_SRB , `OP_B  , `OP_B  , `OP_B   };
-        24'b1000_0001_1001_xxxx_0010_xxxx: mc = { 3'h6,`ALU_OP_SRB , `OP_C  , `OP_C  , `OP_C   };
-        24'b1000_0001_1001_xxxx_0011_xxxx: mc = { 3'h6,`ALU_OP_SRB , `OP_D  , `OP_D  , `OP_D   };
+        24'b1000_0001_1001_xxxx_0000_xxxx: mc = { 3'h6,`ALU_OP_SRB , `OP_A  , `K_A  , `OP_A   };
+        24'b1000_0001_1001_xxxx_0001_xxxx: mc = { 3'h6,`ALU_OP_SRB , `OP_B  , `K_B  , `OP_B   };
+        24'b1000_0001_1001_xxxx_0010_xxxx: mc = { 3'h6,`ALU_OP_SRB , `OP_C  , `K_C  , `OP_C   };
+        24'b1000_0001_1001_xxxx_0011_xxxx: mc = { 3'h6,`ALU_OP_SRB , `OP_D  , `K_D  , `OP_D   };
         // 81Af0n Rn=A.f
-        24'b1000_0001_1010_xxxx_0000_0000: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_R0  };
-        24'b1000_0001_1010_xxxx_0000_0001: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_R1  };
-        24'b1000_0001_1010_xxxx_0000_0010: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_R2  };
-        24'b1000_0001_1010_xxxx_0000_0011: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_R3  };
-        24'b1000_0001_1010_xxxx_0000_0100: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_R4  };
-        24'b1000_0001_1010_xxxx_0000_1000: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_R0  };
-        24'b1000_0001_1010_xxxx_0000_1001: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_R1  };
-        24'b1000_0001_1010_xxxx_0000_1010: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_R2  };
-        24'b1000_0001_1010_xxxx_0000_1011: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_R3  };
-        24'b1000_0001_1010_xxxx_0000_1100: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_R4  };
+        24'b1000_0001_1010_xxxx_0000_0000: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R0  };
+        24'b1000_0001_1010_xxxx_0000_0001: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R1  };
+        24'b1000_0001_1010_xxxx_0000_0010: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R2  };
+        24'b1000_0001_1010_xxxx_0000_0011: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R3  };
+        24'b1000_0001_1010_xxxx_0000_0100: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R4  };
+        24'b1000_0001_1010_xxxx_0000_1000: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R0  };
+        24'b1000_0001_1010_xxxx_0000_1001: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R1  };
+        24'b1000_0001_1010_xxxx_0000_1010: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R2  };
+        24'b1000_0001_1010_xxxx_0000_1011: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R3  };
+        24'b1000_0001_1010_xxxx_0000_1100: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R4  };
         // 81Af1n A.f=Rn C.f=Rn
-        24'b1000_0001_1010_xxxx_0001_0000: mc = { 3'h6,`ALU_OP_TFR , `OP_R0 , `OP_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0001_0001: mc = { 3'h6,`ALU_OP_TFR , `OP_R1 , `OP_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0001_0010: mc = { 3'h6,`ALU_OP_TFR , `OP_R2 , `OP_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0001_0011: mc = { 3'h6,`ALU_OP_TFR , `OP_R3 , `OP_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0001_0100: mc = { 3'h6,`ALU_OP_TFR , `OP_R4 , `OP_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0001_1000: mc = { 3'h6,`ALU_OP_TFR , `OP_R0 , `OP_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0001_1001: mc = { 3'h6,`ALU_OP_TFR , `OP_R1 , `OP_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0001_1010: mc = { 3'h6,`ALU_OP_TFR , `OP_R2 , `OP_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0001_1011: mc = { 3'h6,`ALU_OP_TFR , `OP_R3 , `OP_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0001_1100: mc = { 3'h6,`ALU_OP_TFR , `OP_R4 , `OP_A  , `OP_C   };
+        24'b1000_0001_1010_xxxx_0001_0000: mc = { 3'h6,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_A   };
+        24'b1000_0001_1010_xxxx_0001_0001: mc = { 3'h6,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_A   };
+        24'b1000_0001_1010_xxxx_0001_0010: mc = { 3'h6,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_A   };
+        24'b1000_0001_1010_xxxx_0001_0011: mc = { 3'h6,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_A   };
+        24'b1000_0001_1010_xxxx_0001_0100: mc = { 3'h6,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_A   };
+        24'b1000_0001_1010_xxxx_0001_1000: mc = { 3'h6,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_C   };
+        24'b1000_0001_1010_xxxx_0001_1001: mc = { 3'h6,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_C   };
+        24'b1000_0001_1010_xxxx_0001_1010: mc = { 3'h6,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_C   };
+        24'b1000_0001_1010_xxxx_0001_1011: mc = { 3'h6,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_C   };
+        24'b1000_0001_1010_xxxx_0001_1100: mc = { 3'h6,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_C   };
         // 81Af2n ARnEX.f
-        24'b1000_0001_1010_xxxx_0010_0000: mc = { 3'h6,`ALU_OP_EX , `OP_R0  , `OP_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0010_0001: mc = { 3'h6,`ALU_OP_EX , `OP_R1  , `OP_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0010_0010: mc = { 3'h6,`ALU_OP_EX , `OP_R2  , `OP_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0010_0011: mc = { 3'h6,`ALU_OP_EX , `OP_R3  , `OP_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0010_0100: mc = { 3'h6,`ALU_OP_EX , `OP_R4  , `OP_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0010_1000: mc = { 3'h6,`ALU_OP_EX , `OP_R0  , `OP_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0010_1001: mc = { 3'h6,`ALU_OP_EX , `OP_R1  , `OP_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0010_1010: mc = { 3'h6,`ALU_OP_EX , `OP_R2  , `OP_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0010_1011: mc = { 3'h6,`ALU_OP_EX , `OP_R3  , `OP_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0010_1100: mc = { 3'h6,`ALU_OP_EX , `OP_R4  , `OP_A  , `OP_C   };
-        // A, C & PC
-        24'b1000_0001_1011_0010_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR, `OP_A   , `OP_A  , `OP_PC  }; // PC=A
-        24'b1000_0001_1011_0011_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR, `OP_C   , `OP_A  , `OP_PC  }; // PC=C
-        24'b1000_0001_1011_0100_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR, `OP_PC  , `OP_A  , `OP_A   }; // A=PC
-        24'b1000_0001_1011_0101_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR, `OP_PC  , `OP_A  , `OP_C   }; // C=PC
-        24'b1000_0001_1011_0110_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX,  `OP_PC  , `OP_A  , `OP_A   }; // APCEX
-        24'b1000_0001_1011_0111_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX,  `OP_PC  , `OP_A  , `OP_C   }; // CPCEX
-        24'b1000_0001_1100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRB , `OP_A  , `OP_A  , `OP_A   }; // ASRB
-        24'b1000_0001_1101_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRB , `OP_B  , `OP_A  , `OP_B   }; // BSRB
-        24'b1000_0001_1110_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRB , `OP_C  , `OP_A  , `OP_C   }; // CSRB
-        24'b1000_0001_1111_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRB , `OP_D  , `OP_A  , `OP_D   }; // DSRB
-        24'b1000_0010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_AND , `OP_HS , `OP_LIT, `OP_HS  }; // HS=0
-        24'b1000_0011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TST0, `OP_HS , `OP_LIT, `OP_HS  }; // ?HS=0
-        24'b1000_0100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_ANDN, `OP_ST , `OP_LIT, `OP_ST  }; // ST=0
-        24'b1000_0101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_OR  , `OP_ST , `OP_LIT, `OP_ST  }; // ST=1
-        24'b1000_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST0, `OP_ST , `OP_LIT, `OP_ST  }; // ?ST=0
-        24'b1000_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST1, `OP_ST , `OP_LIT, `OP_ST  }; // ?ST=1
+        24'b1000_0001_1010_xxxx_0010_0000: mc = { 3'h6,`ALU_OP_EX  , `OP_R0 , `K_A  , `OP_A   };
+        24'b1000_0001_1010_xxxx_0010_0001: mc = { 3'h6,`ALU_OP_EX  , `OP_R1 , `K_A  , `OP_A   };
+        24'b1000_0001_1010_xxxx_0010_0010: mc = { 3'h6,`ALU_OP_EX  , `OP_R2 , `K_A  , `OP_A   };
+        24'b1000_0001_1010_xxxx_0010_0011: mc = { 3'h6,`ALU_OP_EX  , `OP_R3 , `K_A  , `OP_A   };
+        24'b1000_0001_1010_xxxx_0010_0100: mc = { 3'h6,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_A   };
+        24'b1000_0001_1010_xxxx_0010_1000: mc = { 3'h6,`ALU_OP_EX  , `OP_R0 , `K_A  , `OP_C   };
+        24'b1000_0001_1010_xxxx_0010_1001: mc = { 3'h6,`ALU_OP_EX  , `OP_R1 , `K_A  , `OP_C   };
+        24'b1000_0001_1010_xxxx_0010_1010: mc = { 3'h6,`ALU_OP_EX  , `OP_R2 , `K_A  , `OP_C   };
+        24'b1000_0001_1010_xxxx_0010_1011: mc = { 3'h6,`ALU_OP_EX  , `OP_R3 , `K_A  , `OP_C   };
+        24'b1000_0001_1010_xxxx_0010_1100: mc = { 3'h6,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_C   };
+        // A, C & PC                                                        
+        24'b1000_0001_1011_0010_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_PC  }; // PC=A
+        24'b1000_0001_1011_0011_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_PC  }; // PC=C
+        24'b1000_0001_1011_0100_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_PC , `K_A  , `OP_A   }; // A=PC
+        24'b1000_0001_1011_0101_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_PC , `K_A  , `OP_C   }; // C=PC
+        24'b1000_0001_1011_0110_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX ,  `OP_PC , `K_A  , `OP_A   }; // APCEX
+        24'b1000_0001_1011_0111_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX ,  `OP_PC , `K_A  , `OP_C   }; // CPCEX
+        24'b1000_0001_1100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRB , `OP_A  , `K_A  , `OP_A   }; // ASRB
+        24'b1000_0001_1101_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRB , `OP_B  , `K_A  , `OP_B   }; // BSRB
+        24'b1000_0001_1110_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRB , `OP_C  , `K_A  , `OP_C   }; // CSRB
+        24'b1000_0001_1111_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRB , `OP_D  , `K_A  , `OP_D   }; // DSRB
+        24'b1000_0010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_AND , `OP_HS , `K_LIT, `OP_HS  }; // HS=0
+        24'b1000_0011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TST0, `OP_HS , `K_LIT, `OP_HS  }; // ?HS=0
+        24'b1000_0100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_ANDN, `OP_ST , `K_LIT, `OP_ST  }; // ST=0
+        24'b1000_0101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_OR  , `OP_ST , `K_LIT, `OP_ST  }; // ST=1
+        24'b1000_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST0, `OP_ST , `K_LIT, `OP_ST  }; // ?ST=0
+        24'b1000_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST1, `OP_ST , `K_LIT, `OP_ST  }; // ?ST=1
         // 88, 89
-        24'b1000_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_NEQ , `OP_P  , `OP_LIT, `OP_A   }; // ?P#n
-        24'b1000_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_EQ  , `OP_P  , `OP_LIT, `OP_A   }; // ?P=n
+        24'b1000_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_NEQ , `OP_P  , `K_LIT, `OP_A   }; // ?P#n
+        24'b1000_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_EQ  , `OP_P  , `K_LIT, `OP_A   }; // ?P=n
         // 8Ax
-        24'b1000_1010_0000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_A  , `OP_B  , `OP_A   };
-        24'b1000_1010_0001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_B  , `OP_C  , `OP_A   };
-        24'b1000_1010_0010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_A  , `OP_C  , `OP_A   };
-        24'b1000_1010_0011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_C  , `OP_D  , `OP_A   };
-        24'b1000_1010_0100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_A  , `OP_B  , `OP_A   };
-        24'b1000_1010_0101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_B  , `OP_C  , `OP_A   };
-        24'b1000_1010_0110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_A  , `OP_C  , `OP_A   };
-        24'b1000_1010_0111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_C  , `OP_D  , `OP_A   };
-        24'b1000_1010_1000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_A  , `OP_Z  , `OP_A   };
-        24'b1000_1010_1001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_B  , `OP_Z  , `OP_A   };
-        24'b1000_1010_1010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_C  , `OP_Z  , `OP_A   };
-        24'b1000_1010_1011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_D  , `OP_Z  , `OP_A   };
-        24'b1000_1010_1100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_A  , `OP_Z  , `OP_A   };
-        24'b1000_1010_1101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_B  , `OP_Z  , `OP_A   };
-        24'b1000_1010_1110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_C  , `OP_Z  , `OP_A   };
-        24'b1000_1010_1111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_D  , `OP_Z  , `OP_A   };
+        24'b1000_1010_0000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_A  , `K_B  , `OP_A   };
+        24'b1000_1010_0001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_B  , `K_C  , `OP_A   };
+        24'b1000_1010_0010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_A  , `K_C  , `OP_A   };
+        24'b1000_1010_0011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_C  , `K_D  , `OP_A   };
+        24'b1000_1010_0100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_A  , `K_B  , `OP_A   };
+        24'b1000_1010_0101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_B  , `K_C  , `OP_A   };
+        24'b1000_1010_0110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_A  , `K_C  , `OP_A   };
+        24'b1000_1010_0111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_C  , `K_D  , `OP_A   };
+        24'b1000_1010_1000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_A  , `K_Z  , `OP_A   };
+        24'b1000_1010_1001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_B  , `K_Z  , `OP_A   };
+        24'b1000_1010_1010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_C  , `K_Z  , `OP_A   };
+        24'b1000_1010_1011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_D  , `K_Z  , `OP_A   };
+        24'b1000_1010_1100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_A  , `K_Z  , `OP_A   };
+        24'b1000_1010_1101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_B  , `K_Z  , `OP_A   };
+        24'b1000_1010_1110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_C  , `K_Z  , `OP_A   };
+        24'b1000_1010_1111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_D  , `K_Z  , `OP_A   };
         // 8B
-        24'b1000_1011_0000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GT  , `OP_A  , `OP_B  , `OP_A   };
-        24'b1000_1011_0001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GT  , `OP_B  , `OP_C  , `OP_A   };
-        24'b1000_1011_0010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GT  , `OP_C  , `OP_A  , `OP_A   };
-        24'b1000_1011_0011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GT  , `OP_D  , `OP_C  , `OP_A   };
-        24'b1000_1011_0100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LT  , `OP_A  , `OP_B  , `OP_A   };
-        24'b1000_1011_0101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LT  , `OP_B  , `OP_C  , `OP_A   };
-        24'b1000_1011_0110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LT  , `OP_C  , `OP_A  , `OP_A   };
-        24'b1000_1011_0111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LT  , `OP_D  , `OP_C  , `OP_A   };
-        24'b1000_1011_1000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GTEQ, `OP_A  , `OP_B  , `OP_A   };
-        24'b1000_1011_1001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GTEQ, `OP_B  , `OP_C  , `OP_A   };
-        24'b1000_1011_1010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GTEQ, `OP_C  , `OP_A  , `OP_A   };
-        24'b1000_1011_1011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GTEQ, `OP_D  , `OP_C  , `OP_A   };
-        24'b1000_1011_1100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LTEQ, `OP_A  , `OP_B  , `OP_A   };
-        24'b1000_1011_1101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LTEQ, `OP_B  , `OP_C  , `OP_A   };
-        24'b1000_1011_1110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LTEQ, `OP_C  , `OP_A  , `OP_A   };
-        24'b1000_1011_1111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LTEQ, `OP_D  , `OP_C  , `OP_A   };
+        24'b1000_1011_0000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GT  , `OP_A  , `K_B  , `OP_A   };
+        24'b1000_1011_0001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GT  , `OP_B  , `K_C  , `OP_A   };
+        24'b1000_1011_0010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GT  , `OP_C  , `K_A  , `OP_A   };
+        24'b1000_1011_0011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GT  , `OP_D  , `K_C  , `OP_A   };
+        24'b1000_1011_0100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LT  , `OP_A  , `K_B  , `OP_A   };
+        24'b1000_1011_0101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LT  , `OP_B  , `K_C  , `OP_A   };
+        24'b1000_1011_0110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LT  , `OP_C  , `K_A  , `OP_A   };
+        24'b1000_1011_0111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LT  , `OP_D  , `K_C  , `OP_A   };
+        24'b1000_1011_1000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GTEQ, `OP_A  , `K_B  , `OP_A   };
+        24'b1000_1011_1001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GTEQ, `OP_B  , `K_C  , `OP_A   };
+        24'b1000_1011_1010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GTEQ, `OP_C  , `K_A  , `OP_A   };
+        24'b1000_1011_1011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GTEQ, `OP_D  , `K_C  , `OP_A   };
+        24'b1000_1011_1100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LTEQ, `OP_A  , `K_B  , `OP_A   };
+        24'b1000_1011_1101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LTEQ, `OP_B  , `K_C  , `OP_A   };
+        24'b1000_1011_1110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LTEQ, `OP_C  , `K_A  , `OP_A   };
+        24'b1000_1011_1111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LTEQ, `OP_D  , `K_C  , `OP_A   };
         // 8E, 8F
-        24'b1000_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR, `OP_LIT, `OP_A  , `OP_STK  }; // GOSUBL
-        24'b1000_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR, `OP_LIT, `OP_A  , `OP_STK  }; // GOSBVL
+        24'b1000_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_STK  }; // GOSUBL
+        24'b1000_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_STK  }; // GOSBVL
         // 9a
-        24'b1001_0xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_A  , `OP_B  , `OP_A   };
-        24'b1001_0xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_B  , `OP_C  , `OP_A   };
-        24'b1001_0xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_A  , `OP_C  , `OP_A   };
-        24'b1001_0xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_C  , `OP_D  , `OP_A   };
-        24'b1001_0xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_A  , `OP_B  , `OP_A   };
-        24'b1001_0xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_B  , `OP_C  , `OP_A   };
-        24'b1001_0xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_A  , `OP_C  , `OP_A   };
-        24'b1001_0xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_C  , `OP_D  , `OP_A   };
-        24'b1001_0xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_A  , `OP_Z  , `OP_A   };
-        24'b1001_0xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_B  , `OP_Z  , `OP_A   };
-        24'b1001_0xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_C  , `OP_Z  , `OP_A   };
-        24'b1001_0xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_D  , `OP_Z  , `OP_A   };
-        24'b1001_0xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_A  , `OP_Z  , `OP_A   };
-        24'b1001_0xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_B  , `OP_Z  , `OP_A   };
-        24'b1001_0xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_C  , `OP_Z  , `OP_A   };
-        24'b1001_0xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_D  , `OP_Z  , `OP_A   };
+        24'b1001_0xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_A  , `K_B  , `OP_A   };
+        24'b1001_0xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_B  , `K_C  , `OP_A   };
+        24'b1001_0xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_A  , `K_C  , `OP_A   };
+        24'b1001_0xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_C  , `K_D  , `OP_A   };
+        24'b1001_0xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_A  , `K_B  , `OP_A   };
+        24'b1001_0xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_B  , `K_C  , `OP_A   };
+        24'b1001_0xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_A  , `K_C  , `OP_A   };
+        24'b1001_0xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_C  , `K_D  , `OP_A   };
+        24'b1001_0xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_A  , `K_Z  , `OP_A   };
+        24'b1001_0xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_B  , `K_Z  , `OP_A   };
+        24'b1001_0xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_C  , `K_Z  , `OP_A   };
+        24'b1001_0xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_D  , `K_Z  , `OP_A   };
+        24'b1001_0xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_A  , `K_Z  , `OP_A   };
+        24'b1001_0xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_B  , `K_Z  , `OP_A   };
+        24'b1001_0xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_C  , `K_Z  , `OP_A   };
+        24'b1001_0xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_D  , `K_Z  , `OP_A   };
         // 9b
-        24'b1001_1xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GT  , `OP_A  , `OP_B  , `OP_A   };
-        24'b1001_1xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GT  , `OP_B  , `OP_C  , `OP_A   };
-        24'b1001_1xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GT  , `OP_C  , `OP_A  , `OP_A   };
-        24'b1001_1xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GT  , `OP_D  , `OP_C  , `OP_A   };
-        24'b1001_1xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LT  , `OP_A  , `OP_B  , `OP_A   };
-        24'b1001_1xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LT  , `OP_B  , `OP_C  , `OP_A   };
-        24'b1001_1xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LT  , `OP_C  , `OP_A  , `OP_A   };
-        24'b1001_1xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LT  , `OP_D  , `OP_C  , `OP_A   };
-        24'b1001_1xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GTEQ, `OP_A  , `OP_B  , `OP_A   };
-        24'b1001_1xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GTEQ, `OP_B  , `OP_C  , `OP_A   };
-        24'b1001_1xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GTEQ, `OP_C  , `OP_A  , `OP_A   };
-        24'b1001_1xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GTEQ, `OP_D  , `OP_C  , `OP_A   };
-        24'b1001_1xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LTEQ, `OP_A  , `OP_B  , `OP_A   };
-        24'b1001_1xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LTEQ, `OP_B  , `OP_C  , `OP_A   };
-        24'b1001_1xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LTEQ, `OP_C  , `OP_A  , `OP_A   };
-        24'b1001_1xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LTEQ, `OP_D  , `OP_C  , `OP_A   };
+        24'b1001_1xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GT  , `OP_A  , `K_B  , `OP_A   };
+        24'b1001_1xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GT  , `OP_B  , `K_C  , `OP_A   };
+        24'b1001_1xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GT  , `OP_C  , `K_A  , `OP_A   };
+        24'b1001_1xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GT  , `OP_D  , `K_C  , `OP_A   };
+        24'b1001_1xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LT  , `OP_A  , `K_B  , `OP_A   };
+        24'b1001_1xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LT  , `OP_B  , `K_C  , `OP_A   };
+        24'b1001_1xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LT  , `OP_C  , `K_A  , `OP_A   };
+        24'b1001_1xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LT  , `OP_D  , `K_C  , `OP_A   };
+        24'b1001_1xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GTEQ, `OP_A  , `K_B  , `OP_A   };
+        24'b1001_1xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GTEQ, `OP_B  , `K_C  , `OP_A   };
+        24'b1001_1xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GTEQ, `OP_C  , `K_A  , `OP_A   };
+        24'b1001_1xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GTEQ, `OP_D  , `K_C  , `OP_A   };
+        24'b1001_1xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LTEQ, `OP_A  , `K_B  , `OP_A   };
+        24'b1001_1xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LTEQ, `OP_B  , `K_C  , `OP_A   };
+        24'b1001_1xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LTEQ, `OP_C  , `K_A  , `OP_A   };
+        24'b1001_1xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LTEQ, `OP_D  , `K_C  , `OP_A   };
         // Aa
-        24'b1010_0xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `OP_B  , `OP_A   }; // A=A+B
-        24'b1010_0xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `OP_C  , `OP_B   };
-        24'b1010_0xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `OP_A  , `OP_C   };
-        24'b1010_0xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_D  , `OP_C  , `OP_D   };
-        24'b1010_0xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `OP_A  , `OP_A   }; // A=A+A
-        24'b1010_0xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `OP_B  , `OP_B   };
-        24'b1010_0xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `OP_C  , `OP_C   };
-        24'b1010_0xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_D  , `OP_D  , `OP_D   }; // D=D+D
-        24'b1010_0xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `OP_A  , `OP_B   };
-        24'b1010_0xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `OP_B  , `OP_C   };
-        24'b1010_0xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `OP_C  , `OP_A   };
-        24'b1010_0xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `OP_D  , `OP_C   };
-        24'b1010_0xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `OP_1  , `OP_A   };
-        24'b1010_0xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_B  , `OP_1  , `OP_B   };
-        24'b1010_0xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `OP_1  , `OP_C   };
-        24'b1010_0xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_D  , `OP_1  , `OP_D   };
+        24'b1010_0xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `K_B  , `OP_A   }; // A=A+B
+        24'b1010_0xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `K_C  , `OP_B   };
+        24'b1010_0xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `K_A  , `OP_C   };
+        24'b1010_0xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_D  , `K_C  , `OP_D   };
+        24'b1010_0xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `K_A  , `OP_A   }; // A=A+A
+        24'b1010_0xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `K_B  , `OP_B   };
+        24'b1010_0xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `K_C  , `OP_C   };
+        24'b1010_0xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_D  , `K_D  , `OP_D   }; // D=D+D
+        24'b1010_0xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `K_A  , `OP_B   };
+        24'b1010_0xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `K_B  , `OP_C   };
+        24'b1010_0xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `K_C  , `OP_A   };
+        24'b1010_0xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `K_D  , `OP_C   };
+        24'b1010_0xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `K_1  , `OP_A   };
+        24'b1010_0xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_B  , `K_1  , `OP_B   };
+        24'b1010_0xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_1  , `OP_C   };
+        24'b1010_0xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_D  , `K_1  , `OP_D   };
         //Ab
-        24'b1010_1xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_Z  , `OP_A  , `OP_A   }; // A=0
-        24'b1010_1xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_Z  , `OP_A  , `OP_B   };
-        24'b1010_1xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_Z  , `OP_A  , `OP_C   };
-        24'b1010_1xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_Z  , `OP_A  , `OP_D   };
-        24'b1010_1xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_B  , `OP_A  , `OP_A   }; // A=B
-        24'b1010_1xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_B   };
-        24'b1010_1xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_C   };
-        24'b1010_1xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_D   }; // D=C
-        24'b1010_1xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_B   };
-        24'b1010_1xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_B  , `OP_A  , `OP_C   };
-        24'b1010_1xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_A   };
-        24'b1010_1xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_D  , `OP_A  , `OP_C   };
-        24'b1010_1xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EX  , `OP_B  , `OP_A  , `OP_A   };
-        24'b1010_1xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EX  , `OP_C  , `OP_B  , `OP_B   };
-        24'b1010_1xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EX  , `OP_A  , `OP_C  , `OP_C   };
-        24'b1010_1xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EX  , `OP_C  , `OP_D  , `OP_D   };
+        24'b1010_1xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_A   }; // A=0
+        24'b1010_1xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_B   };
+        24'b1010_1xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_C   };
+        24'b1010_1xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_D   };
+        24'b1010_1xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_A   }; // A=B
+        24'b1010_1xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_B   };
+        24'b1010_1xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_C   };
+        24'b1010_1xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D   }; // D=C
+        24'b1010_1xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_B   };
+        24'b1010_1xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_C   };
+        24'b1010_1xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_A   };
+        24'b1010_1xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_D  , `K_A  , `OP_C   };
+        24'b1010_1xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EX  , `OP_B  , `K_A  , `OP_A   };
+        24'b1010_1xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EX  , `OP_C  , `K_B  , `OP_B   };
+        24'b1010_1xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EX  , `OP_A  , `K_C  , `OP_C   };
+        24'b1010_1xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EX  , `OP_C  , `K_D  , `OP_D   };
         //Ba
-        24'b1011_0xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `OP_B  , `OP_A   }; // A=A-B
-        24'b1011_0xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_B  , `OP_C  , `OP_B   };
-        24'b1011_0xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `OP_A  , `OP_C   };
-        24'b1011_0xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_D  , `OP_C  , `OP_D   };
-        24'b1011_0xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `OP_1  , `OP_A   }; // A=A+1
-        24'b1011_0xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `OP_1  , `OP_B   };
-        24'b1011_0xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `OP_1  , `OP_C   };
-        24'b1011_0xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_D  , `OP_1  , `OP_D   }; // D=D+1
-        24'b1011_0xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_B  , `OP_A  , `OP_B   }; // B=B-A
-        24'b1011_0xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `OP_B  , `OP_C   };
-        24'b1011_0xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `OP_C  , `OP_A   };
-        24'b1011_0xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `OP_D  , `OP_C   }; // C=C-D
-        24'b1011_0xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `OP_B  , `OP_A   }; // A=A-B
-        24'b1011_0xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `OP_B  , `OP_B   };
-        24'b1011_0xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `OP_C  , `OP_C   };
-        24'b1011_0xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `OP_D  , `OP_D   }; // D=C-D
+        24'b1011_0xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   }; // A=A-B
+        24'b1011_0xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_B  , `K_C  , `OP_B   };
+        24'b1011_0xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_A  , `OP_C   };
+        24'b1011_0xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_D  , `K_C  , `OP_D   };
+        24'b1011_0xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `K_1  , `OP_A   }; // A=A+1
+        24'b1011_0xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `K_1  , `OP_B   };
+        24'b1011_0xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `K_1  , `OP_C   };
+        24'b1011_0xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_D  , `K_1  , `OP_D   }; // D=D+1
+        24'b1011_0xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_B  , `K_A  , `OP_B   }; // B=B-A
+        24'b1011_0xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_C   };
+        24'b1011_0xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_A   };
+        24'b1011_0xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_C   }; // C=C-D
+        24'b1011_0xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   }; // A=A-B
+        24'b1011_0xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_B   };
+        24'b1011_0xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_C   };
+        24'b1011_0xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_D   }; // D=C-D
         //Bb
-        24'b1011_1xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_A  , `OP_A  , `OP_A   }; // ASL
-        24'b1011_1xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_B  , `OP_B  , `OP_B   }; // BSL
-        24'b1011_1xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_C  , `OP_C  , `OP_C   }; // CSL
-        24'b1011_1xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_D  , `OP_D  , `OP_D   }; // DSL
-        24'b1011_1xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_A  , `OP_A  , `OP_A   }; // ASR
-        24'b1011_1xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_B  , `OP_B  , `OP_B   }; // BSR
-        24'b1011_1xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_C  , `OP_C  , `OP_C   }; // CSR
-        24'b1011_1xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_D  , `OP_D  , `OP_D   }; // DSR
-        24'b1011_1xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_Z  , `OP_A  , `OP_A   }; // A=0-A
-        24'b1011_1xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_Z  , `OP_B  , `OP_B   }; // B=0-B
-        24'b1011_1xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_Z  , `OP_C  , `OP_C   }; // C=0-C
-        24'b1011_1xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_Z  , `OP_D  , `OP_D   }; // D=0-D
-        24'b1011_1xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `OP_9  , `OP_A   }; // A=-A-1 == A=A-9
-        24'b1011_1xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_B  , `OP_9  , `OP_B   };
-        24'b1011_1xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `OP_9  , `OP_C   };
-        24'b1011_1xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_D  , `OP_9  , `OP_D   };
+        24'b1011_1xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_A  , `K_A  , `OP_A   }; // ASL
+        24'b1011_1xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_B  , `K_B  , `OP_B   }; // BSL
+        24'b1011_1xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_C  , `K_C  , `OP_C   }; // CSL
+        24'b1011_1xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_D  , `K_D  , `OP_D   }; // DSL
+        24'b1011_1xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_A  , `K_A  , `OP_A   }; // ASR
+        24'b1011_1xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_B  , `K_B  , `OP_B   }; // BSR
+        24'b1011_1xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_C  , `K_C  , `OP_C   }; // CSR
+        24'b1011_1xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_D  , `K_D  , `OP_D   }; // DSR
+        24'b1011_1xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_Z  , `K_A  , `OP_A   }; // A=0-A
+        24'b1011_1xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_Z  , `K_B  , `OP_B   }; // B=0-B
+        24'b1011_1xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_Z  , `K_C  , `OP_C   }; // C=0-C
+        24'b1011_1xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_Z  , `K_D  , `OP_D   }; // D=0-D
+        24'b1011_1xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `K_9  , `OP_A   }; // A=-A-1 == A=A-9
+        24'b1011_1xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_B  , `K_9  , `OP_B   };
+        24'b1011_1xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_9  , `OP_C   };
+        24'b1011_1xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_D  , `K_9  , `OP_D   };
         // C
-        24'b1100_0000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_A  , `OP_B  , `OP_A   }; // A=A+B
-        24'b1100_0001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_B  , `OP_C  , `OP_B   };
-        24'b1100_0010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `OP_A  , `OP_C   };
-        24'b1100_0011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_D  , `OP_C  , `OP_D   };
-        24'b1100_0100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_A  , `OP_A  , `OP_A   }; // A=A+A
-        24'b1100_0101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_B  , `OP_B  , `OP_B   };
-        24'b1100_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `OP_C  , `OP_C   };
-        24'b1100_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_D  , `OP_D  , `OP_D   }; // D=D+D
-        24'b1100_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_B  , `OP_A  , `OP_B   };
-        24'b1100_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `OP_B  , `OP_C   };
-        24'b1100_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_A  , `OP_C  , `OP_A   };
-        24'b1100_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `OP_D  , `OP_C   };
-        24'b1100_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `OP_1  , `OP_A   };
-        24'b1100_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_B  , `OP_1  , `OP_B   };
-        24'b1100_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `OP_1  , `OP_C   };
-        24'b1100_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_D  , `OP_1  , `OP_D   };
+        24'b1100_0000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_A  , `K_B  , `OP_A   }; // A=A+B
+        24'b1100_0001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_B  , `K_C  , `OP_B   };
+        24'b1100_0010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `K_A  , `OP_C   };
+        24'b1100_0011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_D  , `K_C  , `OP_D   };
+        24'b1100_0100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_A  , `K_A  , `OP_A   }; // A=A+A
+        24'b1100_0101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_B  , `K_B  , `OP_B   };
+        24'b1100_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `K_C  , `OP_C   };
+        24'b1100_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_D  , `K_D  , `OP_D   }; // D=D+D
+        24'b1100_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_B  , `K_A  , `OP_B   };
+        24'b1100_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `K_B  , `OP_C   };
+        24'b1100_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_A  , `K_C  , `OP_A   };
+        24'b1100_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `K_D  , `OP_C   };
+        24'b1100_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `K_1  , `OP_A   };
+        24'b1100_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_B  , `K_1  , `OP_B   };
+        24'b1100_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `K_1  , `OP_C   };
+        24'b1100_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_D  , `K_1  , `OP_D   };
         //D
-        24'b1101_0000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_Z  , `OP_A  , `OP_A   }; // A=0
-        24'b1101_0001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_Z  , `OP_A  , `OP_B   };
-        24'b1101_0010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_Z  , `OP_A  , `OP_C   };
-        24'b1101_0011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_Z  , `OP_A  , `OP_D   };
-        24'b1101_0100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_B  , `OP_A  , `OP_A   }; // A=B
-        24'b1101_0101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_B   };
-        24'b1101_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_C   };
-        24'b1101_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_D   }; // D=C
-        24'b1101_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `OP_A  , `OP_B   };
-        24'b1101_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_B  , `OP_A  , `OP_C   };
-        24'b1101_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `OP_A  , `OP_A   };
-        24'b1101_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_D  , `OP_A  , `OP_C   };
-        24'b1101_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_B  , `OP_A  , `OP_A   };
-        24'b1101_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_C  , `OP_B  , `OP_B   };
-        24'b1101_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_A  , `OP_C  , `OP_C   };
-        24'b1101_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_C  , `OP_D  , `OP_D   };
+        24'b1101_0000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_A   }; // A=0
+        24'b1101_0001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_B   };
+        24'b1101_0010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_C   };
+        24'b1101_0011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_D   };
+        24'b1101_0100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_A   }; // A=B
+        24'b1101_0101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_B   };
+        24'b1101_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_C   };
+        24'b1101_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D   }; // D=C
+        24'b1101_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_B   };
+        24'b1101_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_C   };
+        24'b1101_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_A   };
+        24'b1101_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_D  , `K_A  , `OP_C   };
+        24'b1101_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_B  , `K_A  , `OP_A   };
+        24'b1101_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_C  , `K_B  , `OP_B   };
+        24'b1101_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_A  , `K_C  , `OP_C   };
+        24'b1101_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_C  , `K_D  , `OP_D   };
         //E
-        24'b1110_0000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `OP_B  , `OP_A   }; // A=A-B
-        24'b1110_0001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_B  , `OP_C  , `OP_B   };
-        24'b1110_0010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `OP_A  , `OP_C   };
-        24'b1110_0011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_D  , `OP_C  , `OP_D   };
-        24'b1110_0100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_A  , `OP_1  , `OP_A   }; // A=A-1
-        24'b1110_0101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_B  , `OP_1  , `OP_B   };
-        24'b1110_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `OP_1  , `OP_C   };
-        24'b1110_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_D  , `OP_1  , `OP_D   }; // D=D-1
-        24'b1110_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_B  , `OP_A  , `OP_B   }; // B=B-A
-        24'b1110_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `OP_B  , `OP_C   };
-        24'b1110_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `OP_C  , `OP_A   };
-        24'b1110_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `OP_D  , `OP_C   }; // C=C-D
-        24'b1110_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `OP_B  , `OP_A   }; // A=A-B
-        24'b1110_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `OP_B  , `OP_B   };
-        24'b1110_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `OP_C  , `OP_C   };
-        24'b1110_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `OP_D  , `OP_D   }; // D=C-D
+        24'b1110_0000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   }; // A=A-B
+        24'b1110_0001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_B  , `K_C  , `OP_B   };
+        24'b1110_0010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `K_A  , `OP_C   };
+        24'b1110_0011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_D  , `K_C  , `OP_D   };
+        24'b1110_0100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_A  , `K_1  , `OP_A   }; // A=A-1
+        24'b1110_0101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_B  , `K_1  , `OP_B   };
+        24'b1110_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `K_1  , `OP_C   };
+        24'b1110_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_D  , `K_1  , `OP_D   }; // D=D-1
+        24'b1110_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_B  , `K_A  , `OP_B   }; // B=B-A
+        24'b1110_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_C   };
+        24'b1110_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_A   };
+        24'b1110_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_C   }; // C=C-D
+        24'b1110_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   }; // A=A-B
+        24'b1110_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_B   };
+        24'b1110_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_C   };
+        24'b1110_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_D   }; // D=C-D
         //F
-        24'b1111_0000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SL , `OP_A  , `OP_A  , `OP_A   }; // ASL
-        24'b1111_0001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SL , `OP_B  , `OP_B  , `OP_B   };
-        24'b1111_0010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SL , `OP_C  , `OP_C  , `OP_C   };
-        24'b1111_0011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SL , `OP_D  , `OP_D  , `OP_D   };
-        24'b1111_0100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SR , `OP_A  , `OP_A  , `OP_A   }; // ASR
-        24'b1111_0101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SR , `OP_B  , `OP_B  , `OP_B   };
-        24'b1111_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SR , `OP_C  , `OP_C  , `OP_C   };
-        24'b1111_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SR , `OP_D  , `OP_D  , `OP_D   }; // DSR
-        24'b1111_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_Z  , `OP_A  , `OP_A   }; // A=0-A
-        24'b1111_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_Z  , `OP_B  , `OP_B   }; // B=0-B
-        24'b1111_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_Z  , `OP_C  , `OP_C   }; // C=0-C
-        24'b1111_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_Z  , `OP_D  , `OP_D   }; // D=0-D
-        24'b1111_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `OP_9  , `OP_A   }; // A=-A-1 == A=A-9
-        24'b1111_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_B  , `OP_9  , `OP_B   };
-        24'b1111_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `OP_9  , `OP_C   };
-        24'b1111_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_D  , `OP_9  , `OP_D   };
+        24'b1111_0000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SL  , `OP_A  , `K_A  , `OP_A   }; // ASL
+        24'b1111_0001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SL  , `OP_B  , `K_B  , `OP_B   };
+        24'b1111_0010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SL  , `OP_C  , `K_C  , `OP_C   };
+        24'b1111_0011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SL  , `OP_D  , `K_D  , `OP_D   };
+        24'b1111_0100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SR  , `OP_A  , `K_A  , `OP_A   }; // ASR
+        24'b1111_0101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SR  , `OP_B  , `K_B  , `OP_B   };
+        24'b1111_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SR  , `OP_C  , `K_C  , `OP_C   };
+        24'b1111_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SR  , `OP_D  , `K_D  , `OP_D   }; // DSR
+        24'b1111_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_Z  , `K_A  , `OP_A   }; // A=0-A
+        24'b1111_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_Z  , `K_B  , `OP_B   }; // B=0-B
+        24'b1111_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_Z  , `K_C  , `OP_C   }; // C=0-C
+        24'b1111_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_Z  , `K_D  , `OP_D   }; // D=0-D
+        24'b1111_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `K_9  , `OP_A   }; // A=-A-1 == A=A-9
+        24'b1111_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_B  , `K_9  , `OP_B   };
+        24'b1111_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `K_9  , `OP_C   };
+        24'b1111_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_D  , `K_9  , `OP_D   };
 
         default:
             mc = { 3'h0,`ALU_OP_ADD, `OP_A  , `OP_A  , `OP_A   };
     endcase
-
+*/
 endmodule
+// mimic a block ROM
+`ifdef SIMULATOR
+module mcrom (
+    input wire [8:0] Address,
+    input wire OutClock,
+    input wire OutClockEn,
+    input wire Reset,
+    output reg [31:0] Q
+    );
+    
+reg [31:0] mcrom[511:0];
 
+always @(posedge OutClock)
+    if (OutClockEn)
+        Q <= mcrom[Address];
+
+initial
+    $readmemb("C:/02_Elektronik/041_1LF2/10_Public/05_PSaturn/mc_tbl.bin", mcrom);
+    
+endmodule
+`endif

@@ -172,7 +172,7 @@ always @(posedge clk_in)
                 // shift as needed
                 if (shift_now)
                     begin // discard last opcode from pre-fetch buffer
-                        pre_fetch_buffer <=  pre_fetch_buffer >> (pre_fetched_opcode_length << 2);
+                        pre_fetch_buffer <=  pre_fetch_buffer >> { pre_fetched_opcode_length, 2'b00 };
                         /* 
                         case (pre_fetched_opcode_length) // discard used opcode from pre-fetch buffer
                             5'h2:  pre_fetch_buffer[87: 0] <= pre_fetch_buffer[95: 8];

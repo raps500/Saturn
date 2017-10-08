@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BaliProject version="3.2" title="PSaturn_MachXO2_DOGM132" device="LCMXO2-7000ZE-1TG144C" default_implementation="PSaturn_MachXO2_DOGM132_Top">
+    <Options/>
+    <Implementation title="PSaturn_MachXO2_DOGM132_Top" dir="PSaturn_MachXO2_DOGM132_Top" description="PSaturn_MachXO2_DOGM132_Top" synthesis="synplify" default_strategy="Strategy1">
+        <Options def_top="mcrom" top="PSaturn_MachXO2_DOGM132"/>
+        <Source name="../02_Components/PSaturn_MachXO2_DOGM132.v" type="Verilog" type_short="Verilog">
+            <Options top_module="PSaturn_MachXO2_DOGM132"/>
+        </Source>
+        <Source name="../../05_PSaturn/saturn_alru.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="../../05_PSaturn/saturn_bus_ctrl.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="../../05_PSaturn/saturn_core.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="../../05_PSaturn/saturn_decoder_sequencer.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="../../05_PSaturn/saturn_defs.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="../02_Components/dogm132.v" type="Verilog" type_short="Verilog">
+            <Options/>
+        </Source>
+        <Source name="mcrom.ipx" type="IPX_Module" type_short="IPX">
+            <Options/>
+        </Source>
+        <Source name="PSaturn_MachXO2_DOGM132.lpf" type="Logic Preference" type_short="LPF">
+            <Options/>
+        </Source>
+    </Implementation>
+    <Strategy name="Strategy1" file="PSaturn_MachXO2_DOGM1321.sty"/>
+</BaliProject>

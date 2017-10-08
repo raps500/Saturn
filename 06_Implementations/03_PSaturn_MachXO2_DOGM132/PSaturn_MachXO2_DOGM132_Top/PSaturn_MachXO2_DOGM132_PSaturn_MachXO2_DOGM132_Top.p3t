@@ -1,0 +1,5 @@
+-rem
+-distrce
+-log "PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.log"
+-o "PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.csv"
+-pr "PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.prf"

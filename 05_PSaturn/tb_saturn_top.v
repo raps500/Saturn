@@ -41,7 +41,7 @@ initial
 	$dumpfile("tb_saturn_top.vcd");
     $dumpvars();
     #0
-	#200000 $finish;
+	#5000000 $finish;
 	end
 
 

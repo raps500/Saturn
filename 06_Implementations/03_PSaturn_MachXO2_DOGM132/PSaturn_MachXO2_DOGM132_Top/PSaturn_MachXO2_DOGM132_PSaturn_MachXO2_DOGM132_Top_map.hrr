@@ -1,0 +1,595 @@
+---------------------------------------------------
+Report for cell PSaturn_MachXO2_DOGM132
+   Instance path: PSaturn_MachXO2_DOGM132
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	    2996.00        100.0
+                                 IOLGC	       2.00        100.0
+                                  LUT4	    5346.00        100.0
+                               DISTRAM	       3.00        100.0
+                                 IOREG	          2        100.0
+                                 IOBUF	         46        100.0
+                                PFUREG	       1379        100.0
+                                RIPPLE	        320        100.0
+                                   EBR	         18        100.0
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+                           saturn_core	          1        97.7
+                       display_dogm132	          1         1.9
+                             async_rom	          1         0.0
+---------------------------------------------------
+Report for cell async_rom
+   Instance path: PSaturn_MachXO2_DOGM132/rom
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                   EBR	         16        88.9
+---------------------------------------------------
+Report for cell saturn_core
+   Instance path: PSaturn_MachXO2_DOGM132/core
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	    2926.08        97.7
+                                  LUT4	    5246.00        98.1
+                                PFUREG	       1333        96.7
+                                RIPPLE	        304        95.0
+                                   EBR	          2        11.1
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+              saturn_decoder_sequencer	          1        13.8
+                           saturn_alru	          1        65.1
+                 saturn_bus_controller	          1        18.7
+---------------------------------------------------
+Report for cell saturn_alru
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	    1951.50        65.1
+                                  LUT4	    3438.00        64.3
+                                PFUREG	        946        68.6
+                                RIPPLE	        240        75.0
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+                     saturn_subbcd64_1	          1         3.8
+                   saturn_subbcd64_1_0	          1         3.8
+                        saturn_compare	          1         5.1
+                       saturn_addbcd64	          1        42.7
+---------------------------------------------------
+Report for cell saturn_compare
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/cmp64
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     154.17         5.1
+                                  LUT4	     120.00         2.2
+                                RIPPLE	         96        30.0
+---------------------------------------------------
+Report for cell saturn_subbcd64_1_0
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     113.50         3.8
+                                  LUT4	     157.00         2.9
+                                RIPPLE	         48        15.0
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+                      saturn_subbcd_20	          1         0.2
+                      saturn_subbcd_26	          1         0.2
+                      saturn_subbcd_30	          1         0.2
+                      saturn_subbcd_28	          1         0.2
+                      saturn_subbcd_29	          1         0.2
+                      saturn_subbcd_27	          1         0.2
+                      saturn_subbcd_22	          1         0.2
+                      saturn_subbcd_24	          1         0.2
+                      saturn_subbcd_25	          1         0.2
+                      saturn_subbcd_23	          1         0.2
+                      saturn_subbcd_21	          1         0.2
+                      saturn_subbcd_16	          1         0.2
+                      saturn_subbcd_18	          1         0.2
+                      saturn_subbcd_19	          1         0.2
+                      saturn_subbcd_17	          1         0.2
+                      saturn_subbcd_15	          1         0.2
+---------------------------------------------------
+Report for cell saturn_subbcd_30
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/sf
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.17         0.2
+                                  LUT4	       7.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_29
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/se
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       7.00         0.2
+                                  LUT4	      10.00         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_28
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/sd
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       7.00         0.2
+                                  LUT4	      10.00         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_27
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/sc
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       7.00         0.2
+                                  LUT4	      10.00         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_26
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/sb
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       7.00         0.2
+                                  LUT4	      10.00         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_25
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/sa
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.83         0.2
+                                  LUT4	      10.00         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_24
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/s9
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       7.00         0.2
+                                  LUT4	      10.00         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_23
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/s8
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       7.00         0.2
+                                  LUT4	      10.00         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_22
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/s7
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       7.00         0.2
+                                  LUT4	      10.00         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_21
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/s6
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.00         0.2
+                                  LUT4	       8.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_20
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/s5
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       7.00         0.2
+                                  LUT4	      10.00         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_19
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/s4
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       7.00         0.2
+                                  LUT4	      10.00         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_18
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/s3
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.50         0.2
+                                  LUT4	       9.00         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_17
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/s2
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.50         0.2
+                                  LUT4	       8.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_16
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/s1
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.00         0.2
+                                  LUT4	       6.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_15
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/rsub64/s0
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.50         0.2
+                                  LUT4	       5.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd64_1
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     112.75         3.8
+                                  LUT4	     167.50         3.1
+                                RIPPLE	         48        15.0
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+                       saturn_subbcd_6	          1         0.2
+                       saturn_subbcd_8	          1         0.2
+                       saturn_subbcd_9	          1         0.2
+                       saturn_subbcd_7	          1         0.2
+                       saturn_subbcd_3	          1         0.2
+                       saturn_subbcd_4	          1         0.2
+                       saturn_subbcd_5	          1         0.2
+                       saturn_subbcd_0	          1         0.2
+                       saturn_subbcd_2	          1         0.2
+                      saturn_subbcd_12	          1         0.2
+                      saturn_subbcd_14	          1         0.2
+                      saturn_subbcd_13	          1         0.2
+                      saturn_subbcd_10	          1         0.2
+                      saturn_subbcd_11	          1         0.2
+                       saturn_subbcd_1	          1         0.2
+                         saturn_subbcd	          1         0.2
+---------------------------------------------------
+Report for cell saturn_subbcd_14
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/sf
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.33         0.2
+                                  LUT4	       7.50         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_13
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/se
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       7.00         0.2
+                                  LUT4	      10.50         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_12
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/sd
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.92         0.2
+                                  LUT4	      10.50         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_11
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/sc
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.92         0.2
+                                  LUT4	      10.50         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_10
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/sb
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.58         0.2
+                                  LUT4	      10.00         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_9
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/sa
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.83         0.2
+                                  LUT4	       9.50         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_8
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/s9
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.92         0.2
+                                  LUT4	      10.50         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_7
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/s8
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.92         0.2
+                                  LUT4	      10.50         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_6
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/s7
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.92         0.2
+                                  LUT4	      10.50         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_5
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/s6
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.42         0.2
+                                  LUT4	       9.50         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_4
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/s5
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.92         0.2
+                                  LUT4	      10.50         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_3
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/s4
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.92         0.2
+                                  LUT4	      10.50         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_2
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/s3
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.83         0.2
+                                  LUT4	       8.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_1
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/s2
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.92         0.2
+                                  LUT4	      10.50         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd_0
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/s1
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.83         0.2
+                                  LUT4	      10.00         0.2
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_subbcd
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/sub64/s0
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.08         0.2
+                                  LUT4	       7.50         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd64
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	    1279.27        42.7
+                                  LUT4	    2874.50        53.8
+                                RIPPLE	         48        15.0
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+                       saturn_addbcd_0	          1         0.2
+                       saturn_addbcd_2	          1         0.2
+                       saturn_addbcd_9	          1         0.2
+                       saturn_addbcd_5	          1         0.2
+                       saturn_addbcd_7	          1         0.2
+                       saturn_addbcd_8	          1         0.2
+                       saturn_addbcd_6	          1         0.2
+                       saturn_addbcd_3	          1         0.2
+                       saturn_addbcd_4	          1         0.2
+                      saturn_addbcd_11	          1         0.2
+                      saturn_addbcd_13	          1         0.2
+                      saturn_addbcd_14	          1         0.2
+                      saturn_addbcd_12	          1         0.2
+                       saturn_addbcd_1	          1         0.2
+                      saturn_addbcd_10	          1         0.2
+                         saturn_addbcd	          1         0.2
+---------------------------------------------------
+Report for cell saturn_addbcd_14
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/af
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.25         0.2
+                                  LUT4	       7.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd_13
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/ae
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.33         0.2
+                                  LUT4	       6.50         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd_12
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/ad
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.83         0.2
+                                  LUT4	       6.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd_11
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/ac
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.50         0.2
+                                  LUT4	       5.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd_10
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/ab
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.00         0.2
+                                  LUT4	       4.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd_9
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/aa
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.00         0.2
+                                  LUT4	       6.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd_8
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/a9
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.58         0.2
+                                  LUT4	       7.50         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd_7
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/a8
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.50         0.2
+                                  LUT4	       5.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd_6
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/a7
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.50         0.2
+                                  LUT4	       5.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd_5
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/a6
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.50         0.2
+                                  LUT4	       5.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd_4
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/a5
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.50         0.2
+                                  LUT4	       5.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd_3
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/a4
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.50         0.2
+                                  LUT4	       5.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd_2
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/a3
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.33         0.2
+                                  LUT4	       5.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd_1
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/a2
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.50         0.2
+                                  LUT4	       5.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd_0
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/a1
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       6.25         0.2
+                                  LUT4	       7.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_addbcd
+   Instance path: PSaturn_MachXO2_DOGM132/core/alru/add64/a0
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       5.50         0.2
+                                  LUT4	       5.00         0.1
+                                RIPPLE	          3         0.9
+---------------------------------------------------
+Report for cell saturn_decoder_sequencer
+   Instance path: PSaturn_MachXO2_DOGM132/core/dec_seq
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     414.25        13.8
+                                  LUT4	     747.00        14.0
+                                PFUREG	        130         9.4
+                                RIPPLE	         36        11.3
+                                   EBR	          2        11.1
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+                      saturn_microcode	          1        10.6
+                  saturn_field_decoder	          1         0.2
+---------------------------------------------------
+Report for cell saturn_field_decoder
+   Instance path: PSaturn_MachXO2_DOGM132/core/dec_seq/field_decoder
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       4.50         0.2
+                                  LUT4	       9.00         0.2
+---------------------------------------------------
+Report for cell saturn_microcode
+   Instance path: PSaturn_MachXO2_DOGM132/core/dec_seq/mc
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     316.75        10.6
+                                  LUT4	     666.00        12.5
+                                RIPPLE	         11         3.4
+                                   EBR	          2        11.1
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+                                 mcrom	          1         0.0
+---------------------------------------------------
+Report for cell mcrom
+   Instance path: PSaturn_MachXO2_DOGM132/core/dec_seq/mc/mcrom_i
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	       0.75         0.0
+                                  LUT4	       2.00         0.0
+                                   EBR	          2        11.1
+---------------------------------------------------
+Report for cell saturn_bus_controller
+   Instance path: PSaturn_MachXO2_DOGM132/core/bus_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     560.33        18.7
+                                  LUT4	    1061.00        19.8
+                                PFUREG	        257        18.6
+                                RIPPLE	         28         8.8
+SUB MODULES
+                                  cell	      count    SLC Usage(%)
+                     saturn_predecoder	          1         9.4
+---------------------------------------------------
+Report for cell saturn_predecoder
+   Instance path: PSaturn_MachXO2_DOGM132/core/bus_ctrl/predec
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	     281.35         9.4
+                                  LUT4	     635.67        11.9
+---------------------------------------------------
+Report for cell display_dogm132
+   Instance path: PSaturn_MachXO2_DOGM132/disp_ctrl
+                     Cell usage:
+                                  cell	      count    Res Usage(%)
+                                  SLIC	      56.83         1.9
+                                  LUT4	      90.00         1.7
+                               DISTRAM	       3.00        100.0
+                                PFUREG	         33         2.4
+                                RIPPLE	          9         2.8
