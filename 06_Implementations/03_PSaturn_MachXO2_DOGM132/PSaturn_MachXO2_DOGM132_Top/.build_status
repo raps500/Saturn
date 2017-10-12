@@ -8,35 +8,35 @@
             <Task name="Bitgen" build_result="0" update_result="3" update_time="0"/>
             <Task name="Jedecgen" build_result="0" update_result="3" update_time="0"/>
         </Milestone>
-        <Milestone name="Map" build_result="2" build_time="1507380579">
-            <Task name="Map" build_result="2" update_result="0" update_time="1507380579"/>
-            <Task name="MapTrace" build_result="2" update_result="0" update_time="1507380581"/>
+        <Milestone name="Map" build_result="2" build_time="1507785537">
+            <Task name="Map" build_result="2" update_result="0" update_time="1507785537"/>
+            <Task name="MapTrace" build_result="2" update_result="0" update_time="1507785539"/>
             <Task name="MapVerilogSimFile" build_result="0" update_result="3" update_time="0"/>
             <Task name="MapVHDLSimFile" build_result="0" update_result="3" update_time="0"/>
         </Milestone>
-        <Milestone name="PAR" build_result="2" build_time="1507380645">
-            <Task name="PAR" build_result="2" update_result="0" update_time="1507380645"/>
-            <Task name="PARTrace" build_result="2" update_result="0" update_time="1507380647"/>
+        <Milestone name="PAR" build_result="2" build_time="1507785630">
+            <Task name="PAR" build_result="2" update_result="0" update_time="1507785630"/>
+            <Task name="PARTrace" build_result="2" update_result="0" update_time="1507785637"/>
             <Task name="IOTiming" build_result="0" update_result="3" update_time="0"/>
         </Milestone>
-        <Milestone name="Synthesis" build_result="2" build_time="1507380572">
-            <Task name="Synplify_Synthesis" build_result="2" update_result="0" update_time="1507380572"/>
+        <Milestone name="Synthesis" build_result="2" build_time="1507785528">
+            <Task name="Synplify_Synthesis" build_result="2" update_result="0" update_time="1507785528"/>
         </Milestone>
         <Milestone name="TOOL_Report" build_result="0" build_time="0">
-            <Task name="HDLE" build_result="0" update_result="2" update_time="1507379986"/>
+            <Task name="HDLE" build_result="0" update_result="2" update_time="1507712746"/>
             <Task name="BKM" build_result="0" update_result="2" update_time="0"/>
             <Task name="SSO" build_result="0" update_result="2" update_time="0"/>
             <Task name="PIODRC" build_result="0" update_result="2" update_time="0"/>
             <Task name="DEC" build_result="0" update_result="2" update_time="0"/>
         </Milestone>
-        <Milestone name="Translate" build_result="2" build_time="1507380576">
-            <Task name="Translate" build_result="2" update_result="0" update_time="1507380576"/>
+        <Milestone name="Translate" build_result="2" build_time="1507785533">
+            <Task name="Translate" build_result="2" update_result="0" update_time="1507785533"/>
         </Milestone>
-        <Report name="PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.edi" last_build_time="1507380565" last_build_size="5192090"/>
-        <Report name="PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.ncd" last_build_time="1507380645" last_build_size="5731415"/>
-        <Report name="PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.ngd" last_build_time="1507380576" last_build_size="4347132"/>
-        <Report name="PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.tw1" last_build_time="1507380581" last_build_size="25386"/>
-        <Report name="PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.twr" last_build_time="1507380647" last_build_size="191285"/>
-        <Report name="PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top_map.ncd" last_build_time="1507380579" last_build_size="3735808"/>
+        <Report name="PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.edi" last_build_time="1507785521" last_build_size="5465683"/>
+        <Report name="PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.ncd" last_build_time="1507785630" last_build_size="6436042"/>
+        <Report name="PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.ngd" last_build_time="1507785533" last_build_size="4662478"/>
+        <Report name="PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.tw1" last_build_time="1507785539" last_build_size="24652"/>
+        <Report name="PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.twr" last_build_time="1507785637" last_build_size="193768"/>
+        <Report name="PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top_map.ncd" last_build_time="1507785537" last_build_size="4177683"/>
     </Strategy>
 </BuildStatus>

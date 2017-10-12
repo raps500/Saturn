@@ -18,22 +18,22 @@ Target Vendor:  LATTICE
 Target Device:  LCMXO2-7000ZETQFP144
 Target Performance:   1
 Mapper:  xo2c00,  version:  Diamond (64-bit) 3.9.0.99.2
-Mapped on:  10/07/17  14:49:37
+Mapped on:  10/12/17  07:18:53
 
 Design Summary
 --------------
 
-   Number of registers:   1381 out of  7209 (19%)
-      PFU registers:         1379 out of  6864 (20%)
+   Number of registers:   1536 out of  7209 (21%)
+      PFU registers:         1534 out of  6864 (22%)
       PIO registers:            2 out of   345 (1%)
-   Number of SLICEs:      2996 out of  3432 (87%)
-      SLICEs as Logic/ROM:   2993 out of  3432 (87%)
-      SLICEs as RAM:            3 out of  2574 (0%)
-      SLICEs as Carry:        320 out of  3432 (9%)
-   Number of LUT4s:        5992 out of  6864 (87%)
-      Number used as logic LUTs:        5346
-      Number used as distributed RAM:     6
-      Number used as ripple logic:      640
+   Number of SLICEs:      3316 out of  3432 (97%)
+      SLICEs as Logic/ROM:   3220 out of  3432 (94%)
+      SLICEs as RAM:           96 out of  2574 (4%)
+      SLICEs as Carry:        282 out of  3432 (8%)
+   Number of LUT4s:        6626 out of  6864 (97%)
+      Number used as logic LUTs:        5870
+      Number used as distributed RAM:   192
+      Number used as ripple logic:      564
       Number used as shift registers:     0
    Number of PIO sites used: 46 + 4(JTAG) out of 115 (43%)
    Number of block RAMs:  18 out of 26 (69%)
@@ -66,54 +66,74 @@ Design Summary
 
 
 
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
 
 Design Summary (cont)
 ---------------------
    Number of clocks:  1
-     Net nclk_o_c: 749 loads, 749 rising, 0 falling (Driver: OSCH_inst )
-   Number of Clock Enables:  19
+     Net nclk_o_c: 916 loads, 916 rising, 0 falling (Driver: OSCH_inst )
+   Number of Clock Enables:  20
      Net div_cnt7: 1 loads, 1 LSLICEs
      Net disp_ctrl.un1_state35_1_i: 5 loads, 4 LSLICEs
-     Net reset: 58 loads, 58 LSLICEs
-     Net core/alru/D0_0_sqmuxa_i: 10 loads, 10 LSLICEs
-     Net core/alru/D1_0_sqmuxa_i: 10 loads, 10 LSLICEs
-     Net core/alru/STK_0__0_sqmuxa_i: 10 loads, 10 LSLICEs
-     Net core/alru/PC_1_sqmuxa_14_i: 10 loads, 10 LSLICEs
-     Net core/alru/P_0_sqmuxa_17_i: 4 loads, 4 LSLICEs
-     Net core/alru/ST_1_sqmuxa: 9 loads, 9 LSLICEs
-     Net core/N_1048_i: 64 loads, 64 LSLICEs
+     Net reset: 61 loads, 61 LSLICEs
+     Net core/alru/PC_1_sqmuxa_13_i: 10 loads, 10 LSLICEs
+     Net core/alru/ST_1_sqmuxa: 13 loads, 13 LSLICEs
+     Net core/seq_latch_alu_regs[0]: 64 loads, 64 LSLICEs
      Net core/seq_push_rstk[0]: 10 loads, 10 LSLICEs
      Net core/alru/STK_1__1_sqmuxa_i: 60 loads, 60 LSLICEs
+     Net core/alru/STK_0__0_sqmuxa_i: 10 loads, 10 LSLICEs
+     Net core/alru/P_0_sqmuxa_16_i: 2 loads, 2 LSLICEs
+     Net core/alru/D1_0_sqmuxa_i: 10 loads, 10 LSLICEs
+     Net core/alru/D0_0_sqmuxa_i: 10 loads, 10 LSLICEs
      Net core/dec_seq/state[0]: 8 loads, 0 LSLICEs
-     Net core/dec_seq/un1_reset_in_i: 13 loads, 13 LSLICEs
-     Net core/dec_seq/op_literal_71: 34 loads, 34 LSLICEs
-     Net core/dec_seq/un1_state39_4_i: 10 loads, 10 LSLICEs
-     Net core/dec_seq/op_literal_1_sqmuxa: 15 loads, 15 LSLICEs
-     Net core/bus_ctrl/N_3804_i: 56 loads, 56 LSLICEs
+     Net core/dec_seq/N_948_i: 13 loads, 13 LSLICEs
+     Net core/dec_seq/un1_state51_4_i: 10 loads, 10 LSLICEs
+     Net core/dec_seq/N_914_i: 47 loads, 47 LSLICEs
+     Net core/bus_ctrl/bus_addr_4_sqmuxa: 10 loads, 10 LSLICEs
+     Net core/bus_ctrl/nibbles_in_queue_6_sqmuxa: 56 loads, 56 LSLICEs
+     Net core/bus_ctrl/un1_fetch_pending11_7_i: 33 loads, 33 LSLICEs
      Net disp_ctrl/statee: 4 loads, 4 LSLICEs
-   Number of LSRs:  9
+   Number of LSRs:  20
      Net div_cnt7: 5 loads, 5 LSLICEs
-     Net reset: 18 loads, 18 LSLICEs
+     Net reset: 10 loads, 10 LSLICEs
+     Net core/alru/mask_i[14]: 18 loads, 18 LSLICEs
+     Net core/seq_alu_op[2]: 1 loads, 1 LSLICEs
+     Net core/alru/latched_src_reg[56]: 2 loads, 2 LSLICEs
+     Net core/alru/latched_src_reg[59]: 2 loads, 2 LSLICEs
+     Net core/alru/latched_src_reg[58]: 2 loads, 2 LSLICEs
+     Net core/alru/f_decimal: 2 loads, 2 LSLICEs
+     Net core/seq_alu_op[1]: 1 loads, 1 LSLICEs
+     Net core/seq_alu_op[3]: 1 loads, 1 LSLICEs
+     Net core/seq_alu_op[0]: 1 loads, 1 LSLICEs
      Net core/seq_pull_rstk[0]: 10 loads, 10 LSLICEs
-     Net core/dec_seq/N_42_i: 1 loads, 1 LSLICEs
-     Net core/dec_seq/un1_reset_in_2_RNIEUAO1: 9 loads, 9 LSLICEs
-     Net core/dec_seq/start_o_RNI4BF31[3]: 6 loads, 6 LSLICEs
-     Net core/bus_ctrl/N_3868_i: 3 loads, 3 LSLICEs
-     Net disp_ctrl/force_refresh_RNISD4A: 1 loads, 1 LSLICEs
-     Net disp_ctrl/force_refresh_RNICBAE: 3 loads, 3 LSLICEs
+     Net core/dec_seq/state42_RNICB4T_0: 9 loads, 9 LSLICEs
+     Net core/dec_seq/op_literal_3_1_RNIIBGJ[0]: 6 loads, 6 LSLICEs
+     Net core/dec_seq/op_literal7_RNIV21I: 26 loads, 26 LSLICEs
+     Net core/bus_ctrl/bus_addr_0_sqmuxa: 3 loads, 3 LSLICEs
+     Net core/bus_ctrl/bus_addr_4_sqmuxa: 3 loads, 3 LSLICEs
+     Net disp_ctrl/un1_state35_0: 1 loads, 1 LSLICEs
+     Net disp_ctrl/N_352_1_i: 3 loads, 3 LSLICEs
+     Net disp_ctrl/force_refresh_RNIPPAE: 3 loads, 3 LSLICEs
    Number of nets driven by tri-state buffers:  0
    Top 10 highest fanout non-clock nets:
-     Net core/seq_op1_reg[0]: 207 loads
-     Net core/seq_op1_reg[1]: 207 loads
-     Net core/bus_ctrl/pre_fetched_opcode_length[0]: 158 loads
+     Net core/seq_op1_reg[1]: 215 loads
+     Net core/seq_op1_reg[0]: 213 loads
+     Net core/seq_op2_reg[1]: 173 loads
      Net core/seq_pull_rstk[0]: 153 loads
-     Net core/seq_op2_reg[1]: 135 loads
-     Net core/alru/f_decimal: 133 loads
-     Net core/bus_ctrl/pre_fetched_opcode_length[1]: 126 loads
-     Net core/bus_ctrl/pre_fetched_opcode_length[2]: 126 loads
-     Net reset: 119 loads
-     Net core/bus_ctrl/pre_fetched_opcode_length[3]: 116 loads
+     Net core/bus_ctrl/pre_fetched_opcode_length[0]: 148 loads
+     Net core/bus_ctrl/pre_fetched_opcode_length[2]: 144 loads
+     Net core/seq_op2_reg[0]: 139 loads
+     Net core/seq_alu_op[2]: 135 loads
+     Net core/seq_op2_reg[2]: 132 loads
+     Net disp_ctrl/lcd_col[1]: 130 loads
+
+                                    Page 2
+
+
+
+
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
+
 
 
 
@@ -127,20 +147,14 @@ Design Errors/Warnings
 
    No errors or warnings present.
 
-                                    Page 2
-
-
-
-
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
-
-
 IO (PIO) Attributes
 -------------------
 
 +---------------------+-----------+-----------+------------+
 | IO Name             | Direction | Levelmode | IO         |
 |                     |           |  IO_TYPE  | Register   |
++---------------------+-----------+-----------+------------+
+| data_io[0]          | BIDIR     | LVCMOS25  |            |
 +---------------------+-----------+-----------+------------+
 | oe_o                | OUTPUT    | LVCMOS25  |            |
 +---------------------+-----------+-----------+------------+
@@ -158,39 +172,25 @@ IO (PIO) Attributes
 +---------------------+-----------+-----------+------------+
 | disp_cs_n_o         | OUTPUT    | LVCMOS25  |            |
 +---------------------+-----------+-----------+------------+
-| data_io[15]         | INPUT     | LVCMOS25  |            |
+| data_io[15]         | BIDIR     | LVCMOS25  |            |
 +---------------------+-----------+-----------+------------+
-| data_io[14]         | INPUT     | LVCMOS25  |            |
+| data_io[14]         | BIDIR     | LVCMOS25  |            |
 +---------------------+-----------+-----------+------------+
-| data_io[13]         | INPUT     | LVCMOS25  |            |
+| data_io[13]         | BIDIR     | LVCMOS25  |            |
 +---------------------+-----------+-----------+------------+
-| data_io[12]         | INPUT     | LVCMOS25  |            |
+| data_io[12]         | BIDIR     | LVCMOS25  |            |
 +---------------------+-----------+-----------+------------+
-| data_io[11]         | INPUT     | LVCMOS25  |            |
+| data_io[11]         | BIDIR     | LVCMOS25  |            |
 +---------------------+-----------+-----------+------------+
-| data_io[10]         | INPUT     | LVCMOS25  |            |
+| data_io[10]         | BIDIR     | LVCMOS25  |            |
 +---------------------+-----------+-----------+------------+
-| data_io[9]          | INPUT     | LVCMOS25  |            |
+| data_io[9]          | BIDIR     | LVCMOS25  |            |
 +---------------------+-----------+-----------+------------+
-| data_io[8]          | INPUT     | LVCMOS25  |            |
+| data_io[8]          | BIDIR     | LVCMOS25  |            |
 +---------------------+-----------+-----------+------------+
-| data_io[7]          | INPUT     | LVCMOS25  |            |
+| data_io[7]          | BIDIR     | LVCMOS25  |            |
 +---------------------+-----------+-----------+------------+
-| data_io[6]          | INPUT     | LVCMOS25  |            |
-+---------------------+-----------+-----------+------------+
-| data_io[5]          | INPUT     | LVCMOS25  |            |
-+---------------------+-----------+-----------+------------+
-| data_io[4]          | INPUT     | LVCMOS25  |            |
-+---------------------+-----------+-----------+------------+
-| data_io[3]          | INPUT     | LVCMOS25  |            |
-+---------------------+-----------+-----------+------------+
-| data_io[2]          | INPUT     | LVCMOS25  |            |
-+---------------------+-----------+-----------+------------+
-| data_io[1]          | INPUT     | LVCMOS25  |            |
-+---------------------+-----------+-----------+------------+
-| data_io[0]          | INPUT     | LVCMOS25  |            |
-+---------------------+-----------+-----------+------------+
-| we_o                | OUTPUT    | LVCMOS25  |            |
+| data_io[6]          | BIDIR     | LVCMOS25  |            |
 +---------------------+-----------+-----------+------------+
 
                                     Page 3
@@ -198,10 +198,22 @@ IO (PIO) Attributes
 
 
 
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
 
 IO (PIO) Attributes (cont)
 --------------------------
+| data_io[5]          | BIDIR     | LVCMOS25  |            |
++---------------------+-----------+-----------+------------+
+| data_io[4]          | BIDIR     | LVCMOS25  |            |
++---------------------+-----------+-----------+------------+
+| data_io[3]          | BIDIR     | LVCMOS25  |            |
++---------------------+-----------+-----------+------------+
+| data_io[2]          | BIDIR     | LVCMOS25  |            |
++---------------------+-----------+-----------+------------+
+| data_io[1]          | BIDIR     | LVCMOS25  |            |
++---------------------+-----------+-----------+------------+
+| we_o                | OUTPUT    | LVCMOS25  |            |
++---------------------+-----------+-----------+------------+
 | addr_o[19]          | OUTPUT    | LVCMOS25  |            |
 +---------------------+-----------+-----------+------------+
 | addr_o[18]          | OUTPUT    | LVCMOS25  |            |
@@ -245,6 +257,15 @@ IO (PIO) Attributes (cont)
 | nclk_o              | OUTPUT    | LVCMOS25  |            |
 +---------------------+-----------+-----------+------------+
 
+
+
+                                    Page 4
+
+
+
+
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
+
 Removed logic
 -------------
 
@@ -254,20 +275,22 @@ Block core/bus_ctrl/predec/GND undriven or does not drive anything - clipped.
 Block core/dec_seq/VCC undriven or does not drive anything - clipped.
 Block core/alru/VCC undriven or does not drive anything - clipped.
 Block core/alru/GND undriven or does not drive anything - clipped.
+Block core/alru/add64/VCC undriven or does not drive anything - clipped.
 Block core/alru/add64/GND undriven or does not drive anything - clipped.
+Block core/alru/add64/ae/VCC undriven or does not drive anything - clipped.
 Block core/alru/sub64/GND undriven or does not drive anything - clipped.
-Block core/alru/rsub64/GND undriven or does not drive anything - clipped.
+Block core/alru/sub64/VCC undriven or does not drive anything - clipped.
 Signal reset_i was merged into signal reset
-
-                                    Page 4
-
-
-
-
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
-
-Removed logic (cont)
---------------------
+Signal we_i_3_i was merged into signal we_i_3
+Signal core/bus_ctrl/un1_fetch_pending11_2_1_i was merged into signal reset
+Signal core/seq_alu_op_i[2] was merged into signal core/seq_alu_op[2]
+Signal core/alru/f_decimal_i was merged into signal core/alru/f_decimal
+Signal core/alru/latched_src_reg_i[59] was merged into signal
+     core/alru/latched_src_reg[59]
+Signal core/alru/latched_src_reg_i[58] was merged into signal
+     core/alru/latched_src_reg[58]
+Signal core/alru/latched_src_reg_i[56] was merged into signal
+     core/alru/latched_src_reg[56]
 Signal disp_ctrl/GND undriven or does not drive anything - clipped.
 Signal core/bus_ctrl/GND undriven or does not drive anything - clipped.
 Signal core/dec_seq/GND undriven or does not drive anything - clipped.
@@ -301,39 +324,23 @@ Signal core/alru/sub64/s7/GND undriven or does not drive anything - clipped.
 Signal core/alru/sub64/s8/GND undriven or does not drive anything - clipped.
 Signal core/alru/sub64/s9/GND undriven or does not drive anything - clipped.
 Signal core/alru/sub64/sa/GND undriven or does not drive anything - clipped.
-Signal core/alru/sub64/sb/GND undriven or does not drive anything - clipped.
-Signal core/alru/sub64/sc/GND undriven or does not drive anything - clipped.
-Signal core/alru/sub64/sd/GND undriven or does not drive anything - clipped.
-Signal core/alru/sub64/se/GND undriven or does not drive anything - clipped.
-Signal core/alru/sub64/sf/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s0/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s1/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s2/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s3/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s4/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s5/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s6/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s7/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s8/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s9/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/sa/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/sb/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/sc/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/sd/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/se/GND undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/sf/GND undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/GND undriven or does not drive anything - clipped.
-Signal rom/VCC undriven or does not drive anything - clipped.
 
                                     Page 5
 
 
 
 
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
 
 Removed logic (cont)
 --------------------
+Signal core/alru/sub64/sb/GND undriven or does not drive anything - clipped.
+Signal core/alru/sub64/sc/GND undriven or does not drive anything - clipped.
+Signal core/alru/sub64/sd/GND undriven or does not drive anything - clipped.
+Signal core/alru/sub64/se/GND undriven or does not drive anything - clipped.
+Signal core/alru/sub64/sf/GND undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/GND undriven or does not drive anything - clipped.
+Signal rom/VCC undriven or does not drive anything - clipped.
 Signal rom/GND undriven or does not drive anything - clipped.
 Signal un2_div_cnt_s_11_0_S1 undriven or does not drive anything - clipped.
 Signal un2_div_cnt_s_11_0_COUT undriven or does not drive anything - clipped.
@@ -359,25 +366,49 @@ Signal core/bus_ctrl/un5_bus_addr_s_17_0_S1 undriven or does not drive anything
      - clipped.
 Signal core/bus_ctrl/un5_bus_addr_s_17_0_COUT undriven or does not drive
      anything - clipped.
-Signal core/bus_ctrl/un1_nibbles_in_queue_4_cry_0_0_S0 undriven or does not
+Signal core/bus_ctrl/un1_nibbles_in_transfer_2_cry_0_0_S1 undriven or does not
+     drive anything - clipped.
+Signal core/bus_ctrl/un1_nibbles_in_transfer_2_cry_0_0_S0 undriven or does not
      drive anything - clipped.
 Signal core/bus_ctrl/N_2 undriven or does not drive anything - clipped.
+Signal core/bus_ctrl/un1_nibbles_in_transfer_2_cry_3_0_COUT undriven or does not
+     drive anything - clipped.
+Signal core/bus_ctrl/un1_nibbles_in_queue_4_cry_0_0_S0 undriven or does not
+     drive anything - clipped.
+Signal core/bus_ctrl/N_3 undriven or does not drive anything - clipped.
 Signal core/bus_ctrl/un1_nibbles_in_queue_4_cry_3_0_COUT undriven or does not
      drive anything - clipped.
 Signal core/bus_ctrl/un1_next_prefetch_addr_cry_0_0_S1 undriven or does not
      drive anything - clipped.
 Signal core/bus_ctrl/un1_next_prefetch_addr_cry_0_0_S0 undriven or does not
      drive anything - clipped.
-Signal core/bus_ctrl/N_3 undriven or does not drive anything - clipped.
+Signal core/bus_ctrl/N_4 undriven or does not drive anything - clipped.
 Signal core/bus_ctrl/un1_next_prefetch_addr_s_19_0_S1 undriven or does not drive
      anything - clipped.
 Signal core/bus_ctrl/un1_next_prefetch_addr_s_19_0_COUT undriven or does not
      drive anything - clipped.
+Signal core/bus_ctrl/dst_total_nibs_0_cry_0_0_S1 undriven or does not drive
+     anything - clipped.
+Signal core/bus_ctrl/dst_total_nibs_0_cry_0_0_S0 undriven or does not drive
+
+                                    Page 6
+
+
+
+
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
+
+Removed logic (cont)
+--------------------
+     anything - clipped.
+Signal core/bus_ctrl/N_5 undriven or does not drive anything - clipped.
+Signal core/bus_ctrl/dst_total_nibs_0_cry_3_0_COUT undriven or does not drive
+     anything - clipped.
 Signal core/bus_ctrl/un1_nibbles_in_queue_2_cry_0_0_S1 undriven or does not
      drive anything - clipped.
 Signal core/bus_ctrl/un1_nibbles_in_queue_2_cry_0_0_S0 undriven or does not
      drive anything - clipped.
-Signal core/bus_ctrl/N_4 undriven or does not drive anything - clipped.
+Signal core/bus_ctrl/N_6 undriven or does not drive anything - clipped.
 Signal core/bus_ctrl/un1_nibbles_in_queue_2_cry_1_0_S1 undriven or does not
      drive anything - clipped.
 Signal core/bus_ctrl/un1_nibbles_in_queue_2_cry_1_0_S0 undriven or does not
@@ -390,48 +421,65 @@ Signal core/bus_ctrl/un1_nibbles_in_queue_2_cry_4_0_S1 undriven or does not
      drive anything - clipped.
 Signal core/bus_ctrl/un1_nibbles_in_queue_2_cry_4_0_COUT undriven or does not
      drive anything - clipped.
-
-                                    Page 6
-
-
-
-
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
-
-Removed logic (cont)
---------------------
-Signal core/dec_seq/new_pc_jump_8_0_cry_0_0_S1 undriven or does not drive
-     anything - clipped.
-Signal core/dec_seq/new_pc_jump_8_0_cry_0_0_S0 undriven or does not drive
-     anything - clipped.
-Signal core/dec_seq/N_1 undriven or does not drive anything - clipped.
-Signal core/dec_seq/new_pc_jump_8_0_s_19_0_S1 undriven or does not drive
-     anything - clipped.
-Signal core/dec_seq/new_pc_jump_8_0_s_19_0_COUT undriven or does not drive
-     anything - clipped.
-Signal core/dec_seq/jump_target_addr_4_cry_0_0_S1 undriven or does not drive
-     anything - clipped.
-Signal core/dec_seq/jump_target_addr_4_cry_0_0_S0 undriven or does not drive
-     anything - clipped.
-Signal core/dec_seq/N_2 undriven or does not drive anything - clipped.
-Signal core/dec_seq/jump_target_addr_4_s_19_0_S1 undriven or does not drive
-     anything - clipped.
-Signal core/dec_seq/jump_target_addr_4_s_19_0_COUT undriven or does not drive
-     anything - clipped.
+Signal core/bus_ctrl/un1_nibbles_in_transfer_1_cry_0_0_S1 undriven or does not
+     drive anything - clipped.
+Signal core/bus_ctrl/un1_nibbles_in_transfer_1_cry_0_0_S0 undriven or does not
+     drive anything - clipped.
+Signal core/bus_ctrl/N_7 undriven or does not drive anything - clipped.
+Signal core/bus_ctrl/un1_nibbles_in_transfer_1_cry_1_0_S1 undriven or does not
+     drive anything - clipped.
+Signal core/bus_ctrl/un1_nibbles_in_transfer_1_cry_1_0_S0 undriven or does not
+     drive anything - clipped.
+Signal core/bus_ctrl/un1_nibbles_in_transfer_1_cry_3_0_S1 undriven or does not
+     drive anything - clipped.
+Signal core/bus_ctrl/un1_nibbles_in_transfer_1_cry_3_0_S0 undriven or does not
+     drive anything - clipped.
+Signal core/bus_ctrl/un1_nibbles_in_transfer_1_cry_4_0_S1 undriven or does not
+     drive anything - clipped.
+Signal core/bus_ctrl/un1_nibbles_in_transfer_1_cry_4_0_COUT undriven or does not
+     drive anything - clipped.
 Signal core/dec_seq/un1_reg_P_in_cry_0_0_S1 undriven or does not drive anything
      - clipped.
 Signal core/dec_seq/un1_reg_P_in_cry_0_0_S0 undriven or does not drive anything
      - clipped.
-Signal core/dec_seq/N_3 undriven or does not drive anything - clipped.
+Signal core/dec_seq/N_1 undriven or does not drive anything - clipped.
 Signal core/dec_seq/un1_reg_P_in_s_3_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/dec_seq/un1_reg_P_in_s_3_0_COUT undriven or does not drive anything
      - clipped.
+Signal core/dec_seq/jump_target_addr_0_cry_0_0_S1 undriven or does not drive
+     anything - clipped.
+Signal core/dec_seq/jump_target_addr_0_cry_0_0_S0 undriven or does not drive
+     anything - clipped.
+Signal core/dec_seq/N_2 undriven or does not drive anything - clipped.
+Signal core/dec_seq/jump_target_addr_0_s_19_0_S1 undriven or does not drive
+     anything - clipped.
+Signal core/dec_seq/jump_target_addr_0_s_19_0_COUT undriven or does not drive
+     anything - clipped.
+
+                                    Page 7
+
+
+
+
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
+
+Removed logic (cont)
+--------------------
+Signal core/dec_seq/jump_target_addr_cry_0_0_S1 undriven or does not drive
+     anything - clipped.
+Signal core/dec_seq/jump_target_addr_cry_0_0_S0 undriven or does not drive
+     anything - clipped.
+Signal core/dec_seq/N_3 undriven or does not drive anything - clipped.
+Signal core/dec_seq/jump_target_addr_s_19_0_S1 undriven or does not drive
+     anything - clipped.
+Signal core/dec_seq/jump_target_addr_s_19_0_COUT undriven or does not drive
+     anything - clipped.
 Signal core/dec_seq/mc/op_literal_21_cry_0_0_S1 undriven or does not drive
      anything - clipped.
 Signal core/dec_seq/mc/op_literal_21_cry_0_0_S0 undriven or does not drive
      anything - clipped.
-Signal core/dec_seq/mc/N_6 undriven or does not drive anything - clipped.
+Signal core/dec_seq/mc/N_1 undriven or does not drive anything - clipped.
 Signal core/dec_seq/mc/op_literal_21_s_19_0_S1 undriven or does not drive
      anything - clipped.
 Signal core/dec_seq/mc/op_literal_21_s_19_0_COUT undriven or does not drive
@@ -444,395 +492,244 @@ Signal core/dec_seq/mc/mcrom_i/mcrom_0_1_0_DOB6 undriven or does not drive
      anything - clipped.
 Signal core/dec_seq/mc/mcrom_i/mcrom_0_1_0_DOB5 undriven or does not drive
      anything - clipped.
-Signal core/dec_seq/mc/mcrom_i/Q_1[31] undriven or does not drive anything -
-     clipped.
-Signal core/dec_seq/mc/mcrom_i/Q_1[30] undriven or does not drive anything -
-     clipped.
-Signal core/dec_seq/mc/mcrom_i/Q_1[29] undriven or does not drive anything -
-     clipped.
-Signal core/dec_seq/mc/mcrom_i/Q_1[28] undriven or does not drive anything -
-     clipped.
-Signal core/dec_seq/mc/mcrom_i/Q_1[27] undriven or does not drive anything -
-     clipped.
-Signal core/dec_seq/mc/mcrom_i/Q_1[26] undriven or does not drive anything -
-     clipped.
-
-                                    Page 7
-
-
-
-
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
-
-Removed logic (cont)
---------------------
-Signal core/dec_seq/mc/mcrom_i/Q_1[25] undriven or does not drive anything -
-     clipped.
+Signal core/dec_seq/mc/mcrom_i/op_write_sticky undriven or does not drive
+     anything - clipped.
 Signal core/dec_seq/mc/mcrom_i/Q_1[24] undriven or does not drive anything -
      clipped.
 Signal core/dec_seq/mc/mcrom_i/Q_1[23] undriven or does not drive anything -
      clipped.
-Signal core/alru/add64/a0/a_plus_b_plus_c_cry_0_0_S0_9 undriven or does not
-     drive anything - clipped.
+Signal core/alru/add64/a0/a_plus_b_plus_c_cry_0_0_S0 undriven or does not drive
+     anything - clipped.
 Signal core/alru/add64/a0/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/a0/a_plus_b_plus_c_cry_3_0_COUT_9 undriven or does not
+Signal core/alru/add64/a0/a_plus_b_plus_c_cry_3_0_COUT undriven or does not
      drive anything - clipped.
-Signal core/alru/add64/a1/a_plus_b_plus_c_cry_0_0_S0_6 undriven or does not
+Signal core/alru/add64/a1/a_plus_b_plus_c_cry_0_0_S0_10 undriven or does not
      drive anything - clipped.
 Signal core/alru/add64/a1/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/a1/a_plus_b_plus_c_cry_3_0_COUT_6 undriven or does not
+Signal core/alru/add64/a1/a_plus_b_plus_c_cry_3_0_COUT_10 undriven or does not
      drive anything - clipped.
-Signal core/alru/add64/a2/a_plus_b_plus_c_cry_0_0_S0_7 undriven or does not
+Signal core/alru/add64/a2/a_plus_b_plus_c_cry_0_0_S0_14 undriven or does not
      drive anything - clipped.
 Signal core/alru/add64/a2/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/a2/a_plus_b_plus_c_cry_3_0_COUT_7 undriven or does not
+Signal core/alru/add64/a2/a_plus_b_plus_c_cry_3_0_COUT_14 undriven or does not
      drive anything - clipped.
-Signal core/alru/add64/a3/a_plus_b_plus_c_cry_0_0_S0_14 undriven or does not
+Signal core/alru/add64/a3/a_plus_b_plus_c_cry_0_0_S0_13 undriven or does not
      drive anything - clipped.
 Signal core/alru/add64/a3/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/a3/a_plus_b_plus_c_cry_3_0_COUT_14 undriven or does not
+Signal core/alru/add64/a3/a_plus_b_plus_c_cry_3_0_COUT_13 undriven or does not
      drive anything - clipped.
-Signal core/alru/add64/a4/a_plus_b_plus_c_cry_0_0_S0_10 undriven or does not
+Signal core/alru/add64/a4/a_plus_b_plus_c_cry_0_0_S0_3 undriven or does not
      drive anything - clipped.
 Signal core/alru/add64/a4/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/a4/a_plus_b_plus_c_cry_3_0_COUT_10 undriven or does not
-     drive anything - clipped.
-Signal core/alru/add64/a5/a_plus_b_plus_c_cry_0_0_S0_2 undriven or does not
-     drive anything - clipped.
-Signal core/alru/add64/a5/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/a5/a_plus_b_plus_c_cry_3_0_COUT_2 undriven or does not
-     drive anything - clipped.
-Signal core/alru/add64/a6/a_plus_b_plus_c_cry_0_0_S0_12 undriven or does not
-     drive anything - clipped.
-Signal core/alru/add64/a6/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/a6/a_plus_b_plus_c_cry_3_0_COUT_12 undriven or does not
-     drive anything - clipped.
-Signal core/alru/add64/a7/a_plus_b_plus_c_cry_0_0_S0_0 undriven or does not
-     drive anything - clipped.
-Signal core/alru/add64/a7/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/a7/a_plus_b_plus_c_cry_3_0_COUT_0 undriven or does not
-     drive anything - clipped.
-Signal core/alru/add64/a8/a_plus_b_plus_c_cry_0_0_S0_11 undriven or does not
-     drive anything - clipped.
-Signal core/alru/add64/a8/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/a8/a_plus_b_plus_c_cry_3_0_COUT_11 undriven or does not
-     drive anything - clipped.
-Signal core/alru/add64/a9/a_plus_b_plus_c_cry_0_0_S0_4 undriven or does not
-     drive anything - clipped.
-Signal core/alru/add64/a9/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/a9/a_plus_b_plus_c_cry_3_0_COUT_4 undriven or does not
-     drive anything - clipped.
+Signal core/alru/add64/a4/a_plus_b_plus_c_cry_3_0_COUT_3 undriven or does not
 
                                     Page 8
 
 
 
 
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
 
 Removed logic (cont)
 --------------------
-Signal core/alru/add64/aa/a_plus_b_plus_c_cry_0_0_S0_8 undriven or does not
+     drive anything - clipped.
+Signal core/alru/add64/a5/a_plus_b_plus_c_cry_0_0_S0_4 undriven or does not
+     drive anything - clipped.
+Signal core/alru/add64/a5/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/add64/a5/a_plus_b_plus_c_cry_3_0_COUT_4 undriven or does not
+     drive anything - clipped.
+Signal core/alru/add64/a6/a_plus_b_plus_c_cry_0_0_S0_1 undriven or does not
+     drive anything - clipped.
+Signal core/alru/add64/a6/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/add64/a6/a_plus_b_plus_c_cry_3_0_COUT_1 undriven or does not
+     drive anything - clipped.
+Signal core/alru/add64/a7/a_plus_b_plus_c_cry_0_0_S0_5 undriven or does not
+     drive anything - clipped.
+Signal core/alru/add64/a7/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/add64/a7/a_plus_b_plus_c_cry_3_0_COUT_5 undriven or does not
+     drive anything - clipped.
+Signal core/alru/add64/a8/a_plus_b_plus_c_cry_0_0_S0_2 undriven or does not
+     drive anything - clipped.
+Signal core/alru/add64/a8/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/add64/a8/a_plus_b_plus_c_cry_3_0_COUT_2 undriven or does not
+     drive anything - clipped.
+Signal core/alru/add64/a9/a_plus_b_plus_c_cry_0_0_S0_8 undriven or does not
+     drive anything - clipped.
+Signal core/alru/add64/a9/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/add64/a9/a_plus_b_plus_c_cry_3_0_COUT_8 undriven or does not
+     drive anything - clipped.
+Signal core/alru/add64/aa/a_plus_b_plus_c_cry_0_0_S0_0 undriven or does not
      drive anything - clipped.
 Signal core/alru/add64/aa/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/aa/a_plus_b_plus_c_cry_3_0_COUT_8 undriven or does not
+Signal core/alru/add64/aa/a_plus_b_plus_c_cry_3_0_COUT_0 undriven or does not
      drive anything - clipped.
-Signal core/alru/add64/ab/a_plus_b_plus_c_cry_0_0_S0_1 undriven or does not
+Signal core/alru/add64/ab/a_plus_b_plus_c_cry_0_0_S0_6 undriven or does not
      drive anything - clipped.
 Signal core/alru/add64/ab/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/ab/a_plus_b_plus_c_cry_3_0_COUT_1 undriven or does not
+Signal core/alru/add64/ab/a_plus_b_plus_c_cry_3_0_COUT_6 undriven or does not
      drive anything - clipped.
-Signal core/alru/add64/ac/a_plus_b_plus_c_cry_0_0_S0_13 undriven or does not
+Signal core/alru/add64/ac/a_plus_b_plus_c_cry_0_0_S0_11 undriven or does not
      drive anything - clipped.
 Signal core/alru/add64/ac/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/ac/a_plus_b_plus_c_cry_3_0_COUT_13 undriven or does not
+Signal core/alru/add64/ac/a_plus_b_plus_c_cry_3_0_COUT_11 undriven or does not
      drive anything - clipped.
-Signal core/alru/add64/ad/a_plus_b_plus_c_cry_0_0_S0_3 undriven or does not
+Signal core/alru/add64/ad/a_plus_b_plus_c_cry_0_0_S0_9 undriven or does not
      drive anything - clipped.
 Signal core/alru/add64/ad/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/ad/a_plus_b_plus_c_cry_3_0_COUT_3 undriven or does not
+Signal core/alru/add64/ad/a_plus_b_plus_c_cry_3_0_COUT_9 undriven or does not
      drive anything - clipped.
-Signal core/alru/add64/ae/a_plus_b_plus_c_cry_0_0_S0_5 undriven or does not
+Signal core/alru/add64/ae/a_plus_b_plus_c_cry_0_0_S0_7 undriven or does not
      drive anything - clipped.
 Signal core/alru/add64/ae/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/ae/a_plus_b_plus_c_cry_3_0_COUT_5 undriven or does not
+Signal core/alru/add64/ae/a_plus_b_plus_c_cry_3_0_COUT_7 undriven or does not
      drive anything - clipped.
-Signal core/alru/add64/af/a_plus_b_plus_c_cry_0_0_S0 undriven or does not drive
-     anything - clipped.
+Signal core/alru/add64/af/a_plus_b_plus_c_cry_0_0_S0_12 undriven or does not
+     drive anything - clipped.
 Signal core/alru/add64/af/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/add64/af/a_plus_b_plus_c_cry_3_0_COUT undriven or does not
+Signal core/alru/add64/af/a_plus_b_plus_c_cry_3_0_COUT_12 undriven or does not
      drive anything - clipped.
-Signal core/alru/sub64/s0/sub_cry_0_0_S0_24 undriven or does not drive anything
-     - clipped.
-Signal core/alru/sub64/s0/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/s0/sub_cry_3_0_COUT_24 undriven or does not drive
-     anything - clipped.
-Signal core/alru/sub64/s1/sub_cry_0_0_S0_13 undriven or does not drive anything
-     - clipped.
-Signal core/alru/sub64/s1/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/s1/sub_cry_3_0_COUT_13 undriven or does not drive
-     anything - clipped.
-Signal core/alru/sub64/s2/sub_cry_0_0_S0_29 undriven or does not drive anything
-     - clipped.
-Signal core/alru/sub64/s2/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/s2/sub_cry_3_0_COUT_29 undriven or does not drive
-     anything - clipped.
-Signal core/alru/sub64/s3/sub_cry_0_0_S0_12 undriven or does not drive anything
-     - clipped.
-Signal core/alru/sub64/s3/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/s3/sub_cry_3_0_COUT_12 undriven or does not drive
-     anything - clipped.
-Signal core/alru/sub64/s4/sub_cry_0_0_S0_22 undriven or does not drive anything
-     - clipped.
-Signal core/alru/sub64/s4/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/s4/sub_cry_3_0_COUT_22 undriven or does not drive
-     anything - clipped.
-Signal core/alru/sub64/s5/sub_cry_0_0_S0_6 undriven or does not drive anything -
 
                                     Page 9
 
 
 
 
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
 
 Removed logic (cont)
 --------------------
+Signal core/alru/sub64/s0/sub_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/sub64/s0/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/sub64/s0/sub_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/sub64/s1/sub_cry_0_0_S0_7 undriven or does not drive anything -
+     clipped.
+Signal core/alru/sub64/s1/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/sub64/s1/sub_cry_3_0_COUT_7 undriven or does not drive anything
+     - clipped.
+Signal core/alru/sub64/s2/sub_cry_0_0_S0_11 undriven or does not drive anything
+     - clipped.
+Signal core/alru/sub64/s2/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/sub64/s2/sub_cry_3_0_COUT_11 undriven or does not drive
+     anything - clipped.
+Signal core/alru/sub64/s3/sub_cry_0_0_S0_10 undriven or does not drive anything
+     - clipped.
+Signal core/alru/sub64/s3/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/sub64/s3/sub_cry_3_0_COUT_10 undriven or does not drive
+     anything - clipped.
+Signal core/alru/sub64/s4/sub_cry_0_0_S0_1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/sub64/s4/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/sub64/s4/sub_cry_3_0_COUT_1 undriven or does not drive anything
+     - clipped.
+Signal core/alru/sub64/s5/sub_cry_0_0_S0_4 undriven or does not drive anything -
      clipped.
 Signal core/alru/sub64/s5/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/s5/sub_cry_3_0_COUT_6 undriven or does not drive anything
+Signal core/alru/sub64/s5/sub_cry_3_0_COUT_4 undriven or does not drive anything
      - clipped.
-Signal core/alru/sub64/s6/sub_cry_0_0_S0_19 undriven or does not drive anything
-     - clipped.
-Signal core/alru/sub64/s6/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/s6/sub_cry_3_0_COUT_19 undriven or does not drive
-     anything - clipped.
-Signal core/alru/sub64/s7/sub_cry_0_0_S0_2 undriven or does not drive anything -
+Signal core/alru/sub64/s6/sub_cry_0_0_S0_0 undriven or does not drive anything -
      clipped.
+Signal core/alru/sub64/s6/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/sub64/s6/sub_cry_3_0_COUT_0 undriven or does not drive anything
+     - clipped.
+Signal core/alru/sub64/s7/sub_cry_0_0_S0_13 undriven or does not drive anything
+     - clipped.
 Signal core/alru/sub64/s7/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/s7/sub_cry_3_0_COUT_2 undriven or does not drive anything
-     - clipped.
-Signal core/alru/sub64/s8/sub_cry_0_0_S0_25 undriven or does not drive anything
-     - clipped.
+Signal core/alru/sub64/s7/sub_cry_3_0_COUT_13 undriven or does not drive
+     anything - clipped.
+Signal core/alru/sub64/s8/sub_cry_0_0_S0_3 undriven or does not drive anything -
+     clipped.
 Signal core/alru/sub64/s8/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/s8/sub_cry_3_0_COUT_25 undriven or does not drive
-     anything - clipped.
-Signal core/alru/sub64/s9/sub_cry_0_0_S0_10 undriven or does not drive anything
+Signal core/alru/sub64/s8/sub_cry_3_0_COUT_3 undriven or does not drive anything
      - clipped.
+Signal core/alru/sub64/s9/sub_cry_0_0_S0_5 undriven or does not drive anything -
+     clipped.
 Signal core/alru/sub64/s9/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/s9/sub_cry_3_0_COUT_10 undriven or does not drive
-     anything - clipped.
-Signal core/alru/sub64/sa/sub_cry_0_0_S0_30 undriven or does not drive anything
+Signal core/alru/sub64/s9/sub_cry_3_0_COUT_5 undriven or does not drive anything
+     - clipped.
+Signal core/alru/sub64/sa/sub_cry_0_0_S0_14 undriven or does not drive anything
      - clipped.
 Signal core/alru/sub64/sa/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/sa/sub_cry_3_0_COUT_30 undriven or does not drive
+Signal core/alru/sub64/sa/sub_cry_3_0_COUT_14 undriven or does not drive
      anything - clipped.
-Signal core/alru/sub64/sb/sub_cry_0_0_S0_4 undriven or does not drive anything -
-     clipped.
-Signal core/alru/sub64/sb/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/sb/sub_cry_3_0_COUT_4 undriven or does not drive anything
-     - clipped.
-Signal core/alru/sub64/sc/sub_cry_0_0_S0_20 undriven or does not drive anything
-     - clipped.
-Signal core/alru/sub64/sc/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/sc/sub_cry_3_0_COUT_20 undriven or does not drive
-     anything - clipped.
-Signal core/alru/sub64/sd/sub_cry_0_0_S0_7 undriven or does not drive anything -
-     clipped.
-Signal core/alru/sub64/sd/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/sd/sub_cry_3_0_COUT_7 undriven or does not drive anything
-     - clipped.
-Signal core/alru/sub64/se/sub_cry_0_0_S0_16 undriven or does not drive anything
-     - clipped.
-Signal core/alru/sub64/se/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/se/sub_cry_3_0_COUT_16 undriven or does not drive
-     anything - clipped.
-Signal core/alru/sub64/sf/sub_cry_0_0_S0_0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/sub64/sf/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/sub64/sf/sub_cry_3_0_COUT_0 undriven or does not drive anything
-     - clipped.
-Signal core/alru/rsub64/s0/sub_cry_0_0_S0_27 undriven or does not drive anything
-     - clipped.
+Signal core/alru/sub64/sb/sub_cry_0_0_S0_12 undriven or does not drive anything
 
                                    Page 10
 
 
 
 
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
 
 Removed logic (cont)
 --------------------
-Signal core/alru/rsub64/s0/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s0/sub_cry_3_0_COUT_27 undriven or does not drive
-     anything - clipped.
-Signal core/alru/rsub64/s1/sub_cry_0_0_S0_14 undriven or does not drive anything
      - clipped.
-Signal core/alru/rsub64/s1/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s1/sub_cry_3_0_COUT_14 undriven or does not drive
+Signal core/alru/sub64/sb/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/sub64/sb/sub_cry_3_0_COUT_12 undriven or does not drive
      anything - clipped.
-Signal core/alru/rsub64/s2/sub_cry_0_0_S0_28 undriven or does not drive anything
+Signal core/alru/sub64/sc/sub_cry_0_0_S0_8 undriven or does not drive anything -
+     clipped.
+Signal core/alru/sub64/sc/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/sub64/sc/sub_cry_3_0_COUT_8 undriven or does not drive anything
      - clipped.
-Signal core/alru/rsub64/s2/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s2/sub_cry_3_0_COUT_28 undriven or does not drive
-     anything - clipped.
-Signal core/alru/rsub64/s3/sub_cry_0_0_S0_11 undriven or does not drive anything
+Signal core/alru/sub64/sd/sub_cry_0_0_S0_6 undriven or does not drive anything -
+     clipped.
+Signal core/alru/sub64/sd/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/sub64/sd/sub_cry_3_0_COUT_6 undriven or does not drive anything
      - clipped.
-Signal core/alru/rsub64/s3/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s3/sub_cry_3_0_COUT_11 undriven or does not drive
-     anything - clipped.
-Signal core/alru/rsub64/s4/sub_cry_0_0_S0_23 undriven or does not drive anything
+Signal core/alru/sub64/se/sub_cry_0_0_S0_2 undriven or does not drive anything -
+     clipped.
+Signal core/alru/sub64/se/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/sub64/se/sub_cry_3_0_COUT_2 undriven or does not drive anything
      - clipped.
-Signal core/alru/rsub64/s4/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s4/sub_cry_3_0_COUT_23 undriven or does not drive
-     anything - clipped.
-Signal core/alru/rsub64/s5/sub_cry_0_0_S0_5 undriven or does not drive anything
+Signal core/alru/sub64/sf/sub_cry_0_0_S0_9 undriven or does not drive anything -
+     clipped.
+Signal core/alru/sub64/sf/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/sub64/sf/sub_cry_3_0_COUT_9 undriven or does not drive anything
      - clipped.
-Signal core/alru/rsub64/s5/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s5/sub_cry_3_0_COUT_5 undriven or does not drive
-     anything - clipped.
-Signal core/alru/rsub64/s6/sub_cry_0_0_S0_18 undriven or does not drive anything
-     - clipped.
-Signal core/alru/rsub64/s6/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s6/sub_cry_3_0_COUT_18 undriven or does not drive
-     anything - clipped.
-Signal core/alru/rsub64/s7/sub_cry_0_0_S0_1 undriven or does not drive anything
-     - clipped.
-Signal core/alru/rsub64/s7/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s7/sub_cry_3_0_COUT_1 undriven or does not drive
-     anything - clipped.
-Signal core/alru/rsub64/s8/sub_cry_0_0_S0_17 undriven or does not drive anything
-     - clipped.
-Signal core/alru/rsub64/s8/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s8/sub_cry_3_0_COUT_17 undriven or does not drive
-     anything - clipped.
-Signal core/alru/rsub64/s9/sub_cry_0_0_S0_9 undriven or does not drive anything
-     - clipped.
-Signal core/alru/rsub64/s9/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/s9/sub_cry_3_0_COUT_9 undriven or does not drive
-     anything - clipped.
-Signal core/alru/rsub64/sa/sub_cry_0_0_S0_26 undriven or does not drive anything
-     - clipped.
-Signal core/alru/rsub64/sa/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/sa/sub_cry_3_0_COUT_26 undriven or does not drive
-     anything - clipped.
-Signal core/alru/rsub64/sb/sub_cry_0_0_S0_3 undriven or does not drive anything
-     - clipped.
-Signal core/alru/rsub64/sb/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/le_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/le_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_1 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/le_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/le_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/le_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/le_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g0_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g0_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_2 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/g0_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g0_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g0_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g0_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/l0_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/l0_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_3 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/l0_cry_1_0_S1 undriven or does not drive anything -
 
                                    Page 11
 
 
 
 
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
 
 Removed logic (cont)
 --------------------
-Signal core/alru/rsub64/sb/sub_cry_3_0_COUT_3 undriven or does not drive
-     anything - clipped.
-Signal core/alru/rsub64/sc/sub_cry_0_0_S0_21 undriven or does not drive anything
-     - clipped.
-Signal core/alru/rsub64/sc/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/sc/sub_cry_3_0_COUT_21 undriven or does not drive
-     anything - clipped.
-Signal core/alru/rsub64/sd/sub_cry_0_0_S0_8 undriven or does not drive anything
-     - clipped.
-Signal core/alru/rsub64/sd/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/sd/sub_cry_3_0_COUT_8 undriven or does not drive
-     anything - clipped.
-Signal core/alru/rsub64/se/sub_cry_0_0_S0_15 undriven or does not drive anything
-     - clipped.
-Signal core/alru/rsub64/se/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/se/sub_cry_3_0_COUT_15 undriven or does not drive
-     anything - clipped.
-Signal core/alru/rsub64/sf/sub_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/rsub64/sf/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/rsub64/sf/sub_cry_3_0_COUT undriven or does not drive anything
-     - clipped.
-Signal core/alru/cmp64/g5_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g5_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_1 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/g5_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g5_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g5_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g5_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l1_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l1_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_2 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/l1_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l1_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l1_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l1_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g9_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g9_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_3 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/g9_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g9_cry_1_0_S0 undriven or does not drive anything -
-
-                                   Page 12
-
-
-
-
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
-
-Removed logic (cont)
---------------------
-     clipped.
-Signal core/alru/cmp64/g9_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g9_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/gb_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/gb_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_4 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/gb_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/gb_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/gb_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/gb_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g1_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g1_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_5 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/g1_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g1_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g1_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g1_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l0_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l0_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_6 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/l0_cry_1_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l0_cry_1_0_S0 undriven or does not drive anything -
      clipped.
@@ -840,34 +737,11 @@ Signal core/alru/cmp64/l0_cry_3_0_S0 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l0_cry_3_0_COUT undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/g3_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g3_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_7 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/g3_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g3_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g3_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g3_cry_3_0_COUT undriven or does not drive anything -
-
-                                   Page 13
-
-
-
-
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
-
-Removed logic (cont)
---------------------
-     clipped.
 Signal core/alru/cmp64/l2_cry_0_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l2_cry_0_0_S0 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/N_8 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/N_4 undriven or does not drive anything - clipped.
 Signal core/alru/cmp64/l2_cry_1_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l2_cry_1_0_S0 undriven or does not drive anything -
@@ -880,7 +754,7 @@ Signal core/alru/cmp64/g2_cry_0_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/g2_cry_0_0_S0 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/N_9 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/N_5 undriven or does not drive anything - clipped.
 Signal core/alru/cmp64/g2_cry_1_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/g2_cry_1_0_S0 undriven or does not drive anything -
@@ -889,11 +763,47 @@ Signal core/alru/cmp64/g2_cry_3_0_S0 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/g2_cry_3_0_COUT undriven or does not drive anything -
      clipped.
+Signal core/alru/cmp64/g1_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g1_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_6 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/g1_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g1_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g1_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g1_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/l1_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/l1_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_7 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/l1_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/l1_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/l1_cry_3_0_S0 undriven or does not drive anything -
+
+                                   Page 12
+
+
+
+
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
+
+Removed logic (cont)
+--------------------
+     clipped.
+Signal core/alru/cmp64/l1_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
 Signal core/alru/cmp64/l5_cry_0_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l5_cry_0_0_S0 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/N_10 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/N_8 undriven or does not drive anything - clipped.
 Signal core/alru/cmp64/l5_cry_1_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l5_cry_1_0_S0 undriven or does not drive anything -
@@ -902,11 +812,122 @@ Signal core/alru/cmp64/l5_cry_3_0_S0 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l5_cry_3_0_COUT undriven or does not drive anything -
      clipped.
+Signal core/alru/cmp64/l6_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/l6_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_9 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/l6_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/l6_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/l6_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/l6_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g8_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g8_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_10 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/g8_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g8_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g8_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g8_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g5_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g5_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_11 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/g5_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g5_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g5_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g5_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g6_cry_0_0_S1 undriven or does not drive anything -
+
+                                   Page 13
+
+
+
+
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
+
+Removed logic (cont)
+--------------------
+     clipped.
+Signal core/alru/cmp64/g6_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_13 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/g6_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g6_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g6_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g6_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g7_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g7_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_14 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/g7_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g7_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g7_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g7_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/l7_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/l7_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_15 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/l7_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/l7_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/l7_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/l7_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g4_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g4_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_16 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/g4_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g4_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g4_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g4_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
 Signal core/alru/cmp64/l4_cry_0_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l4_cry_0_0_S0 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/N_11 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/N_17 undriven or does not drive anything - clipped.
+
+                                   Page 14
+
+
+
+
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
+
+Removed logic (cont)
+--------------------
 Signal core/alru/cmp64/l4_cry_1_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l4_cry_1_0_S0 undriven or does not drive anything -
@@ -915,21 +936,24 @@ Signal core/alru/cmp64/l4_cry_3_0_S0 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l4_cry_3_0_COUT undriven or does not drive anything -
      clipped.
+Signal core/alru/cmp64/gc_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/gc_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_18 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/gc_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/gc_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/gc_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/gc_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
 Signal core/alru/cmp64/lb_cry_0_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/lb_cry_0_0_S0 undriven or does not drive anything -
-
-                                   Page 14
-
-
-
-
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
-
-Removed logic (cont)
---------------------
      clipped.
-Signal core/alru/cmp64/N_12 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/N_19 undriven or does not drive anything - clipped.
 Signal core/alru/cmp64/lb_cry_1_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/lb_cry_1_0_S0 undriven or does not drive anything -
@@ -942,7 +966,7 @@ Signal core/alru/cmp64/l9_cry_0_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l9_cry_0_0_S0 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/N_13 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/N_20 undriven or does not drive anything - clipped.
 Signal core/alru/cmp64/l9_cry_1_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l9_cry_1_0_S0 undriven or does not drive anything -
@@ -955,20 +979,56 @@ Signal core/alru/cmp64/la_cry_0_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/la_cry_0_0_S0 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/N_14 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/N_21 undriven or does not drive anything - clipped.
 Signal core/alru/cmp64/la_cry_1_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/la_cry_1_0_S0 undriven or does not drive anything -
      clipped.
+
+                                   Page 15
+
+
+
+
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
+
+Removed logic (cont)
+--------------------
 Signal core/alru/cmp64/la_cry_3_0_S0 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/la_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g9_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g9_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_22 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/g9_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g9_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g9_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g9_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/gb_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/gb_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_23 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/gb_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/gb_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/gb_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/gb_cry_3_0_COUT undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/ga_cry_0_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/ga_cry_0_0_S0 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/N_15 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/N_24 undriven or does not drive anything - clipped.
 Signal core/alru/cmp64/ga_cry_1_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/ga_cry_1_0_S0 undriven or does not drive anything -
@@ -977,78 +1037,18 @@ Signal core/alru/cmp64/ga_cry_3_0_S0 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/ga_cry_3_0_COUT undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/gf_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/gf_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_16 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/gf_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-
-                                   Page 15
-
-
-
-
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
-
-Removed logic (cont)
---------------------
-Signal core/alru/cmp64/gf_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/gf_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/gf_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/gd_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/gd_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_17 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/gd_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/gd_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/gd_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/gd_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/lf_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/lf_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_18 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/lf_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/lf_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/lf_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/lf_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/ld_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/ld_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_19 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/ld_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/ld_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/ld_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/ld_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
 Signal core/alru/cmp64/ge_cry_0_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/ge_cry_0_0_S0 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/N_20 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/N_25 undriven or does not drive anything - clipped.
 Signal core/alru/cmp64/ge_cry_1_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/ge_cry_1_0_S0 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/ge_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/ge_cry_3_0_COUT undriven or does not drive anything -
      clipped.
 
                                    Page 16
@@ -1056,118 +1056,15 @@ Signal core/alru/cmp64/ge_cry_3_0_S0 undriven or does not drive anything -
 
 
 
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
 
 Removed logic (cont)
 --------------------
-Signal core/alru/cmp64/ge_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/le_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/le_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_21 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/le_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/le_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/le_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/le_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g8_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g8_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_22 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/g8_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g8_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g8_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g8_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g6_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g6_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_23 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/g6_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g6_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g6_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g6_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l6_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l6_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_24 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/l6_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l6_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l6_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l6_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l8_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-
-                                   Page 17
-
-
-
-
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
-
-Removed logic (cont)
---------------------
-Signal core/alru/cmp64/l8_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_25 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/l8_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l8_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l8_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l8_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l7_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l7_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_26 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/l7_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l7_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l7_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/l7_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g7_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g7_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/N_27 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/g7_cry_1_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g7_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g7_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g7_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
 Signal core/alru/cmp64/lc_cry_0_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/lc_cry_0_0_S0 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/N_28 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/N_26 undriven or does not drive anything - clipped.
 Signal core/alru/cmp64/lc_cry_1_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/lc_cry_1_0_S0 undriven or does not drive anything -
@@ -1176,47 +1073,86 @@ Signal core/alru/cmp64/lc_cry_3_0_S0 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/lc_cry_3_0_COUT undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/gc_cry_0_0_S1 undriven or does not drive anything -
+Signal core/alru/cmp64/gd_cry_0_0_S1 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/gc_cry_0_0_S0 undriven or does not drive anything -
+Signal core/alru/cmp64/gd_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_27 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/gd_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/gd_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/gd_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/gd_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/ld_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/ld_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_28 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/ld_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/ld_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/ld_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/ld_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/lf_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/lf_cry_0_0_S0 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/N_29 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/gc_cry_1_0_S1 undriven or does not drive anything -
+Signal core/alru/cmp64/lf_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/lf_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/lf_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/lf_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/gf_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/gf_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
 
-                                   Page 18
+                                   Page 17
 
 
 
 
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
 
 Removed logic (cont)
 --------------------
-     clipped.
-Signal core/alru/cmp64/gc_cry_1_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/gc_cry_3_0_S0 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/gc_cry_3_0_COUT undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g4_cry_0_0_S1 undriven or does not drive anything -
-     clipped.
-Signal core/alru/cmp64/g4_cry_0_0_S0 undriven or does not drive anything -
-     clipped.
 Signal core/alru/cmp64/N_30 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/g4_cry_1_0_S1 undriven or does not drive anything -
+Signal core/alru/cmp64/gf_cry_1_0_S1 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/g4_cry_1_0_S0 undriven or does not drive anything -
+Signal core/alru/cmp64/gf_cry_1_0_S0 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/g4_cry_3_0_S0 undriven or does not drive anything -
+Signal core/alru/cmp64/gf_cry_3_0_S0 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/g4_cry_3_0_COUT undriven or does not drive anything -
+Signal core/alru/cmp64/gf_cry_3_0_COUT undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g3_cry_0_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g3_cry_0_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/N_31 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/g3_cry_1_0_S1 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g3_cry_1_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g3_cry_3_0_S0 undriven or does not drive anything -
+     clipped.
+Signal core/alru/cmp64/g3_cry_3_0_COUT undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l3_cry_0_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l3_cry_0_0_S0 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/N_31 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/N_32 undriven or does not drive anything - clipped.
 Signal core/alru/cmp64/l3_cry_1_0_S1 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l3_cry_1_0_S0 undriven or does not drive anything -
@@ -1225,18 +1161,18 @@ Signal core/alru/cmp64/l3_cry_3_0_S0 undriven or does not drive anything -
      clipped.
 Signal core/alru/cmp64/l3_cry_3_0_COUT undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/g0_cry_0_0_S1 undriven or does not drive anything -
+Signal core/alru/cmp64/l8_cry_0_0_S1 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/g0_cry_0_0_S0 undriven or does not drive anything -
+Signal core/alru/cmp64/l8_cry_0_0_S0 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/N_32 undriven or does not drive anything - clipped.
-Signal core/alru/cmp64/g0_cry_1_0_S1 undriven or does not drive anything -
+Signal core/alru/cmp64/N_33 undriven or does not drive anything - clipped.
+Signal core/alru/cmp64/l8_cry_1_0_S1 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/g0_cry_1_0_S0 undriven or does not drive anything -
+Signal core/alru/cmp64/l8_cry_1_0_S0 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/g0_cry_3_0_S0 undriven or does not drive anything -
+Signal core/alru/cmp64/l8_cry_3_0_S0 undriven or does not drive anything -
      clipped.
-Signal core/alru/cmp64/g0_cry_3_0_COUT undriven or does not drive anything -
+Signal core/alru/cmp64/l8_cry_3_0_COUT undriven or does not drive anything -
      clipped.
 Signal rom/data_o_1_0_14_DO8 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_14_DO7 undriven or does not drive anything - clipped.
@@ -1246,18 +1182,18 @@ Signal rom/data_o_1_0_14_DO4 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_14_DO3 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_14_DO2 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_14_DO1 undriven or does not drive anything - clipped.
-Signal rom/data_o_1_0_13_DO8 undriven or does not drive anything - clipped.
-Signal rom/data_o_1_0_13_DO7 undriven or does not drive anything - clipped.
 
-                                   Page 19
+                                   Page 18
 
 
 
 
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
 
 Removed logic (cont)
 --------------------
+Signal rom/data_o_1_0_13_DO8 undriven or does not drive anything - clipped.
+Signal rom/data_o_1_0_13_DO7 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_13_DO6 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_13_DO5 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_13_DO4 undriven or does not drive anything - clipped.
@@ -1312,18 +1248,18 @@ Signal rom/data_o_1_0_7_DO4 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_7_DO3 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_7_DO2 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_7_DO1 undriven or does not drive anything - clipped.
-Signal rom/data_o_1_0_6_DO8 undriven or does not drive anything - clipped.
-Signal rom/data_o_1_0_6_DO7 undriven or does not drive anything - clipped.
 
-                                   Page 20
+                                   Page 19
 
 
 
 
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
 
 Removed logic (cont)
 --------------------
+Signal rom/data_o_1_0_6_DO8 undriven or does not drive anything - clipped.
+Signal rom/data_o_1_0_6_DO7 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_6_DO6 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_6_DO5 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_6_DO4 undriven or does not drive anything - clipped.
@@ -1378,18 +1314,18 @@ Signal rom/data_o_1_0_0_DO4 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_0_DO3 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_0_DO2 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_0_DO1 undriven or does not drive anything - clipped.
-Signal rom/data_o_1_0_15_DO8 undriven or does not drive anything - clipped.
-Signal rom/data_o_1_0_15_DO7 undriven or does not drive anything - clipped.
 
-                                   Page 21
+                                   Page 20
 
 
 
 
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
 
 Removed logic (cont)
 --------------------
+Signal rom/data_o_1_0_15_DO8 undriven or does not drive anything - clipped.
+Signal rom/data_o_1_0_15_DO7 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_15_DO6 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_15_DO5 undriven or does not drive anything - clipped.
 Signal rom/data_o_1_0_15_DO4 undriven or does not drive anything - clipped.
@@ -1401,6 +1337,13 @@ Signal un2_div_cnt_cry_0_0_S0 undriven or does not drive anything - clipped.
 Signal N_1 undriven or does not drive anything - clipped.
 Signal OSCH_inst_SEDSTDBY undriven or does not drive anything - clipped.
 Block reset_RNI3JG was optimized away.
+Block core/bus_ctrl/bus_we_RNI8M4A was optimized away.
+Block core/bus_ctrl/predec/un1_fetch_pending11 was optimized away.
+Block core/dec_seq/alu_op_RNI3VP9[2] was optimized away.
+Block core/alru/f_decimal_RNIDDC7 was optimized away.
+Block core/alru/latched_src_reg_RNIOQ8C[59] was optimized away.
+Block core/alru/latched_src_reg_RNINP8C[58] was optimized away.
+Block core/alru/latched_src_reg_RNILN8C[56] was optimized away.
 Block disp_ctrl/GND was optimized away.
 Block core/bus_ctrl/GND was optimized away.
 Block core/dec_seq/GND was optimized away.
@@ -1437,33 +1380,17 @@ Block core/alru/sub64/sb/GND was optimized away.
 Block core/alru/sub64/sc/GND was optimized away.
 Block core/alru/sub64/sd/GND was optimized away.
 Block core/alru/sub64/se/GND was optimized away.
-Block core/alru/sub64/sf/GND was optimized away.
-Block core/alru/rsub64/s0/GND was optimized away.
-Block core/alru/rsub64/s1/GND was optimized away.
-Block core/alru/rsub64/s2/GND was optimized away.
-Block core/alru/rsub64/s3/GND was optimized away.
-Block core/alru/rsub64/s4/GND was optimized away.
-Block core/alru/rsub64/s5/GND was optimized away.
-Block core/alru/rsub64/s6/GND was optimized away.
-Block core/alru/rsub64/s7/GND was optimized away.
 
-                                   Page 22
+                                   Page 21
 
 
 
 
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
 
 Removed logic (cont)
 --------------------
-Block core/alru/rsub64/s8/GND was optimized away.
-Block core/alru/rsub64/s9/GND was optimized away.
-Block core/alru/rsub64/sa/GND was optimized away.
-Block core/alru/rsub64/sb/GND was optimized away.
-Block core/alru/rsub64/sc/GND was optimized away.
-Block core/alru/rsub64/sd/GND was optimized away.
-Block core/alru/rsub64/se/GND was optimized away.
-Block core/alru/rsub64/sf/GND was optimized away.
+Block core/alru/sub64/sf/GND was optimized away.
 Block core/alru/cmp64/GND was optimized away.
 Block rom/VCC was optimized away.
 Block rom/GND was optimized away.
@@ -1476,16 +1403,202 @@ Memory Usage
     RAM SLICEs: 0
     Logic SLICEs: 0
     PFU Registers: 0
-    -Contains EBR mcrom_0_1_0:  TYPE= DP8KC,  Width_A= 5,  Depth_A= 512,
-         Depth_B= 512,  REGMODE_A= OUTREG,  REGMODE_B= OUTREG,  RESETMODE= SYNC,
-         ASYNC_RESET_RELEASE= SYNC,  WRITEMODE_A= NORMAL,  WRITEMODE_B= NORMAL,
-         GSR= DISABLED,  MEM_INIT_FILE= mc_tbl.bin,  MEM_LPC_FILE= mcrom.lpc
+    -Contains EBR mcrom_0_1_0:  TYPE= DP8KC,  Width_A= 7,  Width_B= 4,  Depth_A=
+         512,  Depth_B= 512,  REGMODE_A= OUTREG,  REGMODE_B= OUTREG,  RESETMODE=
+         SYNC,  ASYNC_RESET_RELEASE= SYNC,  WRITEMODE_A= NORMAL,  WRITEMODE_B=
+         NORMAL,  GSR= DISABLED,  MEM_INIT_FILE= mc_tbl.bin,  MEM_LPC_FILE=
+         mcrom.lpc
     -Contains EBR mcrom_0_0_1:  TYPE= DP8KC,  Width_A= 9,  Width_B= 9,  Depth_A=
          512,  Depth_B= 512,  REGMODE_A= OUTREG,  REGMODE_B= OUTREG,  RESETMODE=
          SYNC,  ASYNC_RESET_RELEASE= SYNC,  WRITEMODE_A= NORMAL,  WRITEMODE_B=
          NORMAL,  GSR= DISABLED,  MEM_INIT_FILE= mc_tbl.bin,  MEM_LPC_FILE=
          mcrom.lpc
 /disp_ctrl/lcdrame_ram:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_1:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_10:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_105:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_11:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_117:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_129:
+    EBRs: 0
+    RAM SLICEs: 3
+
+                                   Page 22
+
+
+
+
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
+
+Memory Usage (cont)
+-------------------
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_13:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_141:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_15:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_153:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_165:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_17:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_177:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_189:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_19:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_201:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_21:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+
+                                   Page 23
+
+
+
+
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
+
+Memory Usage (cont)
+-------------------
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_213:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_225:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_23:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_237:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_249:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_261:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_273:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_285:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_297:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_3:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_309:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+
+                                   Page 24
+
+
+
+
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
+
+Memory Usage (cont)
+-------------------
+/disp_ctrl/lcdrame_ram_321:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_5:
+    EBRs: 0
+    RAM SLICEs: 3
+    Logic SLICEs: 0
+    PFU Registers: 0
+/disp_ctrl/lcdrame_ram_7:
     EBRs: 0
     RAM SLICEs: 3
     Logic SLICEs: 0
@@ -1512,16 +1625,6 @@ Memory Usage
     -Contains EBR data_o_1_0_6:  TYPE= SP8KC,  Width= 1,  Depth= 8192,  REGMODE=
          NOREG,  RESETMODE= SYNC,  WRITEMODE= NORMAL,  GSR= DISABLED
     -Contains EBR data_o_1_0_7:  TYPE= SP8KC,  Width= 1,  Depth= 8192,  REGMODE=
-
-                                   Page 23
-
-
-
-
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
-
-Memory Usage (cont)
--------------------
          NOREG,  RESETMODE= SYNC,  WRITEMODE= NORMAL,  GSR= DISABLED
     -Contains EBR data_o_1_0_8:  TYPE= SP8KC,  Width= 1,  Depth= 8192,  REGMODE=
          NOREG,  RESETMODE= SYNC,  WRITEMODE= NORMAL,  GSR= DISABLED
@@ -1539,6 +1642,15 @@ Memory Usage (cont)
          REGMODE= NOREG,  RESETMODE= SYNC,  WRITEMODE= NORMAL,  GSR= DISABLED
 
      
+
+
+
+                                   Page 25
+
+
+
+
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
 
 OSC Summary
 -----------
@@ -1578,16 +1690,6 @@ Instance Name: rom/data_o_1_0_8
 Instance Name: rom/data_o_1_0_9
          Type: SP8KC
 Instance Name: rom/data_o_1_0_10
-
-                                   Page 24
-
-
-
-
-Design:  PSaturn_MachXO2_DOGM132                       Date:  10/07/17  14:49:37
-
-ASIC Components (cont)
-----------------------
          Type: SP8KC
 Instance Name: rom/data_o_1_0_11
          Type: SP8KC
@@ -1605,9 +1707,19 @@ Instance Name: core/dec_seq/mc/mcrom_i/mcrom_0_0_1
 Run Time and Memory Usage
 -------------------------
 
-   Total CPU Time: 2 secs  
-   Total REAL Time: 3 secs  
-   Peak Memory Usage: 93 MB
+   Total CPU Time: 3 secs  
+   Total REAL Time: 4 secs  
+   Peak Memory Usage: 99 MB
+
+                                   Page 26
+
+
+
+
+Design:  PSaturn_MachXO2_DOGM132                       Date:  10/12/17  07:18:53
+
+Run Time and Memory Usage (cont)
+--------------------------------
         
 
 
@@ -1645,7 +1757,27 @@ Run Time and Memory Usage
 
 
 
-                                   Page 25
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                   Page 27
 
 
 Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.

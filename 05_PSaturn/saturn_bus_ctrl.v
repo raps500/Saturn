@@ -41,15 +41,14 @@ module saturn_bus_controller(
     // CPU data bus
     input wire [19:0]   data_addr_in,   // data address
     input wire [3:0]    data_size_in,   // size of data transfer
-    input wire [63:0]   data_data_in,   // data to be written, address & size have alignment information
+    input wire [75:0]   data_data_in,   // data to be written, address & size have alignment information
     input wire [3:0]    data_field_left_in,   // data left field mask
     input wire [3:0]    data_field_right_in,  // data right field mask
     
     output wire [63:0]  data_data_o,    // read data 
     input wire          data_read_in,   // read data strobe
     input wire          data_write_in,  // write data strobe
-    output wire         data_read_ready_o,   // asserted when the read transfer is complete
-    output wire         data_write_ready_o   // asserted when the write transfer is complete
+    output wire         data_rw_ready_o // asserted when the read transfer is complete
 );
 
 reg [3:0] bus_state = 4'h0;
@@ -64,13 +63,14 @@ reg ibus_ready = 1'b0;
 reg [19:0] bus_addr = 20'h0; // full address of the current transfer
 reg [19:0] pre_fetched_opcode_addr = 20'h0; // latched address of the current pre-fetch opcode
 reg [19:0] next_prefetch_addr = 20'h0; // address of the opcode being fetched now
+reg [19:0] saved_bus_addr = 20'h0; // saved bus fetch address during read/write accesses
 reg bus_rd = 1'b0, bus_we = 1'b0; // in positive logic
 
 reg [63:0] read_data = 64'h0;       // read data from memory correctly aligned accoring to data mask
 reg [15:0] write_data = 16'h0;      // data to write to memory already aligned and 
 reg [4:0] nibbles_in_transfer = 5'h0;    // read or written nibbles
-wire [3:0] dst_total_nibs;  // number of nibbles in the field area
-reg data_read_ready = 1'b0, data_write_ready = 1'b0;
+wire [4:0] dst_total_nibs;  // number of nibbles in the field area
+reg data_rw_ready = 1'b0, data_write_ready = 1'b0;
 reg skip_size_check = 1'b0; // skip size check when prefetching during execution
 wire inhibit_fetch; // the instruction in the queue is a got or conditional, inhib further fetch
 reg flush_pending = 1'b0;
@@ -82,9 +82,8 @@ assign ibus_ready_o = ibus_ready;
 assign bus_addr_o = bus_addr;
 assign bus_rd_o = ~bus_rd;
 assign bus_we_o = ~bus_we;
-assign data_read_ready_o = data_read_ready;
-assign data_write_ready_o = data_write_ready;
-
+assign data_rw_ready_o = data_rw_ready;
+assign data_data_o = read_data;
 
 // first access mask
 reg [15:0] left_mask, right_mask;
@@ -134,9 +133,7 @@ always @(*)
     end
 
 assign data_mask = left_mask & right_mask; 
-assign dst_total_nibs = data_field_left_in - data_field_right_in;
-
-
+assign dst_total_nibs = { 1'b0, data_field_left_in } - { 1'b0, data_field_right_in } + 5'h1;
 
 saturn_predecoder predec(
     .opcode_in(pre_fetch_buffer[19:0]),
@@ -173,29 +170,6 @@ always @(posedge clk_in)
                 if (shift_now)
                     begin // discard last opcode from pre-fetch buffer
                         pre_fetch_buffer <=  pre_fetch_buffer >> { pre_fetched_opcode_length, 2'b00 };
-                        /* 
-                        case (pre_fetched_opcode_length) // discard used opcode from pre-fetch buffer
-                            5'h2:  pre_fetch_buffer[87: 0] <= pre_fetch_buffer[95: 8];
-                            5'h3:  pre_fetch_buffer[83: 0] <= pre_fetch_buffer[95:12];
-                            5'h4:  pre_fetch_buffer[79: 0] <= pre_fetch_buffer[95:16];
-                            5'h5:  pre_fetch_buffer[75: 0] <= pre_fetch_buffer[95:20];
-                            5'h6:  pre_fetch_buffer[71: 0] <= pre_fetch_buffer[95:24];
-                            5'h7:  pre_fetch_buffer[67: 0] <= pre_fetch_buffer[95:28];
-                            5'h8:  pre_fetch_buffer[63: 0] <= pre_fetch_buffer[95:32];
-                            5'h9:  pre_fetch_buffer[59: 0] <= pre_fetch_buffer[95:36];
-                            5'ha:  pre_fetch_buffer[55: 0] <= pre_fetch_buffer[95:40];
-                            5'hb:  pre_fetch_buffer[51: 0] <= pre_fetch_buffer[95:44];
-                            5'hc:  pre_fetch_buffer[47: 0] <= pre_fetch_buffer[95:48];
-                            5'hd:  pre_fetch_buffer[43: 0] <= pre_fetch_buffer[95:52];
-                            5'he:  pre_fetch_buffer[39: 0] <= pre_fetch_buffer[95:56];
-                            5'hf:  pre_fetch_buffer[35: 0] <= pre_fetch_buffer[95:60];
-                            5'h10: pre_fetch_buffer[31: 0] <= pre_fetch_buffer[95:64];
-                            5'h11: pre_fetch_buffer[27: 0] <= pre_fetch_buffer[95:68];
-                            5'h12: pre_fetch_buffer[23: 0] <= pre_fetch_buffer[95:72];
-                            5'h13: pre_fetch_buffer[19: 0] <= pre_fetch_buffer[95:76];
-                            5'h14: pre_fetch_buffer[15: 0] <= pre_fetch_buffer[95:80];                                
-                        endcase
-                        */
                     end
                 case (bus_state)
                     `BUS_ST_FLUSH: // reset state or flushed
@@ -290,100 +264,67 @@ always @(posedge clk_in)
                                     ibus_ready <= `S_ASSERTED;
                                     bus_state <= `BUS_ST_WAIT;
                                     shift_now <= 1'b1;
-                                    /*
-                                    case (no_of_needed_nibbles) // discard used opcode from pre-fetch buffer
-                                        5'h2:  pre_fetch_buffer[87: 0] <= pre_fetch_buffer[95: 8];
-                                        5'h3:  pre_fetch_buffer[83: 0] <= pre_fetch_buffer[95:12];
-                                        5'h4:  pre_fetch_buffer[79: 0] <= pre_fetch_buffer[95:16];
-                                        5'h5:  pre_fetch_buffer[75: 0] <= pre_fetch_buffer[95:20];
-                                        5'h6:  pre_fetch_buffer[71: 0] <= pre_fetch_buffer[95:24];
-                                        5'h7:  pre_fetch_buffer[67: 0] <= pre_fetch_buffer[95:28];
-                                        5'h8:  pre_fetch_buffer[63: 0] <= pre_fetch_buffer[95:32];
-                                        5'h9:  pre_fetch_buffer[59: 0] <= pre_fetch_buffer[95:36];
-                                        5'ha:  pre_fetch_buffer[55: 0] <= pre_fetch_buffer[95:40];
-                                        5'hb:  pre_fetch_buffer[51: 0] <= pre_fetch_buffer[95:44];
-                                        5'hc:  pre_fetch_buffer[47: 0] <= pre_fetch_buffer[95:48];
-                                        5'hd:  pre_fetch_buffer[43: 0] <= pre_fetch_buffer[95:52];
-                                        5'he:  pre_fetch_buffer[39: 0] <= pre_fetch_buffer[95:56];
-                                        5'hf:  pre_fetch_buffer[35: 0] <= pre_fetch_buffer[95:60];
-                                        5'h10: pre_fetch_buffer[31: 0] <= pre_fetch_buffer[95:64];
-                                        5'h11: pre_fetch_buffer[27: 0] <= pre_fetch_buffer[95:68];
-                                        5'h12: pre_fetch_buffer[23: 0] <= pre_fetch_buffer[95:72];
-                                        5'h13: pre_fetch_buffer[19: 0] <= pre_fetch_buffer[95:76];
-                                        5'h14: pre_fetch_buffer[15: 0] <= pre_fetch_buffer[95:80];                                
-                                    endcase
-                                    */
                                 end
                         end
                     `BUS_ST_WAIT:
                         begin
                             shift_now <= `S_NEGATED;
                             ibus_ready <= `S_NEGATED;
+                            data_rw_ready <= `S_NEGATED;
                             if (data_read_in)
                                 begin
                                     bus_state <= `BUS_ST_READ;
                                     bus_rd <= `S_ASSERTED;
                                     bus_addr <= data_addr_in;
+                                    saved_bus_addr <= bus_addr;
                                     nibbles_in_transfer <= 5'h0;
                                 end
-                            if (flush_pending)
-                                begin
-                                    bus_state <= `BUS_ST_FLUSH;
-                                    flush_pending <= `S_NEGATED;
-                                end
                             else
-                                if (fetch_pending)
-                                    begin // check if the current pre fetch buffer has a whole opcode
-                                        // it doesn't return here till a new request exists
-                                        fetch_pending <= `S_NEGATED;
-                                        if (no_of_needed_nibbles <= nibbles_in_queue)
-                                            begin
-                                                pre_fetched_opcode <= pre_fetch_buffer[83: 0];
-                                                pre_fetched_opcode_length <= no_of_needed_nibbles;
-                                                nibbles_in_queue <= nibbles_in_queue - no_of_needed_nibbles;
-                                                pre_fetched_opcode_addr <= next_prefetch_addr;
-                                                next_prefetch_addr <= next_prefetch_addr + { 15'h0, no_of_needed_nibbles };
-                                                ibus_ready <= `S_ASSERTED;
-                                                shift_now <= 1'b1;
-                                                /*
-                                                case (no_of_needed_nibbles) // discard used opcode from pre-fetch buffer
-                                                    5'h2:  pre_fetch_buffer[87: 0] <= pre_fetch_buffer[95: 8];
-                                                    5'h3:  pre_fetch_buffer[83: 0] <= pre_fetch_buffer[95:12];
-                                                    5'h4:  pre_fetch_buffer[79: 0] <= pre_fetch_buffer[95:16];
-                                                    5'h5:  pre_fetch_buffer[75: 0] <= pre_fetch_buffer[95:20];
-                                                    5'h6:  pre_fetch_buffer[71: 0] <= pre_fetch_buffer[95:24];
-                                                    5'h7:  pre_fetch_buffer[67: 0] <= pre_fetch_buffer[95:28];
-                                                    5'h8:  pre_fetch_buffer[63: 0] <= pre_fetch_buffer[95:32];
-                                                    5'h9:  pre_fetch_buffer[59: 0] <= pre_fetch_buffer[95:36];
-                                                    5'ha:  pre_fetch_buffer[55: 0] <= pre_fetch_buffer[95:40];
-                                                    5'hb:  pre_fetch_buffer[51: 0] <= pre_fetch_buffer[95:44];
-                                                    5'hc:  pre_fetch_buffer[47: 0] <= pre_fetch_buffer[95:48];
-                                                    5'hd:  pre_fetch_buffer[43: 0] <= pre_fetch_buffer[95:52];
-                                                    5'he:  pre_fetch_buffer[39: 0] <= pre_fetch_buffer[95:56];
-                                                    5'hf:  pre_fetch_buffer[35: 0] <= pre_fetch_buffer[95:60];
-                                                    5'h10: pre_fetch_buffer[31: 0] <= pre_fetch_buffer[95:64];
-                                                    5'h11: pre_fetch_buffer[27: 0] <= pre_fetch_buffer[95:68];
-                                                    5'h12: pre_fetch_buffer[23: 0] <= pre_fetch_buffer[95:72];
-                                                    5'h13: pre_fetch_buffer[19: 0] <= pre_fetch_buffer[95:76];
-                                                    5'h14: pre_fetch_buffer[15: 0] <= pre_fetch_buffer[95:80];                                
-                                                endcase
-                                                */
+                                if (data_write_in)
+                                    begin
+                                        //if (data_addr_in[1:0] == 2'b00)
+                                        bus_state <= `BUS_ST_WRITE;
+                                        bus_we <= `S_ASSERTED;
+                                        bus_addr <= data_addr_in;
+                                        saved_bus_addr <= bus_addr;
+                                        nibbles_in_transfer <= 5'h0;
+                                    end
+                                else
+                                    if (flush_pending)
+                                        begin
+                                            bus_state <= `BUS_ST_FLUSH;
+                                            flush_pending <= `S_NEGATED;
+                                        end
+                                    else
+                                        if (fetch_pending)
+                                            begin // check if the current pre fetch buffer has a whole opcode
+                                                // it doesn't return here till a new request exists
+                                                fetch_pending <= `S_NEGATED;
+                                                if (no_of_needed_nibbles <= nibbles_in_queue)
+                                                    begin
+                                                        pre_fetched_opcode <= pre_fetch_buffer[83: 0];
+                                                        pre_fetched_opcode_length <= no_of_needed_nibbles;
+                                                        nibbles_in_queue <= nibbles_in_queue - no_of_needed_nibbles;
+                                                        pre_fetched_opcode_addr <= next_prefetch_addr;
+                                                        next_prefetch_addr <= next_prefetch_addr + { 15'h0, no_of_needed_nibbles };
+                                                        ibus_ready <= `S_ASSERTED;
+                                                        shift_now <= 1'b1;
+                                                    end
+                                                else
+                                                    begin
+                                                        bus_state <= `BUS_ST_FETCH_WORD; // incomplete
+                                                        bus_rd <= `S_ASSERTED;
+                                                    end
                                             end
                                         else
                                             begin
-                                                bus_state <= `BUS_ST_FETCH_WORD; // incomplete
-                                                bus_rd <= `S_ASSERTED;
+                                                if ((nibbles_in_queue <= 5'd18) && (!inhibit_fetch)) // keep fetching
+                                                    begin
+                                                        bus_state <= `BUS_ST_FETCH_WORD; // incomplete
+                                                        bus_rd <= `S_ASSERTED;
+                                                        skip_size_check <= 1'b1;
+                                                    end
                                             end
-                                    end
-                                else
-                                    begin
-                                        if ((nibbles_in_queue <= 5'd18) && (!inhibit_fetch)) // keep fetching
-                                            begin
-                                                bus_state <= `BUS_ST_FETCH_WORD; // incomplete
-                                                bus_rd <= `S_ASSERTED;
-                                                skip_size_check <= 1'b1;
-                                            end
-                                    end
                         end
                     `BUS_ST_READ:
                         begin
@@ -413,19 +354,19 @@ always @(posedge clk_in)
                                         nibbles_in_transfer <= nibbles_in_transfer + 5'h4;
                                         bus_addr <= bus_addr + 20'h4;
                                     end
-                                2'b01: // fetch only 3 nibbles, happens only after flush
+                                2'b01: // fetch only 3 nibbles store them right justified
                                     begin
                                         read_data[12: 0] <= bus_data_in[15: 4];
                                         nibbles_in_transfer <= nibbles_in_transfer + 5'h3;
                                         bus_addr <= { bus_addr[19:2] + 18'h1, 2'b00 }; // next access will be aligned
                                     end
-                                2'b10: // fetch only 3 nibbles, happens only after flush
+                                2'b10: // fetch only 3 nibbles store them right justified
                                     begin
                                         read_data[ 7: 0] <= bus_data_in[15: 8];
                                         nibbles_in_transfer <= nibbles_in_transfer + 5'h2;
                                         bus_addr <= { bus_addr[19:2] + 18'h1, 2'b00 }; // next access will be aligned
                                     end
-                                2'b11: // fetch only 1 nibble, happens only after flush
+                                2'b11: // fetch only 1 nibble store them right justified
                                     begin
                                         read_data[ 3: 0] <= bus_data_in[15:12];
                                         nibbles_in_transfer <= nibbles_in_transfer + 5'h1;
@@ -439,10 +380,12 @@ always @(posedge clk_in)
                         begin
                             bus_rd <= `S_NEGATED;
                             if (nibbles_in_transfer >= dst_total_nibs)
-                                begin
+                                begin // signal ready and shift to right location
                                     read_data <= read_data << { data_field_right_in, 2'b00 };
-                                    data_read_ready <= 1'b1;
+                                    data_rw_ready <= `S_ASSERTED;
                                     bus_state <= `BUS_ST_WAIT;
+                                    // restore last fetch address
+                                    bus_addr <= saved_bus_addr;
                                 end
                             else
                                 begin
@@ -664,7 +607,7 @@ always @(*)
                     else
                     if (op0_3) size = 5'h03 + { 1'b0, op1 }; // LCelse
                     else
-                    if (op_is_la) size = 5'h05 + { 1'b0, op4 }; // LA
+                    if (op_is_la) size = 5'h06 + { 1'b0, op4 }; // LA
                 end
     end
 

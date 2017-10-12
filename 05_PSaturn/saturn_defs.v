@@ -30,15 +30,15 @@
 `define OP_9       6'h30 // 9s or Fs depending on the decimal flag
 `define OP_Z       6'h38
 `define OP_1       6'h39 // must be 39 because it uses the force carry flag
-// short form used in most f the microcode
+// short form used as op2 in the microcode
 `define K_A        3'h0
 `define K_B        3'h1
 `define K_C        3'h2
 `define K_D        3'h3
 `define K_9        3'h4 // 9s or Fs depending on the decimal flag
-`define K_Z        3'h5
-`define K_1        3'h6 // must be 39 because it uses the force carry flag
-`define K_LIT      3'h7 // literal from opcode
+`define K_LIT      3'h5 // literal from opcode or zero
+`define K_D0       3'h5 // for address generation
+`define K_D1       3'h6 // for address generation
 
 // ALU operations
 `define ALU_OP_NONE 5'h00
@@ -51,21 +51,20 @@
 `define ALU_OP_OR   5'h07
 `define ALU_OP_SL   5'h08
 `define ALU_OP_SR   5'h09
-`define ALU_OP_SLB  5'h0A
-`define ALU_OP_SRB  5'h0B
-`define ALU_OP_SLC  5'h0C
-`define ALU_OP_SRC  5'h10
-`define ALU_OP_EQ   5'h11
-`define ALU_OP_NEQ  5'h12
-`define ALU_OP_GTEQ 5'h13
-`define ALU_OP_GT   5'h14
-`define ALU_OP_LTEQ 5'h15
-`define ALU_OP_LT   5'h16
-`define ALU_OP_RD   5'h17
-`define ALU_OP_WR   5'h18
-`define ALU_OP_TST1 5'h19 // Test if set
-`define ALU_OP_TST0 5'h1A // test if clear
-`define ALU_OP_ANDN 5'h1B // AND with negated op2, used to clear bits on HS and ST
+`define ALU_OP_SRB  5'h0A
+`define ALU_OP_SLC  5'h0B
+`define ALU_OP_SRC  5'h0C
+`define ALU_OP_EQ   5'h0D
+`define ALU_OP_NEQ  5'h0E
+`define ALU_OP_GTEQ 5'h0F
+`define ALU_OP_GT   5'h10
+`define ALU_OP_LTEQ 5'h11
+`define ALU_OP_LT   5'h12
+`define ALU_OP_RD   5'h13   // read from memory
+`define ALU_OP_WR   5'h14   // write to memory
+`define ALU_OP_TST1 5'h15 // Test if set
+`define ALU_OP_TST0 5'h16 // test if clear
+`define ALU_OP_ANDN 5'h17 // AND with negated op2, used to clear bits on HS and ST
 // Sequencer States
 `define ST_INIT         4'h0
 `define ST_DECODE       4'h1

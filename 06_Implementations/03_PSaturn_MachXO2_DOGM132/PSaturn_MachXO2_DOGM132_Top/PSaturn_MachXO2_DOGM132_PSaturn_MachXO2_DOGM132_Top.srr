@@ -3,7 +3,7 @@
 #OS: Windows 8 6.2
 #Hostname: ALEV7
 
-# Sat Oct 07 14:47:51 2017
+# Thu Oct 12 07:17:03 2017
 
 #Implementation: PSaturn_MachXO2_DOGM132_Top
 
@@ -30,7 +30,7 @@ Copyright (C) 1994-2016 Synopsys, Inc. All rights reserved. This Synopsys softwa
 @I::"C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\02_Components\dogm132.v" (library work)
 @I::"C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\mcrom.v" (library work)
 Verilog syntax check successful!
-Options changed - recompiling
+File C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v changed - recompiling
 Selecting top level module PSaturn_MachXO2_DOGM132
 @N: CG364 :"C:\lscc\diamond\3.9_x64\synpbase\lib\lucent\machxo2.v":1793:7:1793:10|Synthesizing module OSCH in library work.
 
@@ -40,13 +40,11 @@ Selecting top level module PSaturn_MachXO2_DOGM132
 @W: CG532 :"C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\02_Components\dogm132.v":233:0:233:6|Within an initial block, only Verilog force statements and memory $readmemh/$readmemb initialization statements are recognized, and all other content is ignored.
 @N: CL134 :"C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\02_Components\dogm132.v":90:0:90:5|Found RAM lcdrame, depth=1024, width=8
 @N: CL134 :"C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\02_Components\dogm132.v":90:0:90:5|Found RAM lcdramo, depth=1024, width=8
-@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_bus_ctrl.v":470:7:470:23|Synthesizing module saturn_predecoder in library work.
+@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_bus_ctrl.v":413:7:413:23|Synthesizing module saturn_predecoder in library work.
 
 @N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_bus_ctrl.v":17:7:17:27|Synthesizing module saturn_bus_controller in library work.
 
 @W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_bus_ctrl.v":26:24:26:33|Removing wire bus_data_o, as there is no assignment to it.
-@W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_bus_ctrl.v":48:24:48:34|Removing wire data_data_o, as there is no assignment to it.
-@W: CL169 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_bus_ctrl.v":159:0:159:5|Pruning unused register read_data[63:0]. Make sure that there are no unused intermediate registers.
 @N: CG364 :"C:\lscc\diamond\3.9_x64\synpbase\lib\lucent\machxo2.v":1291:7:1291:11|Synthesizing module DP8KC in library work.
 
 @N: CG364 :"C:\lscc\diamond\3.9_x64\synpbase\lib\lucent\machxo2.v":1120:7:1120:9|Synthesizing module VHI in library work.
@@ -55,49 +53,42 @@ Selecting top level module PSaturn_MachXO2_DOGM132
 
 @N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\mcrom.v":8:7:8:11|Synthesizing module mcrom in library work.
 
-@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":1436:7:1436:22|Synthesizing module saturn_microcode in library work.
+@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":1467:7:1467:22|Synthesizing module saturn_microcode in library work.
 
-@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":778:7:778:32|Synthesizing module saturn_trace_field_decoder in library work.
+@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":791:7:791:32|Synthesizing module saturn_trace_field_decoder in library work.
 
-@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":797:7:797:22|Synthesizing module saturn_trace_dis in library work.
+@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":810:7:810:22|Synthesizing module saturn_trace_dis in library work.
 
-@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":692:7:692:26|Synthesizing module saturn_field_decoder in library work.
+@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":705:7:705:26|Synthesizing module saturn_field_decoder in library work.
 
 @N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":12:7:12:30|Synthesizing module saturn_decoder_sequencer in library work.
 
-@N: CG793 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":428:28:428:35|Ignoring system task $display
-@W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":45:25:45:30|Removing wire addr_o, as there is no assignment to it.
-@W: CG133 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":68:11:68:16|Object new_pc is declared but not assigned. Either assign a value or remove the declaration.
-@W: CG133 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":70:4:70:14|Object load_new_pc is declared but not assigned. Either assign a value or remove the declaration.
-@W: CG133 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":73:10:73:19|Object field_left is declared but not assigned. Either assign a value or remove the declaration.
-@W: CG133 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":73:22:73:32|Object field_right is declared but not assigned. Either assign a value or remove the declaration.
-@W: CG133 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":74:10:74:17|Object alu_reg1 is declared but not assigned. Either assign a value or remove the declaration.
-@W: CG133 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":74:20:74:27|Object alu_reg2 is declared but not assigned. Either assign a value or remove the declaration.
-@W: CG133 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":75:10:75:16|Object alu_dst is declared but not assigned. Either assign a value or remove the declaration.
-@W: CG133 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":136:4:136:14|Object trace_start is declared but not assigned. Either assign a value or remove the declaration.
-@W: CL168 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":166:17:166:19|Removing instance dis because it does not drive other instances. To preserve this instance, use the syn_noprune synthesis directive.
-@W: CL169 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":403:0:403:5|Pruning unused register curr_data_addr[19:0]. Make sure that there are no unused intermediate registers.
-@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":753:7:753:19|Synthesizing module saturn_addbcd in library work.
+@N: CG793 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":446:28:446:35|Ignoring system task $display
+@W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":49:25:49:30|Removing wire addr_o, as there is no assignment to it.
+@W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":58:25:58:33|Removing wire load_pc_o, as there is no assignment to it.
+@W: CG133 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":152:4:152:14|Object trace_start is declared but not assigned. Either assign a value or remove the declaration.
+@W: CL168 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":189:17:189:19|Removing instance dis because it does not drive other instances. To preserve this instance, use the syn_noprune synthesis directive.
+@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":763:7:763:19|Synthesizing module saturn_addbcd in library work.
 
-@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":574:7:574:21|Synthesizing module saturn_addbcd64 in library work.
+@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":584:7:584:21|Synthesizing module saturn_addbcd64 in library work.
 
-@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":776:7:776:19|Synthesizing module saturn_subbcd in library work.
+@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":786:7:786:19|Synthesizing module saturn_subbcd in library work.
 
-@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":664:7:664:21|Synthesizing module saturn_subbcd64 in library work.
+@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":674:7:674:21|Synthesizing module saturn_subbcd64 in library work.
 
-@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":798:7:798:20|Synthesizing module saturn_compare in library work.
+@N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":808:7:808:20|Synthesizing module saturn_compare in library work.
 
 @N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":8:7:8:17|Synthesizing module saturn_alru in library work.
 
-@N: CG793 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":387:12:387:19|Ignoring system task $display
-@W: CG532 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":538:0:538:6|Within an initial block, only Verilog force statements and memory $readmemh/$readmemb initialization statements are recognized, and all other content is ignored.
-@W: CL169 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":384:0:384:5|Pruning unused register HS[3:0]. Make sure that there are no unused intermediate registers.
+@N: CG793 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":383:12:383:19|Ignoring system task $display
+@W: CG532 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":542:0:542:6|Within an initial block, only Verilog force statements and memory $readmemh/$readmemb initialization statements are recognized, and all other content is ignored.
+@W: CL169 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":380:0:380:5|Pruning unused register HS[3:0]. Make sure that there are no unused intermediate registers.
 @N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":11:7:11:17|Synthesizing module saturn_core in library work.
 
-@W: CG781 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":138:28:138:28|Input irq_in on instance dec_seq is undriven; assigning to 0.  Simulation mismatch possible. Either assign the input or remove the declaration. 
-@W: CG781 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":139:28:139:28|Input irqen_in on instance dec_seq is undriven; assigning to 0.  Simulation mismatch possible. Either assign the input or remove the declaration. 
-@W: CG781 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":182:12:182:15|Input CONFIG_in on instance alru is undriven; assigning to 0.  Simulation mismatch possible. Either assign the input or remove the declaration. 
-@W: CG781 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":182:12:182:15|Input addr_in on instance alru is undriven; assigning to 0.  Simulation mismatch possible. Either assign the input or remove the declaration. 
+@W: CS263 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":114:41:114:59|Port-width mismatch for port data_data_in. The port definition is 76 bits, but the actual port connection bit width is 64. Adjust either the definition or the instantiation of this port.
+@W: CG781 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":170:12:170:15|Input CONFIG_in on instance alru is undriven; assigning to 0.  Simulation mismatch possible. Either assign the input or remove the declaration. 
+@W: CG781 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":170:12:170:15|Input addr_in on instance alru is undriven; assigning to 0.  Simulation mismatch possible. Either assign the input or remove the declaration. 
+@W: CG781 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":170:12:170:15|Input dp_sel_in on instance alru is undriven; assigning to 0.  Simulation mismatch possible. Either assign the input or remove the declaration. 
 @W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":15:24:15:32|Removing wire irq_ack_o, as there is no assignment to it.
 @W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":16:24:16:31|Removing wire irq_en_o, as there is no assignment to it.
 @W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":25:24:25:30|Removing wire oport_o, as there is no assignment to it.
@@ -106,11 +97,8 @@ Selecting top level module PSaturn_MachXO2_DOGM132
 @W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":38:5:38:12|Removing wire bus_we_n, as there is no assignment to it.
 @W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":39:12:39:28|Removing wire bus_data_from_mem, as there is no assignment to it.
 @W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":40:12:40:26|Removing wire bus_data_to_mem, as there is no assignment to it.
-@W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":53:12:53:20|Removing wire data_addr, as there is no assignment to it.
-@W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":54:11:54:19|Removing wire data_size, as there is no assignment to it.
-@W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":55:12:55:22|Removing wire data_to_mem, as there is no assignment to it.
-@W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":76:13:76:32|Removing wire bus_data_from_memory, as there is no assignment to it.
-@W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":94:13:94:18|Removing wire bus_IN, as there is no assignment to it.
+@W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":52:11:52:19|Removing wire data_size, as there is no assignment to it.
+@W: CG360 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":87:13:87:18|Removing wire bus_IN, as there is no assignment to it.
 @N: CG364 :"C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\02_Components\PSaturn_MachXO2_DOGM132.v":144:7:144:15|Synthesizing module async_rom in library work.
 
 @W: CG532 :"C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\02_Components\PSaturn_MachXO2_DOGM132.v":156:0:156:6|Within an initial block, only Verilog force statements and memory $readmemh/$readmemb initialization statements are recognized, and all other content is ignored.
@@ -139,11 +127,8 @@ Selecting top level module PSaturn_MachXO2_DOGM132
 @W: CL246 :"C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\02_Components\PSaturn_MachXO2_DOGM132.v":147:24:147:30|Input port bits 19 to 15 of addr_in[19:0] are unused. Assign logic for all port bits or change the input port size.
 @W: CL246 :"C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\02_Components\PSaturn_MachXO2_DOGM132.v":147:24:147:30|Input port bits 1 to 0 of addr_in[19:0] are unused. Assign logic for all port bits or change the input port size.
 @N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\02_Components\PSaturn_MachXO2_DOGM132.v":145:24:145:29|Input clk_in is unused.
-@W: CL156 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":53:12:53:20|*Input data_addr[19:0] to expression [instance] has undriven bits; assigning undriven bits to 0.  Simulation mismatch possible. Assign all bits of the input.
-@W: CL156 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":54:11:54:19|*Input data_size[3:0] to expression [instance] has undriven bits; assigning undriven bits to 0.  Simulation mismatch possible. Assign all bits of the input.
-@W: CL156 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":55:12:55:22|*Input data_to_mem[63:0] to expression [instance] has undriven bits; assigning undriven bits to 0.  Simulation mismatch possible. Assign all bits of the input.
-@W: CL156 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":76:13:76:32|*Input bus_data_from_memory[63:0] to expression [instance] has undriven bits; assigning undriven bits to 0.  Simulation mismatch possible. Assign all bits of the input.
-@W: CL156 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":94:13:94:18|*Input bus_IN[15:0] to expression [instance] has undriven bits; assigning undriven bits to 0.  Simulation mismatch possible. Assign all bits of the input.
+@W: CL156 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":52:11:52:19|*Input data_size[3:0] to expression [instance] has undriven bits; assigning undriven bits to 0.  Simulation mismatch possible. Assign all bits of the input.
+@W: CL156 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":87:13:87:18|*Input bus_IN[15:0] to expression [instance] has undriven bits; assigning undriven bits to 0.  Simulation mismatch possible. Assign all bits of the input.
 @W: CL157 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":15:24:15:32|*Output irq_ack_o has undriven bits; assigning undriven bits to 0.  Simulation mismatch possible. Assign all bits of the output.
 @W: CL157 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":16:24:16:31|*Output irq_en_o has undriven bits; assigning undriven bits to 0.  Simulation mismatch possible. Assign all bits of the output.
 @W: CL157 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_core.v":25:24:25:30|*Output oport_o has undriven bits; assigning undriven bits to 0.  Simulation mismatch possible. Assign all bits of the output.
@@ -153,7 +138,8 @@ Selecting top level module PSaturn_MachXO2_DOGM132
 @W: CL246 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":18:24:18:33|Input port bits 5 to 3 of op2_reg_in[5:0] are unused. Assign logic for all port bits or change the input port size.
 @N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":11:24:11:34|Input showregs_in is unused.
 @N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":36:24:36:42|Input write_sticky_bit_in is unused.
-@N: CL201 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":403:0:403:5|Trying to extract state machine for register state.
+@N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_alru.v":55:24:55:32|Input dp_sel_in is unused.
+@N: CL201 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":421:0:421:5|Trying to extract state machine for register state.
 Extracted state machine for register state
 State machine has 9 reachable states with original encodings of:
    0000
@@ -165,34 +151,31 @@ State machine has 9 reachable states with original encodings of:
    1000
    1001
    1010
-@W: CL249 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":403:0:403:5|Initial value is not supported on state machine state
-@N: CL189 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":403:0:403:5|Register bit irq_ack is always 0.
-@A: CL153 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":70:4:70:14|*Unassigned bits of load_new_pc are referenced and tied to 0 -- simulation mismatch possible.
-@W: CL157 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":45:25:45:30|*Output addr_o has undriven bits; assigning undriven bits to 0.  Simulation mismatch possible. Assign all bits of the output.
+@W: CL249 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":421:0:421:5|Initial value is not supported on state machine state
+@N: CL189 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":421:0:421:5|Register bit irq_ack is always 0.
+@W: CL157 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":49:25:49:30|*Output addr_o has undriven bits; assigning undriven bits to 0.  Simulation mismatch possible. Assign all bits of the output.
+@W: CL157 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":58:25:58:33|*Output load_pc_o has undriven bits; assigning undriven bits to 0.  Simulation mismatch possible. Assign all bits of the output.
 @N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":15:25:15:30|Input irq_in is unused.
 @N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":16:25:16:32|Input irqen_in is unused.
 @N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":27:25:27:57|Input ibus_pre_fetched_opcode_length_in is unused.
-@N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":59:25:59:29|Input Dn_in is unused.
-@N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":802:21:802:23|Input op4 is unused.
-@N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":803:21:803:23|Input op5 is unused.
-@N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":804:22:804:26|Input pc_in is unused.
-@N: CL201 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_bus_ctrl.v":159:0:159:5|Trying to extract state machine for register bus_state.
+@N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":815:21:815:23|Input op4 is unused.
+@N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":816:21:816:23|Input op5 is unused.
+@N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_decoder_sequencer.v":817:22:817:26|Input pc_in is unused.
+@N: CL201 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_bus_ctrl.v":156:0:156:5|Trying to extract state machine for register bus_state.
 @W: CL157 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_bus_ctrl.v":26:24:26:33|*Output bus_data_o has undriven bits; assigning undriven bits to 0.  Simulation mismatch possible. Assign all bits of the output.
-@W: CL157 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_bus_ctrl.v":48:24:48:34|*Output data_data_o has undriven bits; assigning undriven bits to 0.  Simulation mismatch possible. Assign all bits of the output.
 @W: CL158 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_bus_ctrl.v":28:24:28:34|Inout bus_data_io is unused
 @N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_bus_ctrl.v":34:24:34:40|Input ibus_fetch_ack_in is unused.
 @N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_bus_ctrl.v":43:24:43:35|Input data_size_in is unused.
 @N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_bus_ctrl.v":44:24:44:35|Input data_data_in is unused.
-@N: CL159 :"C:\02_Elektronik\041_1LF2\10_Public\05_PSaturn\saturn_bus_ctrl.v":50:24:50:36|Input data_write_in is unused.
 @N: CL189 :"C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\02_Components\dogm132.v":90:0:90:5|Register bit lcd_page[2] is always 0.
 @W: CL260 :"C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\02_Components\dogm132.v":90:0:90:5|Pruning register bit 2 of lcd_page[2:0]. If this is not the intended behavior, drive the input with valid values, or an input from the top level.
 
-At c_ver Exit (Real Time elapsed 0h:00m:33s; CPU Time elapsed 0h:00m:33s; Memory used current: 193MB peak: 393MB)
+At c_ver Exit (Real Time elapsed 0h:00m:32s; CPU Time elapsed 0h:00m:32s; Memory used current: 242MB peak: 405MB)
 
-Process took 0h:00m:33s realtime, 0h:00m:33s cputime
+Process took 0h:00m:32s realtime, 0h:00m:32s cputime
 
 Process completed successfully.
-# Sat Oct 07 14:48:25 2017
+# Thu Oct 12 07:17:36 2017
 
 ###########################################################]
 Synopsys Netlist Linker, version comp2016q3p1, Build 141R, built Dec  5 2016
@@ -204,17 +187,17 @@ At syn_nfilter Exit (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; 
 Process took 0h:00m:01s realtime, 0h:00m:01s cputime
 
 Process completed successfully.
-# Sat Oct 07 14:48:25 2017
+# Thu Oct 12 07:17:37 2017
 
 ###########################################################]
 @END
 
-At c_hdl Exit (Real Time elapsed 0h:00m:34s; CPU Time elapsed 0h:00m:33s; Memory used current: 3MB peak: 4MB)
+At c_hdl Exit (Real Time elapsed 0h:00m:33s; CPU Time elapsed 0h:00m:32s; Memory used current: 3MB peak: 4MB)
 
-Process took 0h:00m:34s realtime, 0h:00m:33s cputime
+Process took 0h:00m:33s realtime, 0h:00m:32s cputime
 
 Process completed successfully.
-# Sat Oct 07 14:48:25 2017
+# Thu Oct 12 07:17:37 2017
 
 ###########################################################]
 Synopsys Netlist Linker, version comp2016q3p1, Build 141R, built Dec  5 2016
@@ -226,12 +209,10 @@ At syn_nfilter Exit (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; 
 Process took 0h:00m:01s realtime, 0h:00m:01s cputime
 
 Process completed successfully.
-# Sat Oct 07 14:48:27 2017
+# Thu Oct 12 07:17:38 2017
 
 ###########################################################]
-Pre-mapping Report
-
-# Sat Oct 07 14:48:27 2017
+# Thu Oct 12 07:17:38 2017
 
 Synopsys Lattice Technology Pre-mapping, Version maplat, Build 1612R, Built Dec  5 2016 10:33:02
 Copyright (C) 1994-2016 Synopsys, Inc. All rights reserved. This Synopsys software and all associated documentation are proprietary to Synopsys, Inc. and may only be used pursuant to the terms and conditions of a written license agreement with Synopsys, Inc. All other use, reproduction, modification, or distribution of the Synopsys software or the associated documentation is strictly prohibited.
@@ -251,28 +232,28 @@ Design Input Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s
 Mapper Initialization Complete (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 110MB peak: 116MB)
 
 
-Start loading timing files (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 120MB peak: 120MB)
+Start loading timing files (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 120MB peak: 121MB)
 
 
 Finished loading timing files (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 120MB peak: 123MB)
 
 @W: FX474 |User-specified initial value defined for some sequential elements which can prevent optimum synthesis results from being achieved. 
-@W: FX469 :|Net un2[15] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
-@W: FX469 :|Net un2[14] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
-@W: FX469 :|Net un2[13] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
-@W: FX469 :|Net un2[12] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
-@W: FX469 :|Net un2[11] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
-@W: FX469 :|Net un2[10] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
-@W: FX469 :|Net un2[9] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
-@W: FX469 :|Net un2[8] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
-@W: FX469 :|Net un2[7] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
-@W: FX469 :|Net un2[6] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
-@W: FX469 :|Net un2[5] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
-@W: FX469 :|Net un2[4] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
-@W: FX469 :|Net un2[3] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
-@W: FX469 :|Net un2[2] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
-@W: FX469 :|Net un2[1] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
-@W: FX469 :|Net un2[0] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[15] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[14] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[13] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[12] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[11] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[10] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[9] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[8] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[7] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[6] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[5] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[4] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[3] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[2] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[1] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
+@W: FX469 :|Net un1[0] is undriven; adding disabled tristate to drive this net. To avoid the addition of a tristate, add a driver to the net.
 @N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_1 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_1 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
 @N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_2 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_2 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
 @N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_3 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_3 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
@@ -283,38 +264,22 @@ Finished loading timing files (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h
 @N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_8 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_8 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
 @N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_9 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_9 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
 @N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_10 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_10 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[0] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[0] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[1] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[1] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[2] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[2] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[3] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[3] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[4] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[4] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[5] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[5] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[6] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[6] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[7] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[7] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[8] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[8] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[9] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[9] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[10] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[10] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[11] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[11] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[12] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[12] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[13] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[13] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[14] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[14] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@W: MO112 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\psaturn_machxo2_dogm132.v":40:18:40:48|Deleting tristate instance un4_data_io[15] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) on net data_io[15] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because its enable is connected to 0.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":384:0:384:5|Removing sequential instance OUTR[0] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":384:0:384:5|Removing sequential instance OUTR[1] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":384:0:384:5|Removing sequential instance OUTR[2] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":384:0:384:5|Removing sequential instance OUTR[3] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":384:0:384:5|Removing sequential instance OUTR[4] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":384:0:384:5|Removing sequential instance OUTR[5] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":384:0:384:5|Removing sequential instance OUTR[6] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":384:0:384:5|Removing sequential instance OUTR[7] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":384:0:384:5|Removing sequential instance OUTR[8] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":384:0:384:5|Removing sequential instance OUTR[9] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":384:0:384:5|Removing sequential instance OUTR[10] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":384:0:384:5|Removing sequential instance OUTR[11] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":403:0:403:5|Removing sequential instance write_sticky_bit (in view: work.saturn_decoder_sequencer(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":403:0:403:5|Removing sequential instance ibus_fetch_ack (in view: work.saturn_decoder_sequencer(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":159:0:159:5|Removing sequential instance bus_rd (in view: work.saturn_bus_controller(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":159:0:159:5|Removing sequential instance data_read_ready (in view: work.saturn_bus_controller(verilog)) of type view:PrimLib.dffr(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":249:0:249:5|Removing sequential instance data_o[63:0] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffe(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Removing sequential instance OUTR[0] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Removing sequential instance OUTR[1] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Removing sequential instance OUTR[2] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Removing sequential instance OUTR[3] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Removing sequential instance OUTR[4] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Removing sequential instance OUTR[5] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Removing sequential instance OUTR[6] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Removing sequential instance OUTR[7] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Removing sequential instance OUTR[8] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Removing sequential instance OUTR[9] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Removing sequential instance OUTR[10] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Removing sequential instance OUTR[11] (in view: work.saturn_alru(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":421:0:421:5|Removing sequential instance write_sticky_bit (in view: work.saturn_decoder_sequencer(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":421:0:421:5|Removing sequential instance ibus_fetch_ack (in view: work.saturn_decoder_sequencer(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":156:0:156:5|Removing sequential instance bus_rd (in view: work.saturn_bus_controller(verilog)) of type view:PrimLib.dffre(prim) because it does not drive other instances.
 ICG Latch Removal Summary:
 Number of ICG latches removed:	0
 Number of ICG latches not removed:	0
@@ -330,14 +295,14 @@ Clock Summary
 Start                                             Requested     Requested     Clock        Clock                   Clock
 Clock                                             Frequency     Period        Type         Group                   Load 
 ------------------------------------------------------------------------------------------------------------------------
-PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     2.1 MHz       480.769       inferred     Inferred_clkgroup_0     1411 
+PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     2.1 MHz       480.769       inferred     Inferred_clkgroup_0     1497 
 ========================================================================================================================
 
-@W: MT529 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Found inferred clock PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock which controls 1411 sequential elements including disp_ctrl.disp_sck. This clock has no specified timing constraint which may prevent conversion of gated or generated clocks and may adversely impact design performance. 
+@W: MT529 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Found inferred clock PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock which controls 1497 sequential elements including disp_ctrl.disp_sck. This clock has no specified timing constraint which may prevent conversion of gated or generated clocks and may adversely impact design performance. 
 
 Finished Pre Mapping Phase.
 
-Starting constraint checker (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:00s; Memory used current: 152MB peak: 153MB)
+Starting constraint checker (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 151MB peak: 153MB)
 
 Encoding state machine state[8:0] (in view: work.saturn_decoder_sequencer(verilog))
 original code -> new code
@@ -350,25 +315,23 @@ original code -> new code
    1000 -> 001000000
    1001 -> 010000000
    1010 -> 100000000
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":403:0:403:5|Removing sequential instance op2_reg_o[5] (in view: work.saturn_decoder_sequencer(verilog)) of type view:PrimLib.dffe(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":403:0:403:5|Removing sequential instance op2_reg_o[4] (in view: work.saturn_decoder_sequencer(verilog)) of type view:PrimLib.dffe(prim) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":403:0:403:5|Removing sequential instance op2_reg_o[3] (in view: work.saturn_decoder_sequencer(verilog)) of type view:PrimLib.dffe(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":421:0:421:5|Removing sequential instance op2_reg_o[5] (in view: work.saturn_decoder_sequencer(verilog)) of type view:PrimLib.dffe(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":421:0:421:5|Removing sequential instance op2_reg_o[4] (in view: work.saturn_decoder_sequencer(verilog)) of type view:PrimLib.dffe(prim) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":421:0:421:5|Removing sequential instance op2_reg_o[3] (in view: work.saturn_decoder_sequencer(verilog)) of type view:PrimLib.dffe(prim) because it does not drive other instances.
 None
 None
 
-Finished constraint checker (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 153MB peak: 155MB)
+Finished constraint checker (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 154MB peak: 156MB)
 
 Pre-mapping successful!
 
-At Mapper Exit (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 67MB peak: 155MB)
+At Mapper Exit (Real Time elapsed 0h:00m:01s; CPU Time elapsed 0h:00m:01s; Memory used current: 67MB peak: 156MB)
 
 Process took 0h:00m:01s realtime, 0h:00m:01s cputime
-# Sat Oct 07 14:48:28 2017
+# Thu Oct 12 07:17:40 2017
 
 ###########################################################]
-Map & Optimize Report
-
-# Sat Oct 07 14:48:29 2017
+# Thu Oct 12 07:17:40 2017
 
 Synopsys Lattice Technology Mapper, Version maplat, Build 1612R, Built Dec  5 2016 10:33:02
 Copyright (C) 1994-2016 Synopsys, Inc. All rights reserved. This Synopsys software and all associated documentation are proprietary to Synopsys, Inc. and may only be used pursuant to the terms and conditions of a written license agreement with Synopsys, Inc. All other use, reproduction, modification, or distribution of the Synopsys software or the associated documentation is strictly prohibited.
@@ -392,33 +355,35 @@ Finished loading timing files (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h
 
 
 
-Starting Optimization and Mapping (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 147MB peak: 150MB)
+Starting Optimization and Mapping (Real Time elapsed 0h:00m:00s; CPU Time elapsed 0h:00m:00s; Memory used current: 148MB peak: 150MB)
 
-@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":48:24:48:34|Tristate driver data_data_o_1 (in view: work.saturn_bus_controller(verilog)) on net data_data_o_1 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
-@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":48:24:48:34|Tristate driver data_data_o_2 (in view: work.saturn_bus_controller(verilog)) on net data_data_o_2 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
-@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":48:24:48:34|Tristate driver data_data_o_3 (in view: work.saturn_bus_controller(verilog)) on net data_data_o_3 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
-@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":48:24:48:34|Tristate driver data_data_o_4 (in view: work.saturn_bus_controller(verilog)) on net data_data_o_4 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
-@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":48:24:48:34|Tristate driver data_data_o_5 (in view: work.saturn_bus_controller(verilog)) on net data_data_o_5 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
-@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":48:24:48:34|Tristate driver data_data_o_6 (in view: work.saturn_bus_controller(verilog)) on net data_data_o_6 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
-@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":48:24:48:34|Tristate driver data_data_o_7 (in view: work.saturn_bus_controller(verilog)) on net data_data_o_7 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
-@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":48:24:48:34|Tristate driver data_data_o_8 (in view: work.saturn_bus_controller(verilog)) on net data_data_o_8 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
-@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":48:24:48:34|Tristate driver data_data_o_9 (in view: work.saturn_bus_controller(verilog)) on net data_data_o_9 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
-@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":48:24:48:34|Tristate driver data_data_o_10 (in view: work.saturn_bus_controller(verilog)) on net data_data_o_10 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
+@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_1 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_1 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
+@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_2 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_2 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
+@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_3 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_3 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
+@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_4 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_4 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
+@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_5 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_5 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
+@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_6 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_6 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
+@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_7 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_7 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
+@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_8 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_8 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
+@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_9 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_9 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
+@N: MO111 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":26:24:26:33|Tristate driver bus_data_o_10 (in view: work.saturn_bus_controller(verilog)) on net bus_data_o_10 (in view: work.saturn_bus_controller(verilog)) has its enable tied to GND.
 
 Available hyper_sources - for debug and ip models
 	None Found
 
-@W: FA239 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":136:8:136:11|ROM right_mask[14:1] (in view: work.saturn_alru(verilog)) mapped in logic. To map to a technology ROM, apply attribute syn_romstyle on this instance.
-@W: FA239 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":114:8:114:11|ROM left_mask[14:1] (in view: work.saturn_alru(verilog)) mapped in logic. To map to a technology ROM, apply attribute syn_romstyle on this instance.
-@W: FA239 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":136:8:136:11|ROM right_mask[14:1] (in view: work.saturn_alru(verilog)) mapped in logic. To map to a technology ROM, apply attribute syn_romstyle on this instance.
-@N: MO106 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":136:8:136:11|Found ROM .delname. (in view: work.saturn_alru(verilog)) with 16 words by 14 bits.
-@W: FA239 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":114:8:114:11|ROM left_mask[14:1] (in view: work.saturn_alru(verilog)) mapped in logic. To map to a technology ROM, apply attribute syn_romstyle on this instance.
-@N: MO106 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":114:8:114:11|Found ROM .delname. (in view: work.saturn_alru(verilog)) with 16 words by 14 bits.
+@W: FA239 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":149:8:149:11|ROM right_mask[14:1] (in view: work.saturn_alru(verilog)) mapped in logic. To map to a technology ROM, apply attribute syn_romstyle on this instance.
+@W: FA239 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":127:8:127:11|ROM left_mask[14:1] (in view: work.saturn_alru(verilog)) mapped in logic. To map to a technology ROM, apply attribute syn_romstyle on this instance.
+@W: FA239 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":149:8:149:11|ROM right_mask[14:1] (in view: work.saturn_alru(verilog)) mapped in logic. To map to a technology ROM, apply attribute syn_romstyle on this instance.
+@N: MO106 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":149:8:149:11|Found ROM .delname. (in view: work.saturn_alru(verilog)) with 16 words by 14 bits.
+@W: FA239 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":127:8:127:11|ROM left_mask[14:1] (in view: work.saturn_alru(verilog)) mapped in logic. To map to a technology ROM, apply attribute syn_romstyle on this instance.
+@N: MO106 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":127:8:127:11|Found ROM .delname. (in view: work.saturn_alru(verilog)) with 16 words by 14 bits.
 @N: FX493 |Applying initial value "00000000" on instance disp_ctrl.out_data[7:0].
 @N: FX493 |Applying initial value "00000000000000000000" on instance core.bus_ctrl.pre_fetched_opcode_addr[19:0].
 @N: FX493 |Applying initial value "0000" on instance core.bus_ctrl.bus_state[3:0].
+@N: FX493 |Applying initial value "00000000000000000000" on instance core.bus_ctrl.saved_bus_addr[19:0].
 @N: FX493 |Applying initial value "000000000000000000000000000000000000000000000000000000000000000000000000000000000000" on instance core.bus_ctrl.pre_fetched_opcode[83:0].
 @N: FX493 |Applying initial value "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" on instance core.bus_ctrl.pre_fetch_buffer[95:0].
+@N: FX493 |Applying initial value "0000000000000000000000000000000000000000000000000000000000000000" on instance core.bus_ctrl.read_data[63:0].
 @N: FX493 |Applying initial value "00000" on instance core.bus_ctrl.pre_fetched_opcode_length[4:0].
 @N: FX493 |Applying initial value "0000" on instance core.alru.P[3:0].
 @N: FX493 |Applying initial value "00000000000000000000" on instance core.alru.D1[19:0].
@@ -427,7 +392,7 @@ Available hyper_sources - for debug and ip models
 @N: FX493 |Applying initial value "0000000000000000000000000000000000000000000000000000000000000000" on instance core.alru.latched_src_reg[63:0].
 @N: FX493 |Applying initial value "0000000000000000000000000000000000000000000000000000000000000000" on instance core.alru.latched_op2_reg[63:0].
 
-Finished RTL optimizations (Real Time elapsed 0h:00m:02s; CPU Time elapsed 0h:00m:02s; Memory used current: 158MB peak: 169MB)
+Finished RTL optimizations (Real Time elapsed 0h:00m:02s; CPU Time elapsed 0h:00m:02s; Memory used current: 157MB peak: 169MB)
 
 @N: MO231 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Found counter in view:work.display_dogm132(verilog) instance state[5:0] 
 Encoding state machine state[8:0] (in view: work.saturn_decoder_sequencer(verilog))
@@ -441,74 +406,71 @@ original code -> new code
    1000 -> 001000000
    1001 -> 010000000
    1010 -> 100000000
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":403:0:403:5|Removing sequential instance op2_reg_o[5] (in view: work.saturn_decoder_sequencer(verilog)) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":403:0:403:5|Removing sequential instance op2_reg_o[4] (in view: work.saturn_decoder_sequencer(verilog)) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":403:0:403:5|Removing sequential instance op2_reg_o[3] (in view: work.saturn_decoder_sequencer(verilog)) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":421:0:421:5|Removing sequential instance op2_reg_o[5] (in view: work.saturn_decoder_sequencer(verilog)) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":421:0:421:5|Removing sequential instance op2_reg_o[4] (in view: work.saturn_decoder_sequencer(verilog)) because it does not drive other instances.
+@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_decoder_sequencer.v":421:0:421:5|Removing sequential instance op2_reg_o[3] (in view: work.saturn_decoder_sequencer(verilog)) because it does not drive other instances.
 
-Starting factoring (Real Time elapsed 0h:00m:02s; CPU Time elapsed 0h:00m:02s; Memory used current: 168MB peak: 170MB)
-
-
-Finished factoring (Real Time elapsed 0h:00m:11s; CPU Time elapsed 0h:00m:11s; Memory used current: 210MB peak: 211MB)
+Starting factoring (Real Time elapsed 0h:00m:03s; CPU Time elapsed 0h:00m:03s; Memory used current: 168MB peak: 171MB)
 
 
-Finished gated-clock and generated-clock conversion (Real Time elapsed 0h:00m:11s; CPU Time elapsed 0h:00m:11s; Memory used current: 198MB peak: 213MB)
+Finished factoring (Real Time elapsed 0h:00m:12s; CPU Time elapsed 0h:00m:12s; Memory used current: 221MB peak: 221MB)
 
 
-Finished generic timing optimizations - Pass 1 (Real Time elapsed 0h:00m:14s; CPU Time elapsed 0h:00m:14s; Memory used current: 205MB peak: 255MB)
+Finished gated-clock and generated-clock conversion (Real Time elapsed 0h:00m:12s; CPU Time elapsed 0h:00m:12s; Memory used current: 204MB peak: 222MB)
 
 
-Starting Early Timing Optimization (Real Time elapsed 0h:00m:41s; CPU Time elapsed 0h:00m:41s; Memory used current: 211MB peak: 255MB)
+Finished generic timing optimizations - Pass 1 (Real Time elapsed 0h:00m:17s; CPU Time elapsed 0h:00m:17s; Memory used current: 210MB peak: 256MB)
+
+@N: FA113 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":779:27:779:73|Pipelining module a_plus_b_plus_c[4:0]. For more information, search for "pipelining" in Online Help.
+@N: MF169 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":249:0:249:5|Pushed in register latched_src_reg[63:0].
+@N: MF169 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":249:0:249:5|Pushed in register latched_op2_reg[63:0].
+@N: MF169 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":156:0:156:5|Pushed in register read_data[63:0].
+@N: MF169 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Pushed in register R\\\[2\\\].
+@N: MF169 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Pushed in register R\\\[1\\\].
+@N: MF169 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Pushed in register R\\\[4\\\].
+@N: MF169 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Pushed in register ABCD\\\[0\\\].
+@N: MF169 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Pushed in register R\\\[0\\\].
+@N: MF169 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Pushed in register R\\\[3\\\].
+@N: MF169 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Pushed in register ABCD\\\[1\\\].
+@N: MF169 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Pushed in register ABCD\\\[2\\\].
+@N: MF169 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_alru.v":380:0:380:5|Pushed in register ABCD\\\[3\\\].
+
+Starting Early Timing Optimization (Real Time elapsed 0h:00m:41s; CPU Time elapsed 0h:00m:41s; Memory used current: 218MB peak: 256MB)
 
 
-Finished Early Timing Optimization (Real Time elapsed 0h:00m:42s; CPU Time elapsed 0h:00m:42s; Memory used current: 211MB peak: 255MB)
+Finished Early Timing Optimization (Real Time elapsed 0h:00m:42s; CPU Time elapsed 0h:00m:42s; Memory used current: 218MB peak: 256MB)
 
 
-Finished generic timing optimizations - Pass 2 (Real Time elapsed 0h:00m:42s; CPU Time elapsed 0h:00m:42s; Memory used current: 209MB peak: 255MB)
+Finished generic timing optimizations - Pass 2 (Real Time elapsed 0h:00m:42s; CPU Time elapsed 0h:00m:42s; Memory used current: 216MB peak: 256MB)
 
 @N: FX211 |Packed ROM rom.data_o_1_0[15:0] (13 input, 16 output) to Block SelectRAM 
 @N: FO126 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Generating RAM disp_ctrl.lcdramo[7:0]
 @N: FO126 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Generating RAM disp_ctrl.lcdrame[7:0]
-@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdrame_ram_326 because it is equivalent to instance disp_ctrl.lcdrame_ram_321. To keep the instance, apply constraint syn_preserve=1 on the instance.
-@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdrame_ram_321 because it is equivalent to instance disp_ctrl.lcdrame_ram_314. To keep the instance, apply constraint syn_preserve=1 on the instance.
-@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdrame_ram_314 because it is equivalent to instance disp_ctrl.lcdrame_ram_309. To keep the instance, apply constraint syn_preserve=1 on the instance.
-@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdrame_ram_309 because it is equivalent to instance disp_ctrl.lcdrame_ram_302. To keep the instance, apply constraint syn_preserve=1 on the instance.
-@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdrame_ram_302 because it is equivalent to instance disp_ctrl.lcdrame_ram_297. To keep the instance, apply constraint syn_preserve=1 on the instance.
-@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdrame_ram_297 because it is equivalent to instance disp_ctrl.lcdrame_ram_290. To keep the instance, apply constraint syn_preserve=1 on the instance.
-@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdrame_ram_290 because it is equivalent to instance disp_ctrl.lcdrame_ram_285. To keep the instance, apply constraint syn_preserve=1 on the instance.
-@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdrame_ram_285 because it is equivalent to instance disp_ctrl.lcdrame_ram_278. To keep the instance, apply constraint syn_preserve=1 on the instance.
-@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdrame_ram_278 because it is equivalent to instance disp_ctrl.lcdrame_ram_273. To keep the instance, apply constraint syn_preserve=1 on the instance.
-@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdrame_ram_273 because it is equivalent to instance disp_ctrl.lcdrame_ram_266. To keep the instance, apply constraint syn_preserve=1 on the instance.
+@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdramo_ram_0 because it is equivalent to instance disp_ctrl.lcdramo_ram. To keep the instance, apply constraint syn_preserve=1 on the instance.
+@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdramo_ram_8 because it is equivalent to instance disp_ctrl.lcdramo_ram_7. To keep the instance, apply constraint syn_preserve=1 on the instance.
+@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdramo_ram_12 because it is equivalent to instance disp_ctrl.lcdramo_ram_11. To keep the instance, apply constraint syn_preserve=1 on the instance.
+@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdramo_ram_16 because it is equivalent to instance disp_ctrl.lcdramo_ram_15. To keep the instance, apply constraint syn_preserve=1 on the instance.
+@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdramo_ram_18 because it is equivalent to instance disp_ctrl.lcdramo_ram_17. To keep the instance, apply constraint syn_preserve=1 on the instance.
+@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdramo_ram_24 because it is equivalent to instance disp_ctrl.lcdramo_ram_23. To keep the instance, apply constraint syn_preserve=1 on the instance.
+@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdramo_ram_110 because it is equivalent to instance disp_ctrl.lcdramo_ram_105. To keep the instance, apply constraint syn_preserve=1 on the instance.
+@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdramo_ram_122 because it is equivalent to instance disp_ctrl.lcdramo_ram_117. To keep the instance, apply constraint syn_preserve=1 on the instance.
+@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdramo_ram_134 because it is equivalent to instance disp_ctrl.lcdramo_ram_129. To keep the instance, apply constraint syn_preserve=1 on the instance.
+@W: BN132 :"c:\02_elektronik\041_1lf2\10_public\06_implementations\02_components\dogm132.v":90:0:90:5|Removing black box instance disp_ctrl.lcdramo_ram_146 because it is equivalent to instance disp_ctrl.lcdramo_ram_141. To keep the instance, apply constraint syn_preserve=1 on the instance.
 
-Finished preparing to map (Real Time elapsed 0h:00m:46s; CPU Time elapsed 0h:00m:46s; Memory used current: 218MB peak: 255MB)
+Finished preparing to map (Real Time elapsed 0h:00m:48s; CPU Time elapsed 0h:00m:48s; Memory used current: 214MB peak: 256MB)
 
 
-Finished technology mapping (Real Time elapsed 0h:00m:50s; CPU Time elapsed 0h:00m:50s; Memory used current: 269MB peak: 276MB)
+Finished technology mapping (Real Time elapsed 0h:00m:53s; CPU Time elapsed 0h:00m:53s; Memory used current: 270MB peak: 303MB)
 
 Pass		 CPU time		Worst Slack		Luts / Registers
 ------------------------------------------------------------
-   1		0h:00m:50s		   367.90ns		5395 /      1388
+   1		0h:00m:53s		   370.62ns		5959 /      1537
 
-Finished technology timing optimizations and critical path resynthesis (Real Time elapsed 0h:00m:51s; CPU Time elapsed 0h:00m:51s; Memory used current: 269MB peak: 276MB)
+Finished technology timing optimizations and critical path resynthesis (Real Time elapsed 0h:00m:55s; CPU Time elapsed 0h:00m:54s; Memory used current: 270MB peak: 303MB)
 
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":159:0:159:5|Removing sequential instance core.bus_ctrl.bus_state[2] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because it does not drive other instances.
-@W: BN114 :|Removing instance core.bus_ctrl.un1_nibbles_in_transfer_cry_4_0 (in view: work.PSaturn_MachXO2_DOGM132(verilog)) of black box view:LUCENT.CCU2D(PRIM) because it does not drive other instances.
-@W: BN114 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":441:32:441:69|Removing instance core.bus_ctrl.un1_nibbles_in_transfer_cry_3_0 (in view: work.PSaturn_MachXO2_DOGM132(verilog)) of black box view:LUCENT.CCU2D(PRIM) because it does not drive other instances.
-@W: BN114 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":441:32:441:69|Removing instance core.bus_ctrl.un1_nibbles_in_transfer_cry_1_0 (in view: work.PSaturn_MachXO2_DOGM132(verilog)) of black box view:LUCENT.CCU2D(PRIM) because it does not drive other instances.
-@W: BN114 :|Removing instance core.bus_ctrl.un1_nibbles_in_transfer_cry_0_0 (in view: work.PSaturn_MachXO2_DOGM132(verilog)) of black box view:LUCENT.CCU2D(PRIM) because it does not drive other instances.
-@W: BN114 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":137:24:137:64|Removing instance core.bus_ctrl.dst_total_nibs_s_3_0 (in view: work.PSaturn_MachXO2_DOGM132(verilog)) of black box view:LUCENT.CCU2D(PRIM) because it does not drive other instances.
-@W: BN114 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":137:24:137:64|Removing instance core.bus_ctrl.dst_total_nibs_cry_1_0 (in view: work.PSaturn_MachXO2_DOGM132(verilog)) of black box view:LUCENT.CCU2D(PRIM) because it does not drive other instances.
-@W: BN114 :|Removing instance core.bus_ctrl.dst_total_nibs_cry_0_0 (in view: work.PSaturn_MachXO2_DOGM132(verilog)) of black box view:LUCENT.CCU2D(PRIM) because it does not drive other instances.
-@W: BN114 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":161:8:161:9|Removing instance core.bus_ctrl.un1_nibbles_in_transfer_1_cry_3_0 (in view: work.PSaturn_MachXO2_DOGM132(verilog)) of black box view:LUCENT.CCU2D(PRIM) because it does not drive other instances.
-@W: BN114 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":161:8:161:9|Removing instance core.bus_ctrl.un1_nibbles_in_transfer_1_cry_1_0 (in view: work.PSaturn_MachXO2_DOGM132(verilog)) of black box view:LUCENT.CCU2D(PRIM) because it does not drive other instances.
-@W: BN114 :|Removing instance core.bus_ctrl.un1_nibbles_in_transfer_1_cry_0_0 (in view: work.PSaturn_MachXO2_DOGM132(verilog)) of black box view:LUCENT.CCU2D(PRIM) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":159:0:159:5|Removing sequential instance core.bus_ctrl.nibbles_in_transfer[4] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":159:0:159:5|Removing sequential instance core.bus_ctrl.nibbles_in_transfer[3] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":159:0:159:5|Removing sequential instance core.bus_ctrl.nibbles_in_transfer[2] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":159:0:159:5|Removing sequential instance core.bus_ctrl.nibbles_in_transfer[1] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because it does not drive other instances.
-@N: BN362 :"c:\02_elektronik\041_1lf2\10_public\05_psaturn\saturn_bus_ctrl.v":159:0:159:5|Removing sequential instance core.bus_ctrl.nibbles_in_transfer[0] (in view: work.PSaturn_MachXO2_DOGM132(verilog)) because it does not drive other instances.
 @N: FX164 |The option to pack registers in the IOB has not been specified. Please set syn_useioff attribute.  
 
-Finished restoring hierarchy (Real Time elapsed 0h:00m:54s; CPU Time elapsed 0h:00m:54s; Memory used current: 269MB peak: 276MB)
+Finished restoring hierarchy (Real Time elapsed 0h:00m:58s; CPU Time elapsed 0h:00m:57s; Memory used current: 270MB peak: 303MB)
 
 
 
@@ -518,40 +480,40 @@ Finished restoring hierarchy (Real Time elapsed 0h:00m:54s; CPU Time elapsed 0h:
 #### START OF CLOCK OPTIMIZATION REPORT #####[
 
 0 non-gated/non-generated clock tree(s) driving 0 clock pin(s) of sequential element(s)
-1 gated/generated clock tree(s) driving 1402 clock pin(s) of sequential element(s)
-0 instances converted, 1402 sequential instances remain driven by gated/generated clocks
+1 gated/generated clock tree(s) driving 1588 clock pin(s) of sequential element(s)
+0 instances converted, 1588 sequential instances remain driven by gated/generated clocks
 
 ================================================================================================= Gated/Generated Clocks =================================================================================================
 Clock Tree ID     Driving Element     Drive Element Type     Fanout     Sample Instance     Explanation                                                                                                                   
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-@K:CKID0001       OSCH_inst           OSCH                   1402       div_cnt[2]          Gating structure creates improper gating logic. See the Gated Clocks description in the user guide for conversion requirements
+@K:CKID0001       OSCH_inst           OSCH                   1588       div_cnt[2]          Gating structure creates improper gating logic. See the Gated Clocks description in the user guide for conversion requirements
 ==========================================================================================================================================================================================================================
 
 
 ##### END OF CLOCK OPTIMIZATION REPORT ######]
 
 
-Start Writing Netlists (Real Time elapsed 0h:00m:54s; CPU Time elapsed 0h:00m:54s; Memory used current: 220MB peak: 276MB)
+Start Writing Netlists (Real Time elapsed 0h:00m:58s; CPU Time elapsed 0h:00m:58s; Memory used current: 220MB peak: 303MB)
 
 Writing Analyst data base C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\PSaturn_MachXO2_DOGM132_Top\synwork\PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top_m.srm
 
-Finished Writing Netlist Databases (Real Time elapsed 0h:00m:55s; CPU Time elapsed 0h:00m:55s; Memory used current: 267MB peak: 276MB)
+Finished Writing Netlist Databases (Real Time elapsed 0h:00m:59s; CPU Time elapsed 0h:00m:59s; Memory used current: 268MB peak: 303MB)
 
 Writing EDIF Netlist and constraint files
 @N: FX1056 |Writing EDF file: C:\02_Elektronik\041_1LF2\10_Public\06_Implementations\03_PSaturn_MachXO2_DOGM132\PSaturn_MachXO2_DOGM132_Top\PSaturn_MachXO2_DOGM132_PSaturn_MachXO2_DOGM132_Top.edi
 L-2016.09L
 @N: BW106 |Synplicity Constraint File capacitance units using default value of 1pF 
 
-Finished Writing EDIF Netlist and constraint files (Real Time elapsed 0h:00m:56s; CPU Time elapsed 0h:00m:56s; Memory used current: 273MB peak: 277MB)
+Finished Writing EDIF Netlist and constraint files (Real Time elapsed 0h:01m:00s; CPU Time elapsed 0h:01m:00s; Memory used current: 275MB peak: 303MB)
 
 
-Start final timing analysis (Real Time elapsed 0h:00m:56s; CPU Time elapsed 0h:00m:56s; Memory used current: 268MB peak: 277MB)
+Start final timing analysis (Real Time elapsed 0h:01m:01s; CPU Time elapsed 0h:01m:01s; Memory used current: 268MB peak: 303MB)
 
 @W: MT420 |Found inferred clock PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock with period 480.77ns. Please declare a user-defined clock on object "n:nclk_o"
 
 
 ##### START OF TIMING REPORT #####[
-# Timing Report written on Sat Oct 07 14:49:26 2017
+# Timing Report written on Thu Oct 12 07:18:41 2017
 #
 
 
@@ -570,12 +532,12 @@ Performance Summary
 *******************
 
 
-Worst slack in design: 377.232
+Worst slack in design: 378.261
 
                                                   Requested     Estimated     Requested     Estimated                 Clock        Clock              
 Starting Clock                                    Frequency     Frequency     Period        Period        Slack       Type         Group              
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     2.1 MHz       9.7 MHz       480.769       103.537       377.232     inferred     Inferred_clkgroup_0
+PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     2.1 MHz       9.8 MHz       480.769       102.508       378.261     inferred     Inferred_clkgroup_0
 System                                            1.0 MHz       NA            1000.000      NA            NA          system       system_clkgroup    
 ======================================================================================================================================================
 @N: MT582 |Estimated period and frequency not reported for given clock unless the clock has at least one timing path which is not a false or a max delay path and that does not have excessive slack
@@ -591,7 +553,7 @@ Clocks                                                                          
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Starting                                       Ending                                         |  constraint  slack    |  constraint  slack  |  constraint  slack  |  constraint  slack
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock  PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock  |  480.769     377.232  |  No paths    -      |  No paths    -      |  No paths    -    
+PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock  PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock  |  480.769     378.261  |  No paths    -      |  No paths    -      |  No paths    -    
 ======================================================================================================================================================================================
  Note: 'No paths' indicates there are no paths in the design for that pair of clock edges.
        'Diff grp' indicates that paths exist but the starting clock and ending clock are in different clock groups.
@@ -618,16 +580,16 @@ Starting Points with Worst Slack
 Instance                         Reference                                         Type        Pin     Net                    Time        Slack  
                                  Clock                                                                                                           
 -------------------------------------------------------------------------------------------------------------------------------------------------
-core.dec_seq.op1_reg_o[3]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1P3IX     Q       seq_op1_reg[3]         1.317       377.232
-core.dec_seq.op1_reg_o[4]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1P3IX     Q       seq_op1_reg[4]         1.317       377.232
-core.dec_seq.op1_reg_o[5]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1P3JX     Q       seq_op1_reg[5]         1.317       377.232
-core.dec_seq.op1_reg_o[0]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1P3JX     Q       seq_op1_reg[0]         1.605       377.322
-core.dec_seq.op1_reg_o[1]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1P3IX     Q       seq_op1_reg[1]         1.605       377.640
-core.alru.R\[0\][0]              PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     Q       R\[0\][0]              1.044       377.883
-core.alru.R\[1\][0]              PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     Q       R\[1\][0]              1.044       377.883
-core.alru.R\[2\][0]              PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     Q       R\[2\][0]              1.044       377.883
-core.alru.R\[3\][0]              PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     Q       R\[3\][0]              1.044       377.883
-core.dec_seq.right_mask_o[0]     PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1P3AX     Q       seq_field_right[0]     1.331       378.142
+core.dec_seq.op1_reg_o[5]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1P3JX     Q       seq_op1_reg[5]         1.324       378.261
+core.dec_seq.op1_reg_o[3]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1P3IX     Q       seq_op1_reg[3]         1.314       378.271
+core.dec_seq.op1_reg_o[4]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1P3IX     Q       seq_op1_reg[4]         1.314       378.271
+core.dec_seq.op1_reg_o[0]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1P3JX     Q       seq_op1_reg[0]         1.614       378.361
+core.dec_seq.op1_reg_o[1]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1P3IX     Q       seq_op1_reg[1]         1.617       378.676
+core.dec_seq.right_mask_o[1]     PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1P3AX     Q       seq_field_right[1]     1.421       378.701
+core.dec_seq.right_mask_o[2]     PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1P3AX     Q       seq_field_right[2]     1.371       378.750
+core.alru.R\[0\][0]              PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     Q       R\[0\][0]              1.044       378.931
+core.alru.R\[1\][0]              PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     Q       R\[1\][0]              1.044       378.931
+core.alru.R\[2\][0]              PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     Q       R\[2\][0]              1.044       378.931
 =================================================================================================================================================
 
 
@@ -638,16 +600,16 @@ Ending Points with Worst Slack
 Instance                    Reference                                         Type        Pin     Net                   Time         Slack  
                             Clock                                                                                                           
 --------------------------------------------------------------------------------------------------------------------------------------------
-core.alru.f_carry           PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       f_carry_2             480.858      377.232
-core.alru.ABCD\[0\][63]     PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       ABCD\[0\]_165[63]     480.664      378.669
-core.alru.ABCD\[1\][63]     PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       ABCD\[1\]_165[63]     480.664      378.669
-core.alru.ABCD\[2\][63]     PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       ABCD\[2\]_165[63]     480.664      378.669
-core.alru.ABCD\[3\][63]     PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       ABCD\[3\]_165[63]     480.664      378.669
-core.alru.R\[0\][63]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       R\[0\]_165[63]        480.664      378.669
-core.alru.R\[1\][63]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       R\[1\]_165[63]        480.664      378.669
-core.alru.R\[2\][63]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       R\[2\]_165[63]        480.664      378.669
-core.alru.R\[3\][63]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       R\[3\]_165[63]        480.664      378.669
-core.alru.R\[4\][63]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       R\[4\]_165[63]        480.664      378.669
+core.alru.f_carry           PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       f_carry_2             480.858      378.261
+core.alru.ABCD\[0\][63]     PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       ABCD\[0\]_165[63]     480.664      378.454
+core.alru.R\[0\][63]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       R\[0\]_165[63]        480.664      378.454
+core.alru.R\[1\][63]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       R\[1\]_165[63]        480.664      378.454
+core.alru.R\[2\][63]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       R\[2\]_165[63]        480.664      378.454
+core.alru.R\[3\][63]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       R\[3\]_165[63]        480.664      378.454
+core.alru.R\[4\][63]        PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       R\[4\]_165[63]        480.664      378.454
+core.alru.ABCD\[1\][63]     PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       ABCD\[1\]_165[63]     480.858      378.480
+core.alru.ABCD\[2\][63]     PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       ABCD\[2\]_165[63]     480.858      378.480
+core.alru.ABCD\[3\][63]     PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock     FD1S3AX     D       ABCD\[3\]_165[63]     480.858      378.480
 ============================================================================================================================================
 
 
@@ -662,299 +624,296 @@ Path information for path number 1:
     + Clock delay at ending point:           0.000 (ideal)
     = Required time:                         480.858
 
-    - Propagation time:                      103.626
+    - Propagation time:                      102.597
     - Clock delay at starting point:         0.000 (ideal)
-    = Slack (critical) :                     377.232
+    = Slack (critical) :                     378.261
 
-    Number of logic level(s):                92
-    Starting point:                          core.dec_seq.op1_reg_o[3] / Q
+    Number of logic level(s):                91
+    Starting point:                          core.dec_seq.op1_reg_o[5] / Q
     Ending point:                            core.alru.f_carry / D
     The start point is clocked by            PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock [rising] on pin CK
     The end   point is clocked by            PSaturn_MachXO2_DOGM132|nclk_o_inferred_clock [rising] on pin CK
 
-Instance / Net                                            Pin      Pin                Arrival     No. of    
-Name                                         Type         Name     Dir     Delay      Time        Fan Out(s)
-------------------------------------------------------------------------------------------------------------
-core.dec_seq.op1_reg_o[3]                    FD1P3IX      Q        Out     1.317      1.317       -         
-seq_op1_reg[3]                               Net          -        -       -          -           31        
-core.alru.add64.src_reg69                    ORCALUT4     A        In      0.000      1.317       -         
-core.alru.add64.src_reg69                    ORCALUT4     Z        Out     1.301      2.617       -         
-src_reg69                                    Net          -        -       -          -           14        
-core.alru.add64.src_reg_1_sqmuxa             ORCALUT4     A        In      0.000      2.617       -         
-core.alru.add64.src_reg_1_sqmuxa             ORCALUT4     Z        Out     1.325      3.942       -         
-src_reg_1_sqmuxa                             Net          -        -       -          -           20        
-core.alru.add64.src_reg_1_0_iv_5[0]          ORCALUT4     C        In      0.000      3.942       -         
-core.alru.add64.src_reg_1_0_iv_5[0]          ORCALUT4     Z        Out     1.017      4.959       -         
-src_reg_1_0_iv_5[0]                          Net          -        -       -          -           1         
-core.alru.add64.src_reg_1_0_iv_7[0]          ORCALUT4     C        In      0.000      4.959       -         
-core.alru.add64.src_reg_1_0_iv_7[0]          ORCALUT4     Z        Out     1.017      5.976       -         
-src_reg_1_0_iv_7[0]                          Net          -        -       -          -           1         
-core.alru.add64.src_reg_1_0_iv[0]            ORCALUT4     B        In      0.000      5.976       -         
-core.alru.add64.src_reg_1_0_iv[0]            ORCALUT4     Z        Out     0.449      6.425       -         
-src_reg_1[0]                                 Net          -        -       -          -           3         
-core.alru.rsub64.s0.sub_cry_0_0              CCU2D        C1       In      0.000      6.425       -         
-core.alru.rsub64.s0.sub_cry_0_0              CCU2D        COUT     Out     1.545      7.969       -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.s0.sub_cry_1_0              CCU2D        CIN      In      0.000      7.969       -         
-core.alru.rsub64.s0.sub_cry_1_0              CCU2D        S0       Out     1.725      9.694       -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.s0.un3_qc_outlto2           ORCALUT4     A        In      0.000      9.694       -         
-core.alru.rsub64.s0.un3_qc_outlto2           ORCALUT4     Z        Out     1.017      10.711      -         
-un3_qc_outlt3                                Net          -        -       -          -           1         
-core.alru.rsub64.s0.qc_out                   ORCALUT4     D        In      0.000      10.711      -         
-core.alru.rsub64.s0.qc_out                   ORCALUT4     Z        Out     0.449      11.160      -         
-c0                                           Net          -        -       -          -           2         
-core.alru.rsub64.s1.sub_cry_0_0_RNO          ORCALUT4     A        In      0.000      11.160      -         
-core.alru.rsub64.s1.sub_cry_0_0_RNO          ORCALUT4     Z        Out     1.017      12.177      -         
-un1_c0_i                                     Net          -        -       -          -           1         
-core.alru.rsub64.s1.sub_cry_0_0              CCU2D        B0       In      0.000      12.177      -         
-core.alru.rsub64.s1.sub_cry_0_0              CCU2D        COUT     Out     1.545      13.721      -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.s1.sub_cry_1_0              CCU2D        CIN      In      0.000      13.721      -         
-core.alru.rsub64.s1.sub_cry_1_0              CCU2D        S0       Out     1.725      15.446      -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.s1.sub_cry_0_0_RNIBVN81     ORCALUT4     B        In      0.000      15.446      -         
-core.alru.rsub64.s1.sub_cry_0_0_RNIBVN81     ORCALUT4     Z        Out     1.089      16.535      -         
-N_2999_tz                                    Net          -        -       -          -           2         
-core.alru.rsub64.s2.sub_cry_0_0_RNO          ORCALUT4     D        In      0.000      16.535      -         
-core.alru.rsub64.s2.sub_cry_0_0_RNO          ORCALUT4     Z        Out     1.017      17.552      -         
-un1_c1_i                                     Net          -        -       -          -           1         
-core.alru.rsub64.s2.sub_cry_0_0              CCU2D        B0       In      0.000      17.552      -         
-core.alru.rsub64.s2.sub_cry_0_0              CCU2D        COUT     Out     1.545      19.096      -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.s2.sub_cry_1_0              CCU2D        CIN      In      0.000      19.096      -         
-core.alru.rsub64.s2.sub_cry_1_0              CCU2D        S0       Out     1.725      20.821      -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.s2.un3_qc_outlto2           ORCALUT4     A        In      0.000      20.821      -         
-core.alru.rsub64.s2.un3_qc_outlto2           ORCALUT4     Z        Out     1.017      21.838      -         
-un3_qc_outlt3                                Net          -        -       -          -           1         
-core.alru.rsub64.s2.qc_out                   ORCALUT4     D        In      0.000      21.838      -         
-core.alru.rsub64.s2.qc_out                   ORCALUT4     Z        Out     0.449      22.287      -         
-c2                                           Net          -        -       -          -           2         
-core.alru.rsub64.s3.sub_cry_0_0_RNO          ORCALUT4     B        In      0.000      22.287      -         
-core.alru.rsub64.s3.sub_cry_0_0_RNO          ORCALUT4     Z        Out     1.017      23.304      -         
-un1_c2_i                                     Net          -        -       -          -           1         
-core.alru.rsub64.s3.sub_cry_0_0              CCU2D        B0       In      0.000      23.304      -         
-core.alru.rsub64.s3.sub_cry_0_0              CCU2D        COUT     Out     1.545      24.848      -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.s3.sub_cry_1_0              CCU2D        CIN      In      0.000      24.848      -         
-core.alru.rsub64.s3.sub_cry_1_0              CCU2D        S0       Out     1.725      26.573      -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.s3.sub_cry_0_0_RNIH76T      ORCALUT4     B        In      0.000      26.573      -         
-core.alru.rsub64.s3.sub_cry_0_0_RNIH76T      ORCALUT4     Z        Out     1.089      27.662      -         
-N_2998_tz                                    Net          -        -       -          -           2         
-core.alru.rsub64.s4.sub_cry_0_0_RNO          ORCALUT4     D        In      0.000      27.662      -         
-core.alru.rsub64.s4.sub_cry_0_0_RNO          ORCALUT4     Z        Out     1.017      28.679      -         
-un1_c3_i                                     Net          -        -       -          -           1         
-core.alru.rsub64.s4.sub_cry_0_0              CCU2D        B0       In      0.000      28.679      -         
-core.alru.rsub64.s4.sub_cry_0_0              CCU2D        COUT     Out     1.545      30.223      -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.s4.sub_cry_1_0              CCU2D        CIN      In      0.000      30.223      -         
-core.alru.rsub64.s4.sub_cry_1_0              CCU2D        S0       Out     1.725      31.948      -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.s4.un3_qc_outlto2           ORCALUT4     A        In      0.000      31.948      -         
-core.alru.rsub64.s4.un3_qc_outlto2           ORCALUT4     Z        Out     1.017      32.965      -         
-un3_qc_outlt3                                Net          -        -       -          -           1         
-core.alru.rsub64.s4.qc_out                   ORCALUT4     D        In      0.000      32.965      -         
-core.alru.rsub64.s4.qc_out                   ORCALUT4     Z        Out     0.449      33.414      -         
-c4                                           Net          -        -       -          -           2         
-core.alru.rsub64.s5.sub_cry_0_0_RNO          ORCALUT4     A        In      0.000      33.414      -         
-core.alru.rsub64.s5.sub_cry_0_0_RNO          ORCALUT4     Z        Out     1.017      34.431      -         
-un1_c4_i                                     Net          -        -       -          -           1         
-core.alru.rsub64.s5.sub_cry_0_0              CCU2D        B0       In      0.000      34.431      -         
-core.alru.rsub64.s5.sub_cry_0_0              CCU2D        COUT     Out     1.545      35.975      -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.s5.sub_cry_1_0              CCU2D        CIN      In      0.000      35.975      -         
-core.alru.rsub64.s5.sub_cry_1_0              CCU2D        S0       Out     1.725      37.700      -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.s5.un3_qc_outlto2           ORCALUT4     A        In      0.000      37.700      -         
-core.alru.rsub64.s5.un3_qc_outlto2           ORCALUT4     Z        Out     1.017      38.717      -         
-un3_qc_outlt3                                Net          -        -       -          -           1         
-core.alru.rsub64.s5.qc_out                   ORCALUT4     D        In      0.000      38.717      -         
-core.alru.rsub64.s5.qc_out                   ORCALUT4     Z        Out     0.449      39.166      -         
-c5                                           Net          -        -       -          -           2         
-core.alru.rsub64.s6.sub_cry_0_0_RNO          ORCALUT4     B        In      0.000      39.166      -         
-core.alru.rsub64.s6.sub_cry_0_0_RNO          ORCALUT4     Z        Out     1.017      40.182      -         
-un1_c5_i                                     Net          -        -       -          -           1         
-core.alru.rsub64.s6.sub_cry_0_0              CCU2D        B0       In      0.000      40.182      -         
-core.alru.rsub64.s6.sub_cry_0_0              CCU2D        COUT     Out     1.545      41.727      -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.s6.sub_cry_1_0              CCU2D        CIN      In      0.000      41.727      -         
-core.alru.rsub64.s6.sub_cry_1_0              CCU2D        S0       Out     1.725      43.452      -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.un1_c6_0_o4                 ORCALUT4     A        In      0.000      43.452      -         
-core.alru.rsub64.un1_c6_0_o4                 ORCALUT4     Z        Out     1.017      44.469      -         
-N_8692                                       Net          -        -       -          -           1         
-core.alru.rsub64.un1_c6_0_o2                 ORCALUT4     A        In      0.000      44.469      -         
-core.alru.rsub64.un1_c6_0_o2                 ORCALUT4     Z        Out     1.089      45.557      -         
-N_8695                                       Net          -        -       -          -           2         
-core.alru.rsub64.s7.sub_cry_0_0_RNO          ORCALUT4     A        In      0.000      45.557      -         
-core.alru.rsub64.s7.sub_cry_0_0_RNO          ORCALUT4     Z        Out     1.017      46.574      -         
-un1_c6_i                                     Net          -        -       -          -           1         
-core.alru.rsub64.s7.sub_cry_0_0              CCU2D        B0       In      0.000      46.574      -         
-core.alru.rsub64.s7.sub_cry_0_0              CCU2D        COUT     Out     1.545      48.119      -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.s7.sub_cry_1_0              CCU2D        CIN      In      0.000      48.119      -         
-core.alru.rsub64.s7.sub_cry_1_0              CCU2D        S0       Out     1.725      49.844      -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.s7.un3_qc_outlto2           ORCALUT4     A        In      0.000      49.844      -         
-core.alru.rsub64.s7.un3_qc_outlto2           ORCALUT4     Z        Out     1.089      50.933      -         
-un3_qc_outlt3                                Net          -        -       -          -           2         
-core.alru.rsub64.s7.qc_out                   ORCALUT4     D        In      0.000      50.933      -         
-core.alru.rsub64.s7.qc_out                   ORCALUT4     Z        Out     0.449      51.381      -         
-c7                                           Net          -        -       -          -           1         
-core.alru.rsub64.s8.sub_cry_0_0_RNO          ORCALUT4     B        In      0.000      51.381      -         
-core.alru.rsub64.s8.sub_cry_0_0_RNO          ORCALUT4     Z        Out     1.017      52.398      -         
-un1_c7_i                                     Net          -        -       -          -           1         
-core.alru.rsub64.s8.sub_cry_0_0              CCU2D        B0       In      0.000      52.398      -         
-core.alru.rsub64.s8.sub_cry_0_0              CCU2D        COUT     Out     1.545      53.943      -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.s8.sub_cry_1_0              CCU2D        CIN      In      0.000      53.943      -         
-core.alru.rsub64.s8.sub_cry_1_0              CCU2D        S0       Out     1.725      55.668      -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.s8.un3_qc_outlto2           ORCALUT4     A        In      0.000      55.668      -         
-core.alru.rsub64.s8.un3_qc_outlto2           ORCALUT4     Z        Out     1.017      56.685      -         
-un3_qc_outlt3                                Net          -        -       -          -           1         
-core.alru.rsub64.s8.qc_out                   ORCALUT4     D        In      0.000      56.685      -         
-core.alru.rsub64.s8.qc_out                   ORCALUT4     Z        Out     0.449      57.133      -         
-c8                                           Net          -        -       -          -           2         
-core.alru.rsub64.s9.sub_cry_0_0_RNO          ORCALUT4     A        In      0.000      57.133      -         
-core.alru.rsub64.s9.sub_cry_0_0_RNO          ORCALUT4     Z        Out     1.017      58.150      -         
-un1_c8_i                                     Net          -        -       -          -           1         
-core.alru.rsub64.s9.sub_cry_0_0              CCU2D        B0       In      0.000      58.150      -         
-core.alru.rsub64.s9.sub_cry_0_0              CCU2D        COUT     Out     1.545      59.695      -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.s9.sub_cry_1_0              CCU2D        CIN      In      0.000      59.695      -         
-core.alru.rsub64.s9.sub_cry_1_0              CCU2D        S0       Out     1.725      61.420      -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.s9.un3_qc_outlto2           ORCALUT4     A        In      0.000      61.420      -         
-core.alru.rsub64.s9.un3_qc_outlto2           ORCALUT4     Z        Out     1.017      62.436      -         
-un3_qc_outlt3                                Net          -        -       -          -           1         
-core.alru.rsub64.s9.qc_out                   ORCALUT4     D        In      0.000      62.436      -         
-core.alru.rsub64.s9.qc_out                   ORCALUT4     Z        Out     0.449      62.885      -         
-c9                                           Net          -        -       -          -           2         
-core.alru.rsub64.sa.sub_cry_0_0_RNO          ORCALUT4     A        In      0.000      62.885      -         
-core.alru.rsub64.sa.sub_cry_0_0_RNO          ORCALUT4     Z        Out     1.017      63.902      -         
-un1_c9_i                                     Net          -        -       -          -           1         
-core.alru.rsub64.sa.sub_cry_0_0              CCU2D        B0       In      0.000      63.902      -         
-core.alru.rsub64.sa.sub_cry_0_0              CCU2D        COUT     Out     1.545      65.447      -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.sa.sub_cry_1_0              CCU2D        CIN      In      0.000      65.447      -         
-core.alru.rsub64.sa.sub_cry_1_0              CCU2D        S0       Out     1.725      67.171      -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.sa.un3_qc_outlto2           ORCALUT4     A        In      0.000      67.171      -         
-core.alru.rsub64.sa.un3_qc_outlto2           ORCALUT4     Z        Out     1.017      68.188      -         
-un3_qc_outlt3                                Net          -        -       -          -           1         
-core.alru.rsub64.sa.qc_out                   ORCALUT4     D        In      0.000      68.188      -         
-core.alru.rsub64.sa.qc_out                   ORCALUT4     Z        Out     0.449      68.637      -         
-ca                                           Net          -        -       -          -           2         
-core.alru.rsub64.sb.sub_cry_0_0_RNO          ORCALUT4     B        In      0.000      68.637      -         
-core.alru.rsub64.sb.sub_cry_0_0_RNO          ORCALUT4     Z        Out     1.017      69.654      -         
-un1_ca_i                                     Net          -        -       -          -           1         
-core.alru.rsub64.sb.sub_cry_0_0              CCU2D        B0       In      0.000      69.654      -         
-core.alru.rsub64.sb.sub_cry_0_0              CCU2D        COUT     Out     1.545      71.198      -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.sb.sub_cry_1_0              CCU2D        CIN      In      0.000      71.198      -         
-core.alru.rsub64.sb.sub_cry_1_0              CCU2D        S0       Out     1.725      72.923      -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.sb.un3_qc_outlto2           ORCALUT4     A        In      0.000      72.923      -         
-core.alru.rsub64.sb.un3_qc_outlto2           ORCALUT4     Z        Out     1.017      73.940      -         
-un3_qc_outlt3                                Net          -        -       -          -           1         
-core.alru.rsub64.sb.qc_out                   ORCALUT4     D        In      0.000      73.940      -         
-core.alru.rsub64.sb.qc_out                   ORCALUT4     Z        Out     0.449      74.389      -         
-cb                                           Net          -        -       -          -           2         
-core.alru.rsub64.sc.sub_cry_0_0_RNO          ORCALUT4     B        In      0.000      74.389      -         
-core.alru.rsub64.sc.sub_cry_0_0_RNO          ORCALUT4     Z        Out     1.017      75.406      -         
-un1_cb_i                                     Net          -        -       -          -           1         
-core.alru.rsub64.sc.sub_cry_0_0              CCU2D        B0       In      0.000      75.406      -         
-core.alru.rsub64.sc.sub_cry_0_0              CCU2D        COUT     Out     1.545      76.950      -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.sc.sub_cry_1_0              CCU2D        CIN      In      0.000      76.950      -         
-core.alru.rsub64.sc.sub_cry_1_0              CCU2D        S0       Out     1.725      78.675      -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.sc.un3_qc_outlto2           ORCALUT4     A        In      0.000      78.675      -         
-core.alru.rsub64.sc.un3_qc_outlto2           ORCALUT4     Z        Out     1.017      79.692      -         
-un3_qc_outlt3                                Net          -        -       -          -           1         
-core.alru.rsub64.sc.qc_out                   ORCALUT4     D        In      0.000      79.692      -         
-core.alru.rsub64.sc.qc_out                   ORCALUT4     Z        Out     0.449      80.141      -         
-cc                                           Net          -        -       -          -           2         
-core.alru.rsub64.sd.sub_cry_0_0_RNO          ORCALUT4     A        In      0.000      80.141      -         
-core.alru.rsub64.sd.sub_cry_0_0_RNO          ORCALUT4     Z        Out     1.017      81.158      -         
-un1_cc_i                                     Net          -        -       -          -           1         
-core.alru.rsub64.sd.sub_cry_0_0              CCU2D        B0       In      0.000      81.158      -         
-core.alru.rsub64.sd.sub_cry_0_0              CCU2D        COUT     Out     1.545      82.702      -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.sd.sub_cry_1_0              CCU2D        CIN      In      0.000      82.702      -         
-core.alru.rsub64.sd.sub_cry_1_0              CCU2D        S0       Out     1.725      84.427      -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.sd.un3_qc_outlto2           ORCALUT4     A        In      0.000      84.427      -         
-core.alru.rsub64.sd.un3_qc_outlto2           ORCALUT4     Z        Out     1.017      85.444      -         
-un3_qc_outlt3                                Net          -        -       -          -           1         
-core.alru.rsub64.sd.qc_out                   ORCALUT4     D        In      0.000      85.444      -         
-core.alru.rsub64.sd.qc_out                   ORCALUT4     Z        Out     0.449      85.893      -         
-cd                                           Net          -        -       -          -           2         
-core.alru.rsub64.se.sub_cry_0_0_RNO          ORCALUT4     A        In      0.000      85.893      -         
-core.alru.rsub64.se.sub_cry_0_0_RNO          ORCALUT4     Z        Out     1.017      86.910      -         
-un1_cd_i                                     Net          -        -       -          -           1         
-core.alru.rsub64.se.sub_cry_0_0              CCU2D        B0       In      0.000      86.910      -         
-core.alru.rsub64.se.sub_cry_0_0              CCU2D        COUT     Out     1.545      88.454      -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.se.sub_cry_1_0              CCU2D        CIN      In      0.000      88.454      -         
-core.alru.rsub64.se.sub_cry_1_0              CCU2D        S0       Out     1.725      90.179      -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.se.un3_qc_outlto2           ORCALUT4     A        In      0.000      90.179      -         
-core.alru.rsub64.se.un3_qc_outlto2           ORCALUT4     Z        Out     1.017      91.196      -         
-un3_qc_outlt3                                Net          -        -       -          -           1         
-core.alru.rsub64.se.qc_out                   ORCALUT4     D        In      0.000      91.196      -         
-core.alru.rsub64.se.qc_out                   ORCALUT4     Z        Out     0.449      91.645      -         
-ce                                           Net          -        -       -          -           2         
-core.alru.rsub64.sf.sub_cry_0_0_RNO          ORCALUT4     A        In      0.000      91.645      -         
-core.alru.rsub64.sf.sub_cry_0_0_RNO          ORCALUT4     Z        Out     1.017      92.662      -         
-un1_ce_i                                     Net          -        -       -          -           1         
-core.alru.rsub64.sf.sub_cry_0_0              CCU2D        B0       In      0.000      92.662      -         
-core.alru.rsub64.sf.sub_cry_0_0              CCU2D        COUT     Out     1.545      94.206      -         
-sub_cry_0                                    Net          -        -       -          -           1         
-core.alru.rsub64.sf.sub_cry_1_0              CCU2D        CIN      In      0.000      94.206      -         
-core.alru.rsub64.sf.sub_cry_1_0              CCU2D        S0       Out     1.725      95.931      -         
-sub[1]                                       Net          -        -       -          -           4         
-core.alru.rsub64.sf.un3_qc_outlto2           ORCALUT4     A        In      0.000      95.931      -         
-core.alru.rsub64.sf.un3_qc_outlto2           ORCALUT4     Z        Out     0.449      96.380      -         
-un3_qc_outlt3                                Net          -        -       -          -           1         
-core.alru.rsub64.qc_out_12_bm                ORCALUT4     D        In      0.000      96.380      -         
-core.alru.rsub64.qc_out_12_bm                ORCALUT4     Z        Out     1.017      97.397      -         
-qc_out_12_bm                                 Net          -        -       -          -           1         
-core.alru.rsub64.qc_out_12                   PFUMX        ALUT     In      0.000      97.397      -         
-core.alru.rsub64.qc_out_12                   PFUMX        Z        Out     0.214      97.611      -         
-N_472                                        Net          -        -       -          -           1         
-core.alru.rsub64.qc_out_14_i_m2_bm           ORCALUT4     B        In      0.000      97.611      -         
-core.alru.rsub64.qc_out_14_i_m2_bm           ORCALUT4     Z        Out     1.017      98.628      -         
-qc_out_14_i_m2_bm                            Net          -        -       -          -           1         
-core.alru.rsub64.qc_out_14_i_m2              PFUMX        ALUT     In      0.000      98.628      -         
-core.alru.rsub64.qc_out_14_i_m2              PFUMX        Z        Out     -0.064     98.564      -         
-N_8830                                       Net          -        -       -          -           1         
-core.alru.rsub64.qc_out_15_i_m2              L6MUX21      D1       In      0.000      98.564      -         
-core.alru.rsub64.qc_out_15_i_m2              L6MUX21      Z        Out     0.732      99.296      -         
-N_8784                                       Net          -        -       -          -           1         
-core.alru.add64.alu_carry_6_am               ORCALUT4     A        In      0.000      99.296      -         
-core.alru.add64.alu_carry_6_am               ORCALUT4     Z        Out     1.017      100.313     -         
-alu_carry_6_am                               Net          -        -       -          -           1         
-core.alru.add64.alu_carry_6                  PFUMX        BLUT     In      0.000      100.313     -         
-core.alru.add64.alu_carry_6                  PFUMX        Z        Out     0.214      100.527     -         
-N_4104                                       Net          -        -       -          -           1         
-core.alru.add64.alu_carry_9                  ORCALUT4     A        In      0.000      100.527     -         
-core.alru.add64.alu_carry_9                  ORCALUT4     Z        Out     1.017      101.544     -         
-N_4109                                       Net          -        -       -          -           1         
-core.alru.add64.alu_carry_u                  ORCALUT4     B        In      0.000      101.544     -         
-core.alru.add64.alu_carry_u                  ORCALUT4     Z        Out     0.449      101.992     -         
-alu_carry                                    Net          -        -       -          -           1         
-core.alru.f_carry_0                          ORCALUT4     B        In      0.000      101.992     -         
-core.alru.f_carry_0                          ORCALUT4     Z        Out     1.017      103.009     -         
-N_1                                          Net          -        -       -          -           1         
-core.alru.f_carry_2                          ORCALUT4     A        In      0.000      103.009     -         
-core.alru.f_carry_2                          ORCALUT4     Z        Out     0.617      103.626     -         
-f_carry_2                                    Net          -        -       -          -           1         
-core.alru.f_carry                            FD1S3AX      D        In      0.000      103.626     -         
-============================================================================================================
+Instance / Net                                         Pin      Pin                Arrival     No. of    
+Name                                      Type         Name     Dir     Delay      Time        Fan Out(s)
+---------------------------------------------------------------------------------------------------------
+core.dec_seq.op1_reg_o[5]                 FD1P3JX      Q        Out     1.324      1.324       -         
+seq_op1_reg[5]                            Net          -        -       -          -           34        
+core.alru.src_reg67                       ORCALUT4     C        In      0.000      1.324       -         
+core.alru.src_reg67                       ORCALUT4     Z        Out     1.313      2.637       -         
+src_reg67                                 Net          -        -       -          -           16        
+core.alru.src_reg_1_sqmuxa                ORCALUT4     A        In      0.000      2.637       -         
+core.alru.src_reg_1_sqmuxa                ORCALUT4     Z        Out     1.325      3.961       -         
+src_reg_1_sqmuxa                          Net          -        -       -          -           20        
+core.alru.src_reg_1_0_iv_5[0]             ORCALUT4     C        In      0.000      3.961       -         
+core.alru.src_reg_1_0_iv_5[0]             ORCALUT4     Z        Out     1.017      4.978       -         
+src_reg_1_0_iv_5[0]                       Net          -        -       -          -           1         
+core.alru.src_reg_1_0_iv_7[0]             ORCALUT4     C        In      0.000      4.978       -         
+core.alru.src_reg_1_0_iv_7[0]             ORCALUT4     Z        Out     1.017      5.995       -         
+src_reg_1_0_iv_7[0]                       Net          -        -       -          -           1         
+core.alru.src_reg_1_0_iv[0]               ORCALUT4     C        In      0.000      5.995       -         
+core.alru.src_reg_1_0_iv[0]               ORCALUT4     Z        Out     0.449      6.444       -         
+src_reg_1[0]                              Net          -        -       -          -           2         
+core.alru.sub64.s0.sub_cry_0_0            CCU2D        B1       In      0.000      6.444       -         
+core.alru.sub64.s0.sub_cry_0_0            CCU2D        COUT     Out     1.545      7.988       -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.s0.sub_cry_1_0            CCU2D        CIN      In      0.000      7.988       -         
+core.alru.sub64.s0.sub_cry_1_0            CCU2D        S0       Out     1.725      9.713       -         
+sub[1]                                    Net          -        -       -          -           4         
+core.alru.sub64.un1_c0_0_o2               ORCALUT4     A        In      0.000      9.713       -         
+core.alru.sub64.un1_c0_0_o2               ORCALUT4     Z        Out     1.017      10.730      -         
+N_9070                                    Net          -        -       -          -           1         
+core.alru.sub64.un1_c0_0_o3               ORCALUT4     A        In      0.000      10.730      -         
+core.alru.sub64.un1_c0_0_o3               ORCALUT4     Z        Out     1.089      11.819      -         
+c0                                        Net          -        -       -          -           2         
+core.alru.sub64.s1.sub_cry_0_0_RNO        ORCALUT4     A        In      0.000      11.819      -         
+core.alru.sub64.s1.sub_cry_0_0_RNO        ORCALUT4     Z        Out     1.017      12.836      -         
+un1_c0_i                                  Net          -        -       -          -           1         
+core.alru.sub64.s1.sub_cry_0_0            CCU2D        B0       In      0.000      12.836      -         
+core.alru.sub64.s1.sub_cry_0_0            CCU2D        COUT     Out     1.545      14.380      -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.s1.sub_cry_1_0            CCU2D        CIN      In      0.000      14.380      -         
+core.alru.sub64.s1.sub_cry_1_0            CCU2D        S0       Out     1.725      16.105      -         
+sub[1]                                    Net          -        -       -          -           4         
+core.alru.sub64.s1.un3_qc_outlto2         ORCALUT4     A        In      0.000      16.105      -         
+core.alru.sub64.s1.un3_qc_outlto2         ORCALUT4     Z        Out     1.017      17.122      -         
+un3_qc_outlt3                             Net          -        -       -          -           1         
+core.alru.sub64.s1.qc_out                 ORCALUT4     C        In      0.000      17.122      -         
+core.alru.sub64.s1.qc_out                 ORCALUT4     Z        Out     0.449      17.571      -         
+c1                                        Net          -        -       -          -           2         
+core.alru.sub64.s2.sub_cry_0_0_RNO        ORCALUT4     B        In      0.000      17.571      -         
+core.alru.sub64.s2.sub_cry_0_0_RNO        ORCALUT4     Z        Out     1.017      18.588      -         
+un1_c1_i                                  Net          -        -       -          -           1         
+core.alru.sub64.s2.sub_cry_0_0            CCU2D        B0       In      0.000      18.588      -         
+core.alru.sub64.s2.sub_cry_0_0            CCU2D        COUT     Out     1.545      20.132      -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.s2.sub_cry_1_0            CCU2D        CIN      In      0.000      20.132      -         
+core.alru.sub64.s2.sub_cry_1_0            CCU2D        S0       Out     1.725      21.857      -         
+sub[1]                                    Net          -        -       -          -           4         
+core.alru.sub64.s2.un3_qc_outlto2         ORCALUT4     A        In      0.000      21.857      -         
+core.alru.sub64.s2.un3_qc_outlto2         ORCALUT4     Z        Out     1.017      22.874      -         
+un3_qc_outlt3                             Net          -        -       -          -           1         
+core.alru.sub64.s2.qc_out                 ORCALUT4     C        In      0.000      22.874      -         
+core.alru.sub64.s2.qc_out                 ORCALUT4     Z        Out     0.449      23.323      -         
+c2                                        Net          -        -       -          -           2         
+core.alru.sub64.s3.sub_cry_0_0_RNO        ORCALUT4     A        In      0.000      23.323      -         
+core.alru.sub64.s3.sub_cry_0_0_RNO        ORCALUT4     Z        Out     1.017      24.340      -         
+un1_c2_i                                  Net          -        -       -          -           1         
+core.alru.sub64.s3.sub_cry_0_0            CCU2D        B0       In      0.000      24.340      -         
+core.alru.sub64.s3.sub_cry_0_0            CCU2D        COUT     Out     1.545      25.884      -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.s3.sub_cry_1_0            CCU2D        CIN      In      0.000      25.884      -         
+core.alru.sub64.s3.sub_cry_1_0            CCU2D        S0       Out     1.725      27.609      -         
+sub[1]                                    Net          -        -       -          -           4         
+core.alru.sub64.s3.un3_qc_outlto2         ORCALUT4     A        In      0.000      27.609      -         
+core.alru.sub64.s3.un3_qc_outlto2         ORCALUT4     Z        Out     1.017      28.626      -         
+un3_qc_outlt3                             Net          -        -       -          -           1         
+core.alru.sub64.s3.qc_out                 ORCALUT4     C        In      0.000      28.626      -         
+core.alru.sub64.s3.qc_out                 ORCALUT4     Z        Out     0.449      29.075      -         
+c3                                        Net          -        -       -          -           2         
+core.alru.sub64.s4.sub_cry_0_0_RNO        ORCALUT4     B        In      0.000      29.075      -         
+core.alru.sub64.s4.sub_cry_0_0_RNO        ORCALUT4     Z        Out     1.017      30.091      -         
+un1_c3_i                                  Net          -        -       -          -           1         
+core.alru.sub64.s4.sub_cry_0_0            CCU2D        B0       In      0.000      30.091      -         
+core.alru.sub64.s4.sub_cry_0_0            CCU2D        COUT     Out     1.545      31.636      -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.s4.sub_cry_1_0            CCU2D        CIN      In      0.000      31.636      -         
+core.alru.sub64.s4.sub_cry_1_0            CCU2D        S0       Out     1.725      33.361      -         
+sub[1]                                    Net          -        -       -          -           4         
+core.alru.sub64.s4.un3_qc_outlto2         ORCALUT4     A        In      0.000      33.361      -         
+core.alru.sub64.s4.un3_qc_outlto2         ORCALUT4     Z        Out     1.017      34.378      -         
+un3_qc_outlt3                             Net          -        -       -          -           1         
+core.alru.sub64.s4.qc_out                 ORCALUT4     C        In      0.000      34.378      -         
+core.alru.sub64.s4.qc_out                 ORCALUT4     Z        Out     0.449      34.827      -         
+c4                                        Net          -        -       -          -           2         
+core.alru.sub64.s5.sub_cry_0_0_RNO        ORCALUT4     A        In      0.000      34.827      -         
+core.alru.sub64.s5.sub_cry_0_0_RNO        ORCALUT4     Z        Out     1.017      35.843      -         
+un1_c4_i                                  Net          -        -       -          -           1         
+core.alru.sub64.s5.sub_cry_0_0            CCU2D        B0       In      0.000      35.843      -         
+core.alru.sub64.s5.sub_cry_0_0            CCU2D        COUT     Out     1.545      37.388      -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.s5.sub_cry_1_0            CCU2D        CIN      In      0.000      37.388      -         
+core.alru.sub64.s5.sub_cry_1_0            CCU2D        S0       Out     1.725      39.113      -         
+sub[1]                                    Net          -        -       -          -           4         
+core.alru.sub64.s5.un3_qc_outlto2         ORCALUT4     A        In      0.000      39.113      -         
+core.alru.sub64.s5.un3_qc_outlto2         ORCALUT4     Z        Out     1.017      40.130      -         
+un3_qc_outlt3                             Net          -        -       -          -           1         
+core.alru.sub64.s5.qc_out                 ORCALUT4     C        In      0.000      40.130      -         
+core.alru.sub64.s5.qc_out                 ORCALUT4     Z        Out     0.449      40.578      -         
+c5                                        Net          -        -       -          -           2         
+core.alru.sub64.s6.sub_cry_0_0_RNO        ORCALUT4     B        In      0.000      40.578      -         
+core.alru.sub64.s6.sub_cry_0_0_RNO        ORCALUT4     Z        Out     1.017      41.595      -         
+un1_c5_i                                  Net          -        -       -          -           1         
+core.alru.sub64.s6.sub_cry_0_0            CCU2D        B0       In      0.000      41.595      -         
+core.alru.sub64.s6.sub_cry_0_0            CCU2D        COUT     Out     1.545      43.140      -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.s6.sub_cry_1_0            CCU2D        CIN      In      0.000      43.140      -         
+core.alru.sub64.s6.sub_cry_1_0            CCU2D        S0       Out     1.725      44.865      -         
+sub[1]                                    Net          -        -       -          -           4         
+core.alru.sub64.s6.un3_qc_outlto2         ORCALUT4     A        In      0.000      44.865      -         
+core.alru.sub64.s6.un3_qc_outlto2         ORCALUT4     Z        Out     1.017      45.882      -         
+un3_qc_outlt3                             Net          -        -       -          -           1         
+core.alru.sub64.s6.qc_out                 ORCALUT4     C        In      0.000      45.882      -         
+core.alru.sub64.s6.qc_out                 ORCALUT4     Z        Out     0.449      46.330      -         
+c6                                        Net          -        -       -          -           2         
+core.alru.sub64.s7.sub_cry_0_0_RNO        ORCALUT4     B        In      0.000      46.330      -         
+core.alru.sub64.s7.sub_cry_0_0_RNO        ORCALUT4     Z        Out     1.017      47.347      -         
+un1_c6_i                                  Net          -        -       -          -           1         
+core.alru.sub64.s7.sub_cry_0_0            CCU2D        B0       In      0.000      47.347      -         
+core.alru.sub64.s7.sub_cry_0_0            CCU2D        COUT     Out     1.545      48.892      -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.s7.sub_cry_1_0            CCU2D        CIN      In      0.000      48.892      -         
+core.alru.sub64.s7.sub_cry_1_0            CCU2D        S0       Out     1.725      50.617      -         
+sub[1]                                    Net          -        -       -          -           4         
+core.alru.sub64.s7.un3_qc_outlto2         ORCALUT4     A        In      0.000      50.617      -         
+core.alru.sub64.s7.un3_qc_outlto2         ORCALUT4     Z        Out     1.017      51.633      -         
+un3_qc_outlt3                             Net          -        -       -          -           1         
+core.alru.sub64.s7.qc_out                 ORCALUT4     C        In      0.000      51.633      -         
+core.alru.sub64.s7.qc_out                 ORCALUT4     Z        Out     0.449      52.082      -         
+c7                                        Net          -        -       -          -           2         
+core.alru.sub64.s8.sub_cry_0_0_RNO        ORCALUT4     A        In      0.000      52.082      -         
+core.alru.sub64.s8.sub_cry_0_0_RNO        ORCALUT4     Z        Out     1.017      53.099      -         
+un1_c7_i                                  Net          -        -       -          -           1         
+core.alru.sub64.s8.sub_cry_0_0            CCU2D        B0       In      0.000      53.099      -         
+core.alru.sub64.s8.sub_cry_0_0            CCU2D        COUT     Out     1.545      54.644      -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.s8.sub_cry_1_0            CCU2D        CIN      In      0.000      54.644      -         
+core.alru.sub64.s8.sub_cry_1_0            CCU2D        S0       Out     1.725      56.368      -         
+sub[1]                                    Net          -        -       -          -           4         
+core.alru.sub64.s8.un3_qc_outlto2         ORCALUT4     A        In      0.000      56.368      -         
+core.alru.sub64.s8.un3_qc_outlto2         ORCALUT4     Z        Out     1.017      57.385      -         
+un3_qc_outlt3                             Net          -        -       -          -           1         
+core.alru.sub64.s8.qc_out                 ORCALUT4     C        In      0.000      57.385      -         
+core.alru.sub64.s8.qc_out                 ORCALUT4     Z        Out     0.449      57.834      -         
+c8                                        Net          -        -       -          -           2         
+core.alru.sub64.s9.sub_cry_0_0_RNO        ORCALUT4     A        In      0.000      57.834      -         
+core.alru.sub64.s9.sub_cry_0_0_RNO        ORCALUT4     Z        Out     1.017      58.851      -         
+un1_c8_i                                  Net          -        -       -          -           1         
+core.alru.sub64.s9.sub_cry_0_0            CCU2D        B0       In      0.000      58.851      -         
+core.alru.sub64.s9.sub_cry_0_0            CCU2D        COUT     Out     1.545      60.395      -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.s9.sub_cry_1_0            CCU2D        CIN      In      0.000      60.395      -         
+core.alru.sub64.s9.sub_cry_1_0            CCU2D        S0       Out     1.725      62.120      -         
+sub[1]                                    Net          -        -       -          -           4         
+core.alru.sub64.s9.un3_qc_outlto2         ORCALUT4     A        In      0.000      62.120      -         
+core.alru.sub64.s9.un3_qc_outlto2         ORCALUT4     Z        Out     1.017      63.137      -         
+un3_qc_outlt3                             Net          -        -       -          -           1         
+core.alru.sub64.s9.qc_out_0               ORCALUT4     C        In      0.000      63.137      -         
+core.alru.sub64.s9.qc_out_0               ORCALUT4     Z        Out     0.449      63.586      -         
+c9                                        Net          -        -       -          -           2         
+core.alru.sub64.sa.sub_cry_0_0_RNO        ORCALUT4     B        In      0.000      63.586      -         
+core.alru.sub64.sa.sub_cry_0_0_RNO        ORCALUT4     Z        Out     1.017      64.603      -         
+un1_c9_i                                  Net          -        -       -          -           1         
+core.alru.sub64.sa.sub_cry_0_0            CCU2D        B0       In      0.000      64.603      -         
+core.alru.sub64.sa.sub_cry_0_0            CCU2D        COUT     Out     1.545      66.147      -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.sa.sub_cry_1_0            CCU2D        CIN      In      0.000      66.147      -         
+core.alru.sub64.sa.sub_cry_1_0            CCU2D        S0       Out     1.725      67.872      -         
+sub[1]                                    Net          -        -       -          -           4         
+core.alru.sub64.sa.un3_qc_outlto2         ORCALUT4     A        In      0.000      67.872      -         
+core.alru.sub64.sa.un3_qc_outlto2         ORCALUT4     Z        Out     1.017      68.889      -         
+un3_qc_outlt3                             Net          -        -       -          -           1         
+core.alru.sub64.sa.qc_out                 ORCALUT4     C        In      0.000      68.889      -         
+core.alru.sub64.sa.qc_out                 ORCALUT4     Z        Out     0.449      69.338      -         
+ca                                        Net          -        -       -          -           2         
+core.alru.sub64.sb.sub_cry_0_0_RNO        ORCALUT4     A        In      0.000      69.338      -         
+core.alru.sub64.sb.sub_cry_0_0_RNO        ORCALUT4     Z        Out     1.017      70.355      -         
+un1_ca_i                                  Net          -        -       -          -           1         
+core.alru.sub64.sb.sub_cry_0_0            CCU2D        B0       In      0.000      70.355      -         
+core.alru.sub64.sb.sub_cry_0_0            CCU2D        COUT     Out     1.545      71.899      -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.sb.sub_cry_1_0            CCU2D        CIN      In      0.000      71.899      -         
+core.alru.sub64.sb.sub_cry_1_0            CCU2D        S0       Out     1.725      73.624      -         
+sub[1]                                    Net          -        -       -          -           4         
+core.alru.sub64.sb.un3_qc_outlto2         ORCALUT4     A        In      0.000      73.624      -         
+core.alru.sub64.sb.un3_qc_outlto2         ORCALUT4     Z        Out     1.017      74.641      -         
+un3_qc_outlt3                             Net          -        -       -          -           1         
+core.alru.sub64.sb.qc_out                 ORCALUT4     C        In      0.000      74.641      -         
+core.alru.sub64.sb.qc_out                 ORCALUT4     Z        Out     0.449      75.090      -         
+cb                                        Net          -        -       -          -           2         
+core.alru.sub64.sc.sub_cry_0_0_RNO        ORCALUT4     B        In      0.000      75.090      -         
+core.alru.sub64.sc.sub_cry_0_0_RNO        ORCALUT4     Z        Out     1.017      76.107      -         
+un1_cb_i                                  Net          -        -       -          -           1         
+core.alru.sub64.sc.sub_cry_0_0            CCU2D        B0       In      0.000      76.107      -         
+core.alru.sub64.sc.sub_cry_0_0            CCU2D        COUT     Out     1.545      77.651      -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.sc.sub_cry_1_0            CCU2D        CIN      In      0.000      77.651      -         
+core.alru.sub64.sc.sub_cry_1_0            CCU2D        S0       Out     1.725      79.376      -         
+sub[1]                                    Net          -        -       -          -           4         
+core.alru.sub64.sc.un3_qc_outlto2         ORCALUT4     A        In      0.000      79.376      -         
+core.alru.sub64.sc.un3_qc_outlto2         ORCALUT4     Z        Out     1.017      80.393      -         
+un3_qc_outlt3                             Net          -        -       -          -           1         
+core.alru.sub64.sc.qc_out                 ORCALUT4     C        In      0.000      80.393      -         
+core.alru.sub64.sc.qc_out                 ORCALUT4     Z        Out     0.449      80.842      -         
+cc                                        Net          -        -       -          -           2         
+core.alru.sub64.sd.sub_cry_0_0_RNO        ORCALUT4     A        In      0.000      80.842      -         
+core.alru.sub64.sd.sub_cry_0_0_RNO        ORCALUT4     Z        Out     1.017      81.859      -         
+un1_cc_i                                  Net          -        -       -          -           1         
+core.alru.sub64.sd.sub_cry_0_0            CCU2D        B0       In      0.000      81.859      -         
+core.alru.sub64.sd.sub_cry_0_0            CCU2D        COUT     Out     1.545      83.403      -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.sd.sub_cry_1_0            CCU2D        CIN      In      0.000      83.403      -         
+core.alru.sub64.sd.sub_cry_1_0            CCU2D        S0       Out     1.725      85.128      -         
+sub[1]                                    Net          -        -       -          -           4         
+core.alru.sub64.sd.un3_qc_outlto2         ORCALUT4     A        In      0.000      85.128      -         
+core.alru.sub64.sd.un3_qc_outlto2         ORCALUT4     Z        Out     1.017      86.145      -         
+un3_qc_outlt3                             Net          -        -       -          -           1         
+core.alru.sub64.sd.qc_out                 ORCALUT4     C        In      0.000      86.145      -         
+core.alru.sub64.sd.qc_out                 ORCALUT4     Z        Out     0.449      86.594      -         
+cd                                        Net          -        -       -          -           2         
+core.alru.sub64.se.sub_cry_0_0_RNO        ORCALUT4     B        In      0.000      86.594      -         
+core.alru.sub64.se.sub_cry_0_0_RNO        ORCALUT4     Z        Out     1.017      87.610      -         
+un1_cd_i                                  Net          -        -       -          -           1         
+core.alru.sub64.se.sub_cry_0_0            CCU2D        B0       In      0.000      87.610      -         
+core.alru.sub64.se.sub_cry_0_0            CCU2D        COUT     Out     1.545      89.155      -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.se.sub_cry_1_0            CCU2D        CIN      In      0.000      89.155      -         
+core.alru.sub64.se.sub_cry_1_0            CCU2D        S1       Out     1.725      90.880      -         
+sub[2]                                    Net          -        -       -          -           4         
+core.alru.sub64.se.un3_qc_outlto2         ORCALUT4     B        In      0.000      90.880      -         
+core.alru.sub64.se.un3_qc_outlto2         ORCALUT4     Z        Out     1.017      91.897      -         
+un3_qc_outlt3                             Net          -        -       -          -           1         
+core.alru.sub64.se.qc_out                 ORCALUT4     C        In      0.000      91.897      -         
+core.alru.sub64.se.qc_out                 ORCALUT4     Z        Out     0.449      92.346      -         
+ce                                        Net          -        -       -          -           2         
+core.alru.sub64.sf.sub_cry_0_0_RNO        ORCALUT4     B        In      0.000      92.346      -         
+core.alru.sub64.sf.sub_cry_0_0_RNO        ORCALUT4     Z        Out     1.017      93.362      -         
+un1_ce_i                                  Net          -        -       -          -           1         
+core.alru.sub64.sf.sub_cry_0_0            CCU2D        B0       In      0.000      93.362      -         
+core.alru.sub64.sf.sub_cry_0_0            CCU2D        COUT     Out     1.545      94.907      -         
+sub_cry_0                                 Net          -        -       -          -           1         
+core.alru.sub64.sf.sub_cry_1_0            CCU2D        CIN      In      0.000      94.907      -         
+core.alru.sub64.sf.sub_cry_1_0            CCU2D        S0       Out     1.725      96.632      -         
+sub[1]                                    Net          -        -       -          -           4         
+core.alru.sub64.sf.un3_qc_outlto1         ORCALUT4     A        In      0.000      96.632      -         
+core.alru.sub64.sf.un3_qc_outlto1         ORCALUT4     Z        Out     1.017      97.649      -         
+un3_qc_outlt2                             Net          -        -       -          -           1         
+core.alru.sub64.sf.qc_out_0_a2            ORCALUT4     C        In      0.000      97.649      -         
+core.alru.sub64.sf.qc_out_0_a2            ORCALUT4     Z        Out     0.449      98.097      -         
+N_9016                                    Net          -        -       -          -           1         
+core.alru.add64.alu_carry_u_0_m2_5_bm     ORCALUT4     A        In      0.000      98.097      -         
+core.alru.add64.alu_carry_u_0_m2_5_bm     ORCALUT4     Z        Out     1.017      99.114      -         
+alu_carry_u_0_m2_5_bm                     Net          -        -       -          -           1         
+core.alru.add64.alu_carry_u_0_m2_5        PFUMX        ALUT     In      0.000      99.114      -         
+core.alru.add64.alu_carry_u_0_m2_5        PFUMX        Z        Out     -0.064     99.051      -         
+N_8934                                    Net          -        -       -          -           1         
+core.alru.add64.alu_carry_u_0_m2_3        L6MUX21      D1       In      0.000      99.051      -         
+core.alru.add64.alu_carry_u_0_m2_3        L6MUX21      Z        Out     0.732      99.782      -         
+N_8938                                    Net          -        -       -          -           1         
+core.alru.add64.alu_carry_u_0_m2_1        L6MUX21      D1       In      0.000      99.782      -         
+core.alru.add64.alu_carry_u_0_m2_1        L6MUX21      Z        Out     0.732      100.514     -         
+N_8940                                    Net          -        -       -          -           1         
+core.alru.add64.alu_carry_u_0_a2_0        ORCALUT4     A        In      0.000      100.514     -         
+core.alru.add64.alu_carry_u_0_a2_0        ORCALUT4     Z        Out     0.449      100.963     -         
+N_235                                     Net          -        -       -          -           1         
+core.alru.f_carry_0                       ORCALUT4     B        In      0.000      100.963     -         
+core.alru.f_carry_0                       ORCALUT4     Z        Out     1.017      101.980     -         
+N_1                                       Net          -        -       -          -           1         
+core.alru.f_carry_2                       ORCALUT4     A        In      0.000      101.980     -         
+core.alru.f_carry_2                       ORCALUT4     Z        Out     0.617      102.597     -         
+f_carry_2                                 Net          -        -       -          -           1         
+core.alru.f_carry                         FD1S3AX      D        In      0.000      102.597     -         
+=========================================================================================================
 
 
 
@@ -963,53 +922,55 @@ core.alru.f_carry                            FD1S3AX      D        In      0.000
 Timing exceptions that could not be applied
 None
 
-Finished final timing analysis (Real Time elapsed 0h:00m:56s; CPU Time elapsed 0h:00m:56s; Memory used current: 268MB peak: 277MB)
+Finished final timing analysis (Real Time elapsed 0h:01m:01s; CPU Time elapsed 0h:01m:01s; Memory used current: 269MB peak: 303MB)
 
 
-Finished timing report (Real Time elapsed 0h:00m:56s; CPU Time elapsed 0h:00m:56s; Memory used current: 268MB peak: 277MB)
+Finished timing report (Real Time elapsed 0h:01m:01s; CPU Time elapsed 0h:01m:01s; Memory used current: 269MB peak: 303MB)
 
 ---------------------------------------
 Resource Usage Report
 Part: lcmxo2_7000ze-1
 
-Register bits: 1381 of 6864 (20%)
+Register bits: 1536 of 6864 (22%)
 PIC Latch:       0
 I/O cells:       46
 Block Rams : 18 of 26 (69%)
 
 
 Details:
-CCU2D:          320
+BB:             16
+CCU2D:          282
 DP8KC:          2
-DPR16X4C:       1
-FD1P3AX:        642
-FD1P3IX:        65
+DPR16X4C:       32
+FD1P3AX:        698
+FD1P3IX:        97
 FD1P3JX:        4
-FD1S3AX:        632
-FD1S3IX:        35
-FD1S3JX:        1
+FD1S3AX:        671
+FD1S3AY:        1
+FD1S3IX:        58
+FD1S3JX:        5
 GSR:            1
-IB:             17
+IB:             1
 IFS1P3DX:       1
-INV:            40
-L6MUX21:        65
+INV:            42
+L6MUX21:        59
 OB:             27
 OBZ:            2
 OFS1P3DX:       1
-ORCALUT4:       5308
+ORCALUT4:       5838
 OSCH:           1
-PFUMX:          534
+PFUMX:          625
 PUR:            1
 SP8KC:          16
-VHI:            41
-VLO:            61
+VHI:            27
+VLO:            44
 false:          2
-true:           22
+true:           19
 Mapper successful!
 
-At Mapper Exit (Real Time elapsed 0h:00m:57s; CPU Time elapsed 0h:00m:57s; Memory used current: 48MB peak: 277MB)
+At Mapper Exit (Real Time elapsed 0h:01m:01s; CPU Time elapsed 0h:01m:01s; Memory used current: 48MB peak: 303MB)
 
-Process took 0h:00m:57s realtime, 0h:00m:57s cputime
-# Sat Oct 07 14:49:26 2017
+Process took 0h:01m:01s realtime, 0h:01m:01s cputime
+# Thu Oct 12 07:18:42 2017
 
 ###########################################################]

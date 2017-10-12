@@ -27,6 +27,10 @@ module saturn_decoder_sequencer(
     input wire [ 4:0]    ibus_pre_fetched_opcode_length_in,    // valid nibbles
     input wire [19:0]    ibus_pre_fetched_opcode_addr_in,      // address of the prefetched bytes
     input wire           ibus_ready_in,   // asserted when the pre-fetch buffer is full
+    // Memory read/write
+    output wire          data_write_o,
+    output wire          data_read_o,
+    input wire           read_write_ready_in,
     // ALRU Control
     output wire          write_dst_o,       // write back the alu operation/memory dat or extra register to the destination register
     output wire          write_op1_o,       // write from alu register to extra register
@@ -54,9 +58,7 @@ module saturn_decoder_sequencer(
     output wire          load_pc_o,         // load PC
     output wire          push_rstk_o,       // push onto the stack
     output wire          pull_rstk_o,       // pull from stack
-    input wire [19:0]    PC_in,
-    output wire          dp_sel_o,          // selected data pointer D1=1, D0=0
-    input wire [19:0]    Dn_in
+    input wire [19:0]    PC_in
 `ifdef HAS_TRACE_UNIT
     ,
     output wire         trace_start_o,
@@ -65,16 +67,10 @@ module saturn_decoder_sequencer(
     );
 
 reg [3:0] state = `ST_INIT;
-reg [19:0] new_pc, curr_data_addr;
 reg [19:0] new_pc_jump = 20'h00000;
-reg load_new_pc, irq_ack;
+reg irq_ack;
 
 // alu control
-reg [3:0] field_left, field_right;       /* fields */
-reg [5:0] alu_reg1, alu_reg2;
-reg [5:0] alu_dst;  /* Alu operators */
-reg [4:0] alu_op;                       /* Alu opcode */
-
 reg force_carry;    // force carry set for A=A+1, A=A-1, P=P+1, ...
 reg force_hex;      // for Dn=Dn+CON
 
@@ -90,7 +86,7 @@ wire [5:0] op_alu_reg1;
 wire [5:0] op_alu_reg2;
 wire [5:0] op_alu_dst;
 wire [4:0] op_alu_op;
-
+reg [4:0] alu_op;   // latched ALU Operation
 // Bus controller i/o
 
 reg ibus_flush_q = 1'b0;
@@ -99,18 +95,14 @@ reg ibus_fetch_ack = 1'b0;
 
 // Decoding
 wire [3:0] op0, op1, op2, op3, op4, op5, op6;
-wire op_is_alu, op_has_read, op_has_write;
 wire op_goc, op_gonc, op_jrel3, op_jrel4, op_govlng;
 wire op_gosub, op_gosubl, op_gosbvl;
 
-wire op_goto_on_cond_set; // for tests with 5 nibbles opcodes 
-wire op_goto_on_acbit; // ?ABIT & ?CBIT
 wire [19:0] ofs_pc_rel2, ofs_pc_rel3, ofs_pc_rel4, new_pc_abs;
 wire [19:0] ofs_pc_rel2_ab;
 
 wire op_setdec, op_sethex, op_uncnfg, op_config, op_shutdn;
 wire op_intoff, op_inton, op_reset;
-wire op_data_reg; // Selects data register (D0/D1) for address output during memory read/write
 wire op_is_lc, op_is_la;
 wire op_is_let_ex_cp;
 wire op_rw_with_lit_size; // DAT0=A/C n DAT1=A/C n A/C=DAT0 n A/C=DAT1 n used to select op3 as field_end
@@ -125,6 +117,30 @@ wire op_push_ac;
 wire op_pull_ac;
 wire [2:0] field;
 wire [3:0] field_decoded_right, field_decoded_left;
+
+// Lireal extraction from OPCODE
+wire op_is_A_A_PM_CON; // A=A+CON, C=C-CON
+wire op_is_Dn_P_CON; // D0=D0+CON, D1=D1-CON
+wire op_is_load_Dn; // D0=hhh D1=hhhhh
+wire op_is_ACBIT; // ABIT=0/1 ?CBIT=0/1
+wire op_is_STBIT; // ST=x ?ST
+wire op_is_HSBIT; // HS=0 ?HS
+wire op_8_1_89A; // field is in op4
+wire op_forced_carry;
+wire op_forced_hex;
+wire op_is_P_CNT; // P=n
+wire op_is_QP_CNT; // ?P
+wire op_is_P_INC_DEC; // P=P-1 P=P+1
+
+wire op_is_MEM_RD; // Any read memory opcode
+wire op_is_MEM_WR; // Any write memory opcode
+wire op_pc_ind_ac; // PC=(A) PC=(C)
+
+wire op_goto_on_acbit; // ?ABIT & ?CBIT
+wire op_goto_on_cond_true;  // ?HS ?ST ?P ?A ?B ?C ?D
+wire op_write_sticky;
+wire op_write_dst;
+wire op_write_carry;
 
 wire op0_0, op0_1, op0_2, op0_3, op0_4, op0_5, op0_6, op0_7, op0_8, op0_9, op0_A, op0_B, op0_C, op0_D, op0_E, op0_F;
 wire op1_0, op1_1, op1_2, op1_3, op1_4, op1_5, op1_6, op1_7, op1_8, op1_9, op1_A, op1_B, op1_C, op1_D, op1_E, op1_F;
@@ -156,11 +172,18 @@ saturn_microcode mc(
     .op3(op3),
     .op4(op4),
     .op5(op5),
-    .op_field_left (op_field_left ),
-    .op_alu_reg1   (op_alu_reg1   ),
-    .op_alu_reg2   (op_alu_reg2   ),
-    .op_alu_dst    (op_alu_dst    ),
-    .op_alu_op     (op_alu_op     )
+    .op_goto_on_cond_true(op_goto_on_cond_true),
+    .op_abit            (op_goto_on_acbit),
+    .op_write_sticky    (op_write_sticky),
+    .op_write_dst       (op_write_dst),
+    .op_write_carry     (op_write_carry),
+    .op_forced_hex      (op_forced_hex),
+    .op_forced_carry    (op_forced_carry),
+    .op_field_left      (op_field_left ),
+    .op_alu_reg1        (op_alu_reg1   ),
+    .op_alu_reg2        (op_alu_reg2   ),
+    .op_alu_dst         (op_alu_dst    ),
+    .op_alu_op          (op_alu_op     )
     );
 
 saturn_trace_dis dis(
@@ -242,22 +265,12 @@ assign op3_D = op3 == 4'hD;
 assign op3_E = op3 == 4'hE;
 assign op3_F = op3 == 4'hF;
 
-// Lireal extraction from OPCODE
-wire op_is_A_A_PM_CON; // A=A+CON, C=C-CON
-wire op_is_Dn_P_CON; // D0=D0+CON, D1=D1-CON
-wire op_is_load_Dn; // D0=hhh D1=hhhhh
-wire op_is_ACBIT; // ABIT=0/1 ?CBIT=0/1
-wire op_is_STHSBIT; // HS=0 ?HS ST=x ?ST
-wire op_8_1_89A;
-wire op_forced_carry;
-wire op_is_P_CNT; // P=n
-wire op_is_QP_CNT; // ?P
-wire op_is_P_INC_DEC; // P=P-1 P=P+1
 assign op_is_load_Dn = op0_1 & (op1_9 | op1_A | op1_B | op1_D | op1_E | op1_F); // Dn=hh
 assign op_is_Dn_P_CON = op0_1 & (op1_6 | op1_7 | op1_8 | op1_C); // D0=D0+CON, D1=D1-CON
 assign op_is_A_A_PM_CON = op0_8 & op1_1 & op2_8; // A=A+CON, C=C-CON
 assign op_is_ACBIT = op0_8 & op1_0 & op2_8 & (op3_4 | op3_5 | op3_6 | op3_7 | op3_8 | op3_9 | op3_A | op3_B); // ABIT=0/1 ?CBIT=0/1
-assign op_is_STHSBIT = op0_8 & (op1_2 | op1_3 | op1_4 | op1_5 | op1_6 | op1_7); // HS=0 ?HS ST=x ?ST
+assign op_is_HSBIT = op0_8 & (op1_2 | op1_3); // HS=0 ?HS
+assign op_is_STBIT = op0_8 & (op1_4 | op1_5 | op1_6 | op1_7); // ST=x ?ST
 
 assign op_is_lc = (op0_3); // two literals size in op1 and literal in op2..op17
 
@@ -266,9 +279,19 @@ assign op_is_let_ex_cp = (op0_8) && ((op1_0) && ((op2_C) || (op2_D) ||
                                                          (op2_F))); // C=P n P=C n CPEX n
 assign op_is_P_CNT = (op0_2); // op1 is literal
 assign op_is_QP_CNT = (op0_8) && ((op1_8) || (op1_9)); // op2 is literal
-assign op_is_P_INC_DEC = (op0_0) && ((op1_D) || (op1_E)); // to force hex mode
+assign op_is_P_INC_DEC = (op0_0) && ((op1_C) || (op1_D)); // to force hex mode
+
+// Indirect jumps need extra care in the state machine
+assign op_pc_ind_ac = op0_8 & op1_0 & op2_8 & (op3_C | op3_E); // PC=(A) PC=(C) 
+
+// PC=(C) and PC=(A) use the memory interface too
+assign op_is_MEM_RD = op0_1 & (op1_4 | op1_5) & 
+                     (op2_2 | op2_3 | op2_6 | op2_7 | op2_A | op2_B | op2_E | op2_F);
+assign op_is_MEM_WR = op0_1 & (op1_4 | op1_5) & 
+                     (op2_0 | op2_1 | op2_4 | op2_5 | op2_8 | op2_9 | op2_C | op2_D);
 
 // Use forced carry as operand and 0 as operand 2
+/*
 assign op_forced_carry =
             (op0_0 && (op1_C || op1_D)) || // P=P+/-1
             (op0_8 && op1_0 && op2_9) || // C=C+P+1
@@ -289,7 +312,7 @@ assign op_is_alu =  ~((op0_0 & (op1_0 | op1_1 | op1_2 | op1_3 | op1_4 | op1_5 | 
                       (op0_8 & op1_0 & op2_8 & (op3_0 | op3_1)) |
                       (op0_8 & op1_0 & op2_8 & op3_F) |
                       (op0_8 & op1_0 & (op2_9 | op2_A | op2_E)) |
-                      (op0_8 & (op1_C | op1_D /*| op2_E | op2_F*/)));// GOLONG GOVLNG GOSUBL GOSBVL
+                      (op0_8 & (op1_C | op1_D )));// GOLONG GOVLNG GOSUBL GOSBVL
 
 // these opcodes are 7 nibbles long
 assign op_goto_on_acbit    = ((op0_8) && ((op1_0) && (op2_8) && (op3_6))) || // ?ABIT
@@ -301,17 +324,14 @@ assign op_goto_on_cond_set = ((op0_8) && ((op1_3) || (op1_6) || // ?HS, ?ST
                                           (op1_7) || (op1_8) || (op1_9) || // ?P
                                           (op1_A) || (op1_B))) || // ?A
                              (op0_9); // ?A
-
-assign op_alu_and_rtn_on_cs= (op_goto_on_cond_set && (op3 == 4'h0) && (op4 == 4'h0)) ||
-                             (op_goto_on_acbit    && (op5 == 4'h0) && (op6 == 4'h0));
+*/
+assign op_alu_and_rtn_on_cs= (op_goto_on_cond_true && (op3 == 4'h0) && (op4 == 4'h0)) ||
+                             (op_goto_on_acbit     && (op5 == 4'h0) && (op6 == 4'h0));
                              
 assign op_rtn_on_carry_set = op0_4 & op1_0 & op2_0;
 assign op_rtn_on_carry_clr = op0_5 & op1_0 & op2_0;
 assign op_rtn              = op0_0 & (op1_0 | op1_1 | op1_2 | op1_3); // RTNSXM, RTN RTNSC RTNCC
 assign op_rti              = op0_0 & op1_F; // RTNI
-
-assign op_has_write = ((op0_1) && (op1[3:1] == 3'b010)) && (op2[1] == 1'b0);
-assign op_has_read  = ((op0_1) && (op1[3:1] == 3'b010)) && (op2[1] == 1'b1);
 
 assign op_rw_with_lit_size = (op0_1 && op1_5 && (op2[3] == 1'b1));
 
@@ -346,8 +366,6 @@ assign op_set_xm =     ((op0_0) && (op1_0)); // RTNSXM
 assign op_set_carry =  ((op0_0) && (op1_2)); // RTNSC
 assign op_clr_carry =  ((op0_0) && (op1_3)); // RTNCC
 
-assign op_data_reg = op2[0]; // for A=DATn/C=DATn & DATn=A/C
-
 assign ofs_pc_rel2 = op0[3] ? { {12{op4[3]}}, op4, op3 }:{ {12{op2[3]}}, op2, op1 };
 assign ofs_pc_rel2_ab = { {12{op6[3]}}, op6, op5 };
 assign ofs_pc_rel3 = { {8{op3[3]}}, op3, op2, op1 };
@@ -374,11 +392,11 @@ wire [19:0] jump_target_addr;
 assign jump_target_addr = ibus_pre_fetched_opcode_addr_in +
                           ((op_goc | op_gonc | op_jrel3) ? 20'h00001:
                            (op_jrel4)            ? 20'h00002:
-                           (op_goto_on_cond_set) ? 20'h00003:
+                           (op_goto_on_cond_true)? 20'h00003:
                            (op_gosub)            ? 20'h00004:
                            (op_goto_on_acbit)    ? 20'h00005:
                            (op_gosubl)           ? 20'h00006:20'h0000) +
-                          ((op_goto_on_cond_set | op_goc | op_gonc) ? ofs_pc_rel2:
+                          ((op_goto_on_cond_true | op_goc | op_gonc) ? ofs_pc_rel2:
                            (op_goto_on_acbit) ? ofs_pc_rel2_ab:
                            (op_jrel3 | op_gosub) ? ofs_pc_rel3:
                            (op_jrel4 | op_gosubl)? ofs_pc_rel4:20'h00000);
@@ -430,13 +448,13 @@ always @(posedge clk_in)
                             ibus_fetch_ack <= 1'b0;
                             ibus_flush_q <= 1'b0;
                             ibus_fetch <= 1'b0;
-                            if (op_is_alu)
+                            if (op_alu_op != `ALU_OP_NONE)
                                 state <= `ST_EXE_LATCH;
                             else
                                 state <= `ST_EXE_END;
                             
                             // jump target address calculation
-                            if (op_goto_on_cond_set | op_goc | op_gonc | op_jrel3 |
+                            if (op_goto_on_cond_true | op_goc | op_gonc | op_jrel3 |
                                 op_jrel4 | op_gosub | op_gosubl)
                                 new_pc_jump <= jump_target_addr;
                             if (op_govlng | op_gosbvl)
@@ -477,23 +495,24 @@ always @(posedge clk_in)
                             op2_reg_o    <= op_alu_reg2;
                             dst_reg_o    <= op_alu_dst;
                             alu_op       <= op_alu_op;
-                            curr_data_addr <= Dn_in; // sample data address
                             force_carry <= op_forced_carry;
-                            force_hex <= op_is_Dn_P_CON | op_is_P_INC_DEC;
+                            force_hex <= op_forced_hex; //op_is_Dn_P_CON | op_is_P_INC_DEC;
                             // literal handling, shift to correct position
+                            op_literal <= 64'h0; // default value 
                             if (op_is_lc | op_is_la | op_is_A_A_PM_CON)
                                 op_literal[63: 0] <= unshifted_op_literal << { op_literal_shift, 2'b00 };
                             if (op_is_ACBIT) // ABIT=0/1 ?CBIT=0/1
                                 op_literal[15: 0] <= (16'h1 << op4); // shift bit to test/set/clear position
-
-                            if (op_is_load_Dn) // up to 20 bits, size determined in mc table
-                                op_literal[19: 0] <= ibus_pre_fetched_opcode_in[27: 8];
-                            if (op_is_Dn_P_CON) // carry and hex mode forced
-                                op_literal[19: 0] <= { 16'h0, ibus_pre_fetched_opcode_in[11: 8] };
+                            if (op_is_STBIT) // ST=0/1 ?ST=0/1
+                                op_literal[15: 0] <= (16'h1 << op2); // shift bit to test/set/clear position
+                            // op_is_load_Dn uses between 8 and 20 bits
+                            // op_is_Dn_P_CON uses 4 bits 
+                            if (op_is_load_Dn | op_is_Dn_P_CON | op_is_QP_CNT | op_is_HSBIT) // first 4 bits
+                                op_literal[3: 0] <= ibus_pre_fetched_opcode_in[11: 8];
+                            if (op_is_load_Dn) // last 16 bits, size determined in mc table
+                                op_literal[19: 4] <= ibus_pre_fetched_opcode_in[27:12];
                             if (op_is_P_CNT) // P=n
                                 op_literal[3: 0] <= op1;
-                            if (op_is_QP_CNT) // ?P=n ?P#n
-                                op_literal[3: 0] <= op2;
                             if (op_gosub | op_gosubl | op_gosbvl) // use ALU to update RSTK
                                 begin
                                     push_rstk <= 1'b1; // make place on stack
@@ -525,50 +544,39 @@ always @(posedge clk_in)
                             push_rstk <= 1'b0;
                             pull_rstk <= 1'b0;
                             state <= `ST_EXE_ALU;
-                            write_dst <= (op_alu_op == `ALU_OP_TFR) ||
-                                         (op_alu_op == `ALU_OP_EX) ||
-                                         (op_alu_op == `ALU_OP_ADD) ||
-                                         (op_alu_op == `ALU_OP_SUB) ||
-                                         (op_alu_op == `ALU_OP_RSUB) ||
-                                         (op_alu_op == `ALU_OP_AND) ||
-                                         (op_alu_op == `ALU_OP_OR) ||
-                                         (op_alu_op == `ALU_OP_SL) ||
-                                         (op_alu_op == `ALU_OP_SR) ||
-                                         (op_alu_op == `ALU_OP_SLB) ||
-                                         (op_alu_op == `ALU_OP_SRB) ||
-                                         (op_alu_op == `ALU_OP_SLC) ||
-                                         (op_alu_op == `ALU_OP_SRC) ||
-                                         (op_alu_op == `ALU_OP_RD);
+                            write_dst <= op_write_dst;
                             write_op1 <= (op_alu_op == `ALU_OP_EX);
-                            write_carry <=(op_alu_op == `ALU_OP_ADD) ||
-                                         (op_alu_op == `ALU_OP_SUB) ||
-                                         (op_alu_op == `ALU_OP_RSUB) ||
-                                         (op_alu_op == `ALU_OP_EQ) ||
-                                         (op_alu_op == `ALU_OP_NEQ) ||
-                                         (op_alu_op == `ALU_OP_GT) ||
-                                         (op_alu_op == `ALU_OP_GTEQ) ||
-                                         (op_alu_op == `ALU_OP_LT) ||
-                                         (op_alu_op == `ALU_OP_LTEQ) ||
-                                         (op_alu_op == `ALU_OP_TST0) ||
-                                         (op_alu_op == `ALU_OP_TST1);                                         
-                            write_sticky_bit <=  
-                                         (op_alu_op == `ALU_OP_SL) ||
-                                         (op_alu_op == `ALU_OP_SR) ||
-                                         (op_alu_op == `ALU_OP_SLB) ||
-                                         (op_alu_op == `ALU_OP_SRB);
+                            write_carry <= op_write_carry;                                         
+                            write_sticky_bit <= op_write_sticky;
                         end
                     `ST_EXE_ALU: // write back results, do memory read/write
                         begin
                             if (op_alu_and_rtn_on_cs | op_goto_on_acbit |
-                                op_goto_on_cond_set | // need extra cycle to catch new carry
+                                op_goto_on_cond_true | // need extra cycle to catch new carry
                                 op_gosub | op_gosubl | op_gosbvl) // these use the alu path too
-                                state <= `ST_EXE_END;
+                                begin
+                                    state <= `ST_EXE_END;
+                                    write_dst <= 1'b0;
+                                end
                             else
                                 begin // fetch next opcode if no test is needed
-                                    state <= `ST_INIT;
-                                    ibus_fetch <= 1'b1;
+                                    if ((op_alu_op == `ALU_OP_RD) || (op_alu_op == `ALU_OP_WR))
+                                        begin
+                                            if (read_write_ready_in)
+                                                begin
+                                                    state <= `ST_INIT;
+                                                    ibus_fetch <= 1'b1;
+                                                    write_dst <= 1'b0;
+                                                end
+                                        end
+                                    else
+                                        begin
+                                            state <= `ST_INIT;
+                                            ibus_fetch <= 1'b1;
+                                            write_dst <= 1'b0;
+                                        end
                                 end
-                            write_dst <= 1'b0;
+                            
                             write_op1 <= 1'b0;
                             write_carry <= 1'b0;
                             write_sticky_bit <= 1'b0;
@@ -577,34 +585,37 @@ always @(posedge clk_in)
                         begin
                             if (op_pull_ac)
                                 pull_rstk <= 1'b1; // adjust stack
-                            // Process returns
-                            if ((op_alu_and_rtn_on_cs & carry_in) |
-                                (op_rtn_on_carry_set & carry_in) |
-                                (op_rtn_on_carry_clr & (~carry_in)) | op_rtn | op_rti)
-                                begin // Pop PC from Stack using the ALU
-                                    op1_reg_o    <= `OP_STK;
-                                    dst_reg_o    <= `OP_PC;
-                                    alu_op       <= `ALU_OP_TFR; // copy RSTK to PC
-                                    left_mask_o  <= 4'h4;
-                                    right_mask_o <= 4'h0;
-                                    state <= `ST_RTN_LATCH;
-                                end
+                            if (op_pc_ind_ac)
+                                state <= `ST_RTN_JMP; // jump, PC was loaded
                             else
-                                begin
-                                    if ((op_gosub | op_gosubl | op_gosbvl) |
-                                    // process ALU-dependant relative jumps
-                                        (op_goto_on_acbit & carry_in) | // ?ABIT, ?CBIT
-                                        (op_goto_on_cond_set & carry_in) | // ?HS, ?ST, ?P, ?A
-                                        (op_goc & carry_in) | // GOC
-                                        (op_gonc & (~carry_in)) | // GONC
-                                         irq_ack) // if interrupt jump too
-                                        state <= `ST_FLUSH_QUEUE;
-                                    else
-                                        begin
-                                            state <= `ST_INIT; // no jump
-                                            ibus_fetch <= 1'b1;
-                                        end
-                                end
+                                // Process returns
+                                if ((op_alu_and_rtn_on_cs & carry_in) |
+                                    (op_rtn_on_carry_set & carry_in) |
+                                    (op_rtn_on_carry_clr & (~carry_in)) | op_rtn | op_rti)
+                                    begin // Pop PC from Stack using the ALU
+                                        op1_reg_o    <= `OP_STK;
+                                        dst_reg_o    <= `OP_PC;
+                                        alu_op       <= `ALU_OP_TFR; // copy RSTK to PC
+                                        left_mask_o  <= 4'h4;
+                                        right_mask_o <= 4'h0;
+                                        state <= `ST_RTN_LATCH;
+                                    end
+                                else
+                                    begin
+                                        if ((op_gosub | op_gosubl | op_gosbvl) |
+                                        // process ALU-dependant relative jumps
+                                            (op_goto_on_acbit & carry_in) | // ?ABIT, ?CBIT
+                                            (op_goto_on_cond_true & carry_in) | // ?HS, ?ST, ?P, ?A
+                                            (op_goc & carry_in) | // GOC
+                                            (op_gonc & (~carry_in)) | // GONC
+                                             irq_ack) // if interrupt jump too
+                                            state <= `ST_FLUSH_QUEUE;
+                                        else
+                                            begin
+                                                state <= `ST_INIT; // no jump
+                                                ibus_fetch <= 1'b1;
+                                            end
+                                    end
                             irq_ack <= 1'b0;
                         end
                     `ST_RTN_LATCH:
@@ -633,12 +644,16 @@ always @(posedge clk_in)
                 endcase
         end
     end
-/* Module outputs */
+    
+// Module outputs
 assign showregs_o           = (state == `ST_EXE_END) | (state == `ST_EXE_ALU);
 assign ibus_flush_q_o       = ibus_flush_q;
 assign ibus_fetch_o         = ibus_fetch;
 assign ibus_fetch_ack_o     = ibus_fetch_ack;
 assign ibus_addr_o          = new_pc_jump; // used with queue flush
+// Memory read write
+assign data_write_o         = op_is_MEM_WR & (state == `ST_EXE_LATCH);
+assign data_read_o          = op_is_MEM_RD & (state == `ST_EXE_LATCH);
 assign write_dst_o          = write_dst;
 assign write_op1_o          = write_op1;
 assign latch_alu_regs_o     = (state == `ST_EXE_LATCH) || (state == `ST_RTN_LATCH);
@@ -657,9 +672,7 @@ assign shift_alu_q_o        = op_is_let_ex_cp; // indicate that the result shoul
 assign add_pc_o             = 1'b0;
 assign push_rstk_o          = push_rstk;
 assign pull_rstk_o          = pull_rstk;
-assign dp_sel_o             = 1'b0;
 assign irq_ack_o            = irq_ack;
-assign load_pc_o            = load_new_pc;
 
 `ifdef HAS_TRACE_UNIT
 assign trace_start_o = trace_start;
@@ -1067,7 +1080,25 @@ always @(*)
                             4'h5: o = "CONFIG";
                             4'h6: o = "C=ID  ";
                             4'h7: o = "SHUTDN";
-                            4'h8: if (op3 == 4'hf) o = "INTOFF"; else o = "INTON ";
+                            4'h8: 
+                                case (op3)
+                                    4'h0: o = "INTON ";
+                                    4'h1: o = "RSI   ";
+                                    4'h2: o = "LA    ";
+                                    4'h3: o = "BUSCB ";
+                                    4'h4: o = "ABIT=0";
+                                    4'h5: o = "ABIT=1";
+                                    4'h6: o = "?ABIT=0";
+                                    4'h7: o = "?ABIT=1";
+                                    4'h8: o = "CBIT=0";
+                                    4'h9: o = "CBIT=1";
+                                    4'hA: o = "?CBIT=0";
+                                    4'hB: o = "?CBIT=1";
+                                    4'hC: o = "PC=(A)";
+                                    4'hD: o = "BUSCD ";
+                                    4'hE: o = "PC=(C)";
+                                    4'hF: o = "INTOFF";
+                                endcase
                             4'h9: o = "C+P+1 ";
                             4'ha: o = "RESET ";
                             4'hb: o = "BUSCC ";
@@ -1442,6 +1473,13 @@ module saturn_microcode(
     input wire  [3:0] op3,
     input wire  [3:0] op4,
     input wire  [3:0] op5,
+    output wire         op_goto_on_cond_true,
+    output wire         op_abit,
+    output wire         op_write_sticky,
+    output wire         op_write_dst,
+    output wire         op_write_carry,
+    output wire         op_forced_hex,
+    output wire         op_forced_carry,
     output wire [2:0] op_field_left,
     output wire [5:0] op_alu_reg1,
     output wire [5:0] op_alu_reg2,
@@ -1450,7 +1488,13 @@ module saturn_microcode(
     );
 
 wire [31:0] mc;
-
+assign op_goto_on_cond_true = mc[25];
+assign op_abit          = mc[26];
+assign op_write_sticky  = mc[27];
+assign op_write_dst     = mc[28];
+assign op_write_carry   = mc[29];
+assign op_forced_hex    = mc[30];
+assign op_forced_carry  = mc[31];
 assign op_field_left     = mc[22:20];
 assign op_alu_op         = mc[19:15];
 assign op_alu_reg1       = mc[14: 9];
@@ -1516,457 +1560,7 @@ mcrom mcrom_i(
     .Reset(1'b0),
     .Q(mc)
     );
-    
-/*
-reg [31:0] mcrom[511:0];
 
-assign mc = mcrom[mca];
-
-initial
-    $readmemb("C:/02_Elektronik/041_1LF2/10_Public/05_PSaturn/mc_tbl.bin", mcrom);
-*/
-/*
-always @(*)
-    casex ({op0, op1, op2, op3, op4, op5})
-        //                                        fend     alu_op     reg1     reg2     dst
-        24'b0000_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_STK };//RSTK=C
-        24'b0000_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_STK, `K_A  , `OP_C   };//C=RSTK
-        24'b0000_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_ST  };//CLRST
-        24'b0000_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_TFR , `OP_ST , `K_A  , `OP_C   };//C=ST
-        24'b0000_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_TFR , `OP_C  , `K_C  , `OP_ST  };//ST=C
-        24'b0000_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_EX  , `OP_ST , `K_C  , `OP_C   };//CSTEX
-        24'b0000_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_ADD , `OP_P  , `K_1  , `OP_P   };//P=P+1
-        24'b0000_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_SUB , `OP_P  , `K_1  , `OP_P   };//P=P-1
-        // 0Ean 0EFn
-        24'b0000_1110_xxxx_0000_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_A  , `K_B  , `OP_A   };//A=A&B
-        24'b0000_1110_xxxx_0001_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_B  , `K_C  , `OP_B   };//B=B&C
-        24'b0000_1110_xxxx_0010_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_C  , `K_A  , `OP_C   };//A=A&B
-        24'b0000_1110_xxxx_0011_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_D  , `K_C  , `OP_D   };//B=B&C
-        24'b0000_1110_xxxx_0100_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_B  , `K_A  , `OP_B   };//A=A&B
-        24'b0000_1110_xxxx_0101_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_C  , `K_B  , `OP_C   };//B=B&C
-        24'b0000_1110_xxxx_0110_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_A  , `K_C  , `OP_A   };//A=A&B
-        24'b0000_1110_xxxx_0111_xxxx_xxxx: mc = { 3'h6,`ALU_OP_AND , `OP_C  , `K_D  , `OP_C   };//B=B&C
-        24'b0000_1110_xxxx_1000_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_A  , `K_B  , `OP_A   };//A=A!B
-        24'b0000_1110_xxxx_1001_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_B  , `K_C  , `OP_B   };//B=B!C
-        24'b0000_1110_xxxx_1010_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_C  , `K_A  , `OP_C   };//A=A!B
-        24'b0000_1110_xxxx_1011_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_D  , `K_C  , `OP_D   };//B=B!C
-        24'b0000_1110_xxxx_1100_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_B  , `K_A  , `OP_B   };//A=A!B
-        24'b0000_1110_xxxx_1101_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_C  , `K_B  , `OP_C   };//B=B!C
-        24'b0000_1110_xxxx_1110_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_A  , `K_C  , `OP_A   };//A=A!B
-        24'b0000_1110_xxxx_1111_xxxx_xxxx: mc = { 3'h6,`ALU_OP_OR  , `OP_C  , `K_D  , `OP_C   };//B=B!C
-        // 10n Rn=A Rn=C
-        24'b0001_0000_0000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R0  };
-        24'b0001_0000_0001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R1  };
-        24'b0001_0000_0010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R2  };
-        24'b0001_0000_0011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R3  };
-        24'b0001_0000_0100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R4  };
-        24'b0001_0000_1000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R0  };
-        24'b0001_0000_1001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R1  };
-        24'b0001_0000_1010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R2  };
-        24'b0001_0000_1011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R3  };
-        24'b0001_0000_1100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R4  };
-        // 11n A=Rn C=Rn                                               reg1     reg2     dst
-        24'b0001_0001_0000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_A   };//A=R0
-        24'b0001_0001_0001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_A   };
-        24'b0001_0001_0010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_A   };
-        24'b0001_0001_0011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_A   };
-        24'b0001_0001_0100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_A   };
-        24'b0001_0001_1000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_C   };//C=R0
-        24'b0001_0001_1001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_C   };
-        24'b0001_0001_1010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_C   };
-        24'b0001_0001_1011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_C   };
-        24'b0001_0001_1100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_C   };
-        // 12n ARnEX CRnEX                                            reg1     reg2     dst
-        24'b0001_0010_0000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R0 , `K_A  , `OP_A   };
-        24'b0001_0010_0001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R1 , `K_A  , `OP_A   };
-        24'b0001_0010_0010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R2 , `K_A  , `OP_A   };
-        24'b0001_0010_0011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R3 , `K_A  , `OP_A   };
-        24'b0001_0010_0100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_A   };
-        24'b0001_0010_1000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R0 , `K_C  , `OP_C   };
-        24'b0001_0010_1001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R1 , `K_C  , `OP_C   };
-        24'b0001_0010_1010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R2 , `K_C  , `OP_C   };
-        24'b0001_0010_1011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R3 , `K_C  , `OP_C   };
-        24'b0001_0010_1100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_EX  , `OP_R4 , `K_C  , `OP_C   };
-        // 13n
-        24'b0001_0011_0000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D0  };
-        24'b0001_0011_0001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D1  };
-        24'b0001_0011_0010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D0 , `K_A  , `OP_A   };
-        24'b0001_0011_0011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D1 , `K_A  , `OP_A   };
-        24'b0001_0011_0100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D0  };
-        24'b0001_0011_0101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D1  };
-        24'b0001_0011_0110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D0 , `K_C  , `OP_C   };
-        24'b0001_0011_0111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D1 , `K_C  , `OP_C   };
-        24'b0001_0011_1000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D0  };
-        24'b0001_0011_1001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D1  };
-        24'b0001_0011_1010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D0 , `K_A  , `OP_A   };
-        24'b0001_0011_1011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D1 , `K_A  , `OP_A   };
-        24'b0001_0011_1100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D0  };
-        24'b0001_0011_1101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D1  };
-        24'b0001_0011_1110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D0 , `K_C  , `OP_C   };
-        24'b0001_0011_1111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_D1 , `K_C  , `OP_C   };
-        // 14 DATn=A/C  A/C=DATn                                      reg1     reg2     dst
-        24'b0001_0100_0000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0100_0001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0100_0010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0100_0011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0100_0100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
-        24'b0001_0100_0101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
-        24'b0001_0100_0110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
-        24'b0001_0100_0111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
-        24'b0001_0100_1000_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0100_1001_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0100_1010_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0100_1011_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0100_1100_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
-        24'b0001_0100_1101_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
-        24'b0001_0100_1110_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
-        24'b0001_0100_1111_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
-        // 15 DATn=A/C  A/C=DATn
-        24'b0001_0101_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0101_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0101_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0101_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0101_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
-        24'b0001_0101_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
-        24'b0001_0101_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
-        24'b0001_0101_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
-        24'b0001_0101_1000_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0101_1001_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0101_1010_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0101_1011_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   };
-        24'b0001_0101_1100_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
-        24'b0001_0101_1101_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   };
-        24'b0001_0101_1110_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
-        24'b0001_0101_1111_xxxx_xxxx_xxxx: mc = { 3'h5,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   };
-        // 1, 17, 18, D0+D0+n                                         reg1     reg2     dst
-        24'b0001_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_D0 , `K_LIT, `OP_D0  }; // D0=D0+n
-        24'b0001_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_D1 , `K_LIT, `OP_D1  }; // D1=D1+n
-        24'b0001_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_D0 , `K_LIT, `OP_D0  }; // D0=D0-n
-        // 19..1F Dx=(n)
-        24'b0001_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D0  };
-        24'b0001_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D0  };
-        24'b0001_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D0  };
-        24'b0001_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_LIT, `K_A  , `OP_D1  }; // D1=D1-n
-        24'b0001_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h1,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D1  };
-        24'b0001_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D1  };
-        24'b0001_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D1  };
-        //  2, 3
-        24'b0010_xxxx_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_P   }; // P=n
-        24'b0011_xxxx_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_C   }; // LC(n)
-        // 7xx GOSUB
-        24'b0111_xxxx_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_STK  }; // GOSUB
-        // 80x                                                        reg1    reg2      dst
-        24'b1000_0000_0000_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_OUT }; // OUT=C
-        24'b1000_0000_0001_xxxx_xxxx_xxxx: mc = { 3'h2,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_OUT }; // OUT=C
-        24'b1000_0000_0010_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TFR , `OP_IN , `K_A  , `OP_A   }; // A=IN
-        24'b1000_0000_0011_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TFR , `OP_IN , `K_A  , `OP_C   }; // C=IN
-        24'b1000_0000_0110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_ID , `K_A  , `OP_C   }; // C=ID,
-        // 8082 LA(n) starting at P witath
-        24'b1000_0000_1000_0010_xxxx_xxxx: mc = { 3'h5,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_A   };
-        24'b1000_0000_1000_0100_xxxx_xxxx: mc = { 3'h3,`ALU_OP_ANDN, `OP_A  , `K_LIT, `OP_A   };// 8084 ABIT=0
-        24'b1000_0000_1000_0101_xxxx_xxxx: mc = { 3'h3,`ALU_OP_OR  , `OP_A  , `K_LIT, `OP_A   };// 8085 ABIT=1
-        24'b1000_0000_1000_0110_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST0, `OP_A  , `K_LIT, `OP_A   };// 8086 ?ABIT=0
-        24'b1000_0000_1000_0111_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST1, `OP_A  , `K_LIT, `OP_A   };// 8087 ?ABIT=1
-        24'b1000_0000_1000_1000_xxxx_xxxx: mc = { 3'h3,`ALU_OP_ANDN, `OP_C  , `K_LIT, `OP_C   };// 8088 CBIT=0
-        24'b1000_0000_1000_1001_xxxx_xxxx: mc = { 3'h3,`ALU_OP_OR  , `OP_C  , `K_LIT, `OP_C   };// 8089 CBIT=1
-        24'b1000_0000_1000_1010_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST0, `OP_C  , `K_LIT, `OP_C   };// 808A ?CBIT=0
-        24'b1000_0000_1000_1011_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST1, `OP_C  , `K_LIT, `OP_C   };// 808B ?CBIT=1
-        24'b1000_0000_1000_1100_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_MEM, `K_A  , `OP_PC  };// 808C PC=(A)
-        24'b1000_0000_1000_1101_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_ID , `K_D  , `OP_A   };// 808D BUSCD
-        24'b1000_0000_1000_1110_xxxx_xxxx: mc = { 3'h4,`ALU_OP_RD  , `OP_MEM, `K_C  , `OP_PC  };// 808E PC=(C)
-        24'b1000_0000_1001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_P  , `K_C  , `OP_C   }; // C=C+P+1 on field A sets carry
-        24'b1000_0000_1011_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_ID , `K_C  , `OP_A   }; // BUSCC
-        24'b1000_0000_1100_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_P  , `K_A  , `OP_C   }; // C=P n
-        24'b1000_0000_1101_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_P   }; // P=C n
-        24'b1000_0000_1111_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_EX  , `OP_P  , `K_C  , `OP_C   }; // CPEX n
-        // 81x ASLC/ASRC/ASRB Word
-        24'b1000_0001_0000_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SLC , `OP_A  , `K_A  , `OP_A   }; // ASLC
-        24'b1000_0001_0001_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SLC , `OP_B  , `K_B  , `OP_B   }; // BSLC
-        24'b1000_0001_0010_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SLC , `OP_C  , `K_C  , `OP_C   }; // CSLC
-        24'b1000_0001_0011_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SLC , `OP_D  , `K_D  , `OP_D   }; // DSLC
-        24'b1000_0001_0100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRC , `OP_A  , `K_A  , `OP_A   };
-        24'b1000_0001_0101_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRC , `OP_B  , `K_A  , `OP_B   };
-        24'b1000_0001_0110_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRC , `OP_C  , `K_A  , `OP_C   };
-        24'b1000_0001_0111_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRC , `OP_D  , `K_A  , `OP_D   };
-        // 818fnm A=A+CON/A=A-CON
-        24'b1000_0001_1000_xxxx_0000_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `K_LIT, `OP_A   }; // A=A+CON
-        24'b1000_0001_1000_xxxx_0001_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `K_LIT, `OP_B   }; // B=B+CON
-        24'b1000_0001_1000_xxxx_0010_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `K_LIT, `OP_C   }; //
-        24'b1000_0001_1000_xxxx_0011_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_D  , `K_LIT, `OP_D   }; //
-        24'b1000_0001_1000_xxxx_1000_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `K_LIT, `OP_A   }; // A=A-CON
-        24'b1000_0001_1000_xxxx_1001_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_B  , `K_LIT, `OP_B   }; //
-        24'b1000_0001_1000_xxxx_1010_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_LIT, `OP_C   }; //
-        24'b1000_0001_1000_xxxx_1011_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_D  , `K_LIT, `OP_D   }; //
-        // 819fn ASRB.f
-        24'b1000_0001_1001_xxxx_0000_xxxx: mc = { 3'h6,`ALU_OP_SRB , `OP_A  , `K_A  , `OP_A   };
-        24'b1000_0001_1001_xxxx_0001_xxxx: mc = { 3'h6,`ALU_OP_SRB , `OP_B  , `K_B  , `OP_B   };
-        24'b1000_0001_1001_xxxx_0010_xxxx: mc = { 3'h6,`ALU_OP_SRB , `OP_C  , `K_C  , `OP_C   };
-        24'b1000_0001_1001_xxxx_0011_xxxx: mc = { 3'h6,`ALU_OP_SRB , `OP_D  , `K_D  , `OP_D   };
-        // 81Af0n Rn=A.f
-        24'b1000_0001_1010_xxxx_0000_0000: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R0  };
-        24'b1000_0001_1010_xxxx_0000_0001: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R1  };
-        24'b1000_0001_1010_xxxx_0000_0010: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R2  };
-        24'b1000_0001_1010_xxxx_0000_0011: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R3  };
-        24'b1000_0001_1010_xxxx_0000_0100: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R4  };
-        24'b1000_0001_1010_xxxx_0000_1000: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R0  };
-        24'b1000_0001_1010_xxxx_0000_1001: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R1  };
-        24'b1000_0001_1010_xxxx_0000_1010: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R2  };
-        24'b1000_0001_1010_xxxx_0000_1011: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R3  };
-        24'b1000_0001_1010_xxxx_0000_1100: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R4  };
-        // 81Af1n A.f=Rn C.f=Rn
-        24'b1000_0001_1010_xxxx_0001_0000: mc = { 3'h6,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0001_0001: mc = { 3'h6,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0001_0010: mc = { 3'h6,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0001_0011: mc = { 3'h6,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0001_0100: mc = { 3'h6,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0001_1000: mc = { 3'h6,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0001_1001: mc = { 3'h6,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0001_1010: mc = { 3'h6,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0001_1011: mc = { 3'h6,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0001_1100: mc = { 3'h6,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_C   };
-        // 81Af2n ARnEX.f
-        24'b1000_0001_1010_xxxx_0010_0000: mc = { 3'h6,`ALU_OP_EX  , `OP_R0 , `K_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0010_0001: mc = { 3'h6,`ALU_OP_EX  , `OP_R1 , `K_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0010_0010: mc = { 3'h6,`ALU_OP_EX  , `OP_R2 , `K_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0010_0011: mc = { 3'h6,`ALU_OP_EX  , `OP_R3 , `K_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0010_0100: mc = { 3'h6,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_A   };
-        24'b1000_0001_1010_xxxx_0010_1000: mc = { 3'h6,`ALU_OP_EX  , `OP_R0 , `K_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0010_1001: mc = { 3'h6,`ALU_OP_EX  , `OP_R1 , `K_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0010_1010: mc = { 3'h6,`ALU_OP_EX  , `OP_R2 , `K_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0010_1011: mc = { 3'h6,`ALU_OP_EX  , `OP_R3 , `K_A  , `OP_C   };
-        24'b1000_0001_1010_xxxx_0010_1100: mc = { 3'h6,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_C   };
-        // A, C & PC                                                        
-        24'b1000_0001_1011_0010_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_PC  }; // PC=A
-        24'b1000_0001_1011_0011_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_PC  }; // PC=C
-        24'b1000_0001_1011_0100_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_PC , `K_A  , `OP_A   }; // A=PC
-        24'b1000_0001_1011_0101_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_PC , `K_A  , `OP_C   }; // C=PC
-        24'b1000_0001_1011_0110_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX ,  `OP_PC , `K_A  , `OP_A   }; // APCEX
-        24'b1000_0001_1011_0111_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX ,  `OP_PC , `K_A  , `OP_C   }; // CPCEX
-        24'b1000_0001_1100_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRB , `OP_A  , `K_A  , `OP_A   }; // ASRB
-        24'b1000_0001_1101_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRB , `OP_B  , `K_A  , `OP_B   }; // BSRB
-        24'b1000_0001_1110_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRB , `OP_C  , `K_A  , `OP_C   }; // CSRB
-        24'b1000_0001_1111_xxxx_xxxx_xxxx: mc = { 3'h7,`ALU_OP_SRB , `OP_D  , `K_A  , `OP_D   }; // DSRB
-        24'b1000_0010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_AND , `OP_HS , `K_LIT, `OP_HS  }; // HS=0
-        24'b1000_0011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_TST0, `OP_HS , `K_LIT, `OP_HS  }; // ?HS=0
-        24'b1000_0100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_ANDN, `OP_ST , `K_LIT, `OP_ST  }; // ST=0
-        24'b1000_0101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_OR  , `OP_ST , `K_LIT, `OP_ST  }; // ST=1
-        24'b1000_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST0, `OP_ST , `K_LIT, `OP_ST  }; // ?ST=0
-        24'b1000_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h3,`ALU_OP_TST1, `OP_ST , `K_LIT, `OP_ST  }; // ?ST=1
-        // 88, 89
-        24'b1000_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_NEQ , `OP_P  , `K_LIT, `OP_A   }; // ?P#n
-        24'b1000_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h0,`ALU_OP_EQ  , `OP_P  , `K_LIT, `OP_A   }; // ?P=n
-        // 8Ax
-        24'b1000_1010_0000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_A  , `K_B  , `OP_A   };
-        24'b1000_1010_0001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_B  , `K_C  , `OP_A   };
-        24'b1000_1010_0010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_A  , `K_C  , `OP_A   };
-        24'b1000_1010_0011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_C  , `K_D  , `OP_A   };
-        24'b1000_1010_0100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_A  , `K_B  , `OP_A   };
-        24'b1000_1010_0101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_B  , `K_C  , `OP_A   };
-        24'b1000_1010_0110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_A  , `K_C  , `OP_A   };
-        24'b1000_1010_0111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_C  , `K_D  , `OP_A   };
-        24'b1000_1010_1000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_A  , `K_Z  , `OP_A   };
-        24'b1000_1010_1001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_B  , `K_Z  , `OP_A   };
-        24'b1000_1010_1010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_C  , `K_Z  , `OP_A   };
-        24'b1000_1010_1011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EQ  , `OP_D  , `K_Z  , `OP_A   };
-        24'b1000_1010_1100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_A  , `K_Z  , `OP_A   };
-        24'b1000_1010_1101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_B  , `K_Z  , `OP_A   };
-        24'b1000_1010_1110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_C  , `K_Z  , `OP_A   };
-        24'b1000_1010_1111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_NEQ , `OP_D  , `K_Z  , `OP_A   };
-        // 8B
-        24'b1000_1011_0000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GT  , `OP_A  , `K_B  , `OP_A   };
-        24'b1000_1011_0001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GT  , `OP_B  , `K_C  , `OP_A   };
-        24'b1000_1011_0010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GT  , `OP_C  , `K_A  , `OP_A   };
-        24'b1000_1011_0011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GT  , `OP_D  , `K_C  , `OP_A   };
-        24'b1000_1011_0100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LT  , `OP_A  , `K_B  , `OP_A   };
-        24'b1000_1011_0101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LT  , `OP_B  , `K_C  , `OP_A   };
-        24'b1000_1011_0110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LT  , `OP_C  , `K_A  , `OP_A   };
-        24'b1000_1011_0111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LT  , `OP_D  , `K_C  , `OP_A   };
-        24'b1000_1011_1000_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GTEQ, `OP_A  , `K_B  , `OP_A   };
-        24'b1000_1011_1001_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GTEQ, `OP_B  , `K_C  , `OP_A   };
-        24'b1000_1011_1010_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GTEQ, `OP_C  , `K_A  , `OP_A   };
-        24'b1000_1011_1011_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_GTEQ, `OP_D  , `K_C  , `OP_A   };
-        24'b1000_1011_1100_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LTEQ, `OP_A  , `K_B  , `OP_A   };
-        24'b1000_1011_1101_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LTEQ, `OP_B  , `K_C  , `OP_A   };
-        24'b1000_1011_1110_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LTEQ, `OP_C  , `K_A  , `OP_A   };
-        24'b1000_1011_1111_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_LTEQ, `OP_D  , `K_C  , `OP_A   };
-        // 8E, 8F
-        24'b1000_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_STK  }; // GOSUBL
-        24'b1000_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_STK  }; // GOSBVL
-        // 9a
-        24'b1001_0xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_A  , `K_B  , `OP_A   };
-        24'b1001_0xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_B  , `K_C  , `OP_A   };
-        24'b1001_0xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_A  , `K_C  , `OP_A   };
-        24'b1001_0xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_C  , `K_D  , `OP_A   };
-        24'b1001_0xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_A  , `K_B  , `OP_A   };
-        24'b1001_0xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_B  , `K_C  , `OP_A   };
-        24'b1001_0xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_A  , `K_C  , `OP_A   };
-        24'b1001_0xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_C  , `K_D  , `OP_A   };
-        24'b1001_0xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_A  , `K_Z  , `OP_A   };
-        24'b1001_0xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_B  , `K_Z  , `OP_A   };
-        24'b1001_0xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_C  , `K_Z  , `OP_A   };
-        24'b1001_0xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EQ  , `OP_D  , `K_Z  , `OP_A   };
-        24'b1001_0xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_A  , `K_Z  , `OP_A   };
-        24'b1001_0xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_B  , `K_Z  , `OP_A   };
-        24'b1001_0xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_C  , `K_Z  , `OP_A   };
-        24'b1001_0xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_NEQ , `OP_D  , `K_Z  , `OP_A   };
-        // 9b
-        24'b1001_1xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GT  , `OP_A  , `K_B  , `OP_A   };
-        24'b1001_1xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GT  , `OP_B  , `K_C  , `OP_A   };
-        24'b1001_1xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GT  , `OP_C  , `K_A  , `OP_A   };
-        24'b1001_1xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GT  , `OP_D  , `K_C  , `OP_A   };
-        24'b1001_1xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LT  , `OP_A  , `K_B  , `OP_A   };
-        24'b1001_1xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LT  , `OP_B  , `K_C  , `OP_A   };
-        24'b1001_1xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LT  , `OP_C  , `K_A  , `OP_A   };
-        24'b1001_1xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LT  , `OP_D  , `K_C  , `OP_A   };
-        24'b1001_1xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GTEQ, `OP_A  , `K_B  , `OP_A   };
-        24'b1001_1xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GTEQ, `OP_B  , `K_C  , `OP_A   };
-        24'b1001_1xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GTEQ, `OP_C  , `K_A  , `OP_A   };
-        24'b1001_1xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_GTEQ, `OP_D  , `K_C  , `OP_A   };
-        24'b1001_1xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LTEQ, `OP_A  , `K_B  , `OP_A   };
-        24'b1001_1xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LTEQ, `OP_B  , `K_C  , `OP_A   };
-        24'b1001_1xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LTEQ, `OP_C  , `K_A  , `OP_A   };
-        24'b1001_1xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_LTEQ, `OP_D  , `K_C  , `OP_A   };
-        // Aa
-        24'b1010_0xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `K_B  , `OP_A   }; // A=A+B
-        24'b1010_0xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `K_C  , `OP_B   };
-        24'b1010_0xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `K_A  , `OP_C   };
-        24'b1010_0xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_D  , `K_C  , `OP_D   };
-        24'b1010_0xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `K_A  , `OP_A   }; // A=A+A
-        24'b1010_0xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `K_B  , `OP_B   };
-        24'b1010_0xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `K_C  , `OP_C   };
-        24'b1010_0xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_D  , `K_D  , `OP_D   }; // D=D+D
-        24'b1010_0xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `K_A  , `OP_B   };
-        24'b1010_0xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `K_B  , `OP_C   };
-        24'b1010_0xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `K_C  , `OP_A   };
-        24'b1010_0xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `K_D  , `OP_C   };
-        24'b1010_0xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `K_1  , `OP_A   };
-        24'b1010_0xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_B  , `K_1  , `OP_B   };
-        24'b1010_0xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_1  , `OP_C   };
-        24'b1010_0xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_D  , `K_1  , `OP_D   };
-        //Ab
-        24'b1010_1xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_A   }; // A=0
-        24'b1010_1xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_B   };
-        24'b1010_1xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_C   };
-        24'b1010_1xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_D   };
-        24'b1010_1xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_A   }; // A=B
-        24'b1010_1xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_B   };
-        24'b1010_1xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_C   };
-        24'b1010_1xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D   }; // D=C
-        24'b1010_1xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_B   };
-        24'b1010_1xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_C   };
-        24'b1010_1xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_A   };
-        24'b1010_1xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_TFR , `OP_D  , `K_A  , `OP_C   };
-        24'b1010_1xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EX  , `OP_B  , `K_A  , `OP_A   };
-        24'b1010_1xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EX  , `OP_C  , `K_B  , `OP_B   };
-        24'b1010_1xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EX  , `OP_A  , `K_C  , `OP_C   };
-        24'b1010_1xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_EX  , `OP_C  , `K_D  , `OP_D   };
-        //Ba
-        24'b1011_0xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   }; // A=A-B
-        24'b1011_0xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_B  , `K_C  , `OP_B   };
-        24'b1011_0xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_A  , `OP_C   };
-        24'b1011_0xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_D  , `K_C  , `OP_D   };
-        24'b1011_0xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_A  , `K_1  , `OP_A   }; // A=A+1
-        24'b1011_0xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_B  , `K_1  , `OP_B   };
-        24'b1011_0xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_C  , `K_1  , `OP_C   };
-        24'b1011_0xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_ADD , `OP_D  , `K_1  , `OP_D   }; // D=D+1
-        24'b1011_0xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_B  , `K_A  , `OP_B   }; // B=B-A
-        24'b1011_0xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_C   };
-        24'b1011_0xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_A   };
-        24'b1011_0xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_C   }; // C=C-D
-        24'b1011_0xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   }; // A=A-B
-        24'b1011_0xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_B   };
-        24'b1011_0xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_C   };
-        24'b1011_0xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_D   }; // D=C-D
-        //Bb
-        24'b1011_1xxx_0000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_A  , `K_A  , `OP_A   }; // ASL
-        24'b1011_1xxx_0001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_B  , `K_B  , `OP_B   }; // BSL
-        24'b1011_1xxx_0010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_C  , `K_C  , `OP_C   }; // CSL
-        24'b1011_1xxx_0011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SL  , `OP_D  , `K_D  , `OP_D   }; // DSL
-        24'b1011_1xxx_0100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_A  , `K_A  , `OP_A   }; // ASR
-        24'b1011_1xxx_0101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_B  , `K_B  , `OP_B   }; // BSR
-        24'b1011_1xxx_0110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_C  , `K_C  , `OP_C   }; // CSR
-        24'b1011_1xxx_0111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SR  , `OP_D  , `K_D  , `OP_D   }; // DSR
-        24'b1011_1xxx_1000_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_Z  , `K_A  , `OP_A   }; // A=0-A
-        24'b1011_1xxx_1001_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_Z  , `K_B  , `OP_B   }; // B=0-B
-        24'b1011_1xxx_1010_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_Z  , `K_C  , `OP_C   }; // C=0-C
-        24'b1011_1xxx_1011_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_Z  , `K_D  , `OP_D   }; // D=0-D
-        24'b1011_1xxx_1100_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_A  , `K_9  , `OP_A   }; // A=-A-1 == A=A-9
-        24'b1011_1xxx_1101_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_B  , `K_9  , `OP_B   };
-        24'b1011_1xxx_1110_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_C  , `K_9  , `OP_C   };
-        24'b1011_1xxx_1111_xxxx_xxxx_xxxx: mc = { 3'h6,`ALU_OP_SUB , `OP_D  , `K_9  , `OP_D   };
-        // C
-        24'b1100_0000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_A  , `K_B  , `OP_A   }; // A=A+B
-        24'b1100_0001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_B  , `K_C  , `OP_B   };
-        24'b1100_0010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `K_A  , `OP_C   };
-        24'b1100_0011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_D  , `K_C  , `OP_D   };
-        24'b1100_0100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_A  , `K_A  , `OP_A   }; // A=A+A
-        24'b1100_0101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_B  , `K_B  , `OP_B   };
-        24'b1100_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `K_C  , `OP_C   };
-        24'b1100_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_D  , `K_D  , `OP_D   }; // D=D+D
-        24'b1100_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_B  , `K_A  , `OP_B   };
-        24'b1100_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `K_B  , `OP_C   };
-        24'b1100_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_A  , `K_C  , `OP_A   };
-        24'b1100_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `K_D  , `OP_C   };
-        24'b1100_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `K_1  , `OP_A   };
-        24'b1100_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_B  , `K_1  , `OP_B   };
-        24'b1100_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `K_1  , `OP_C   };
-        24'b1100_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_D  , `K_1  , `OP_D   };
-        //D
-        24'b1101_0000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_A   }; // A=0
-        24'b1101_0001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_B   };
-        24'b1101_0010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_C   };
-        24'b1101_0011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_D   };
-        24'b1101_0100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_A   }; // A=B
-        24'b1101_0101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_B   };
-        24'b1101_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_C   };
-        24'b1101_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D   }; // D=C
-        24'b1101_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_B   };
-        24'b1101_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_C   };
-        24'b1101_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_A   };
-        24'b1101_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_TFR , `OP_D  , `K_A  , `OP_C   };
-        24'b1101_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_B  , `K_A  , `OP_A   };
-        24'b1101_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_C  , `K_B  , `OP_B   };
-        24'b1101_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_A  , `K_C  , `OP_C   };
-        24'b1101_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_EX  , `OP_C  , `K_D  , `OP_D   };
-        //E
-        24'b1110_0000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   }; // A=A-B
-        24'b1110_0001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_B  , `K_C  , `OP_B   };
-        24'b1110_0010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `K_A  , `OP_C   };
-        24'b1110_0011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_D  , `K_C  , `OP_D   };
-        24'b1110_0100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_A  , `K_1  , `OP_A   }; // A=A-1
-        24'b1110_0101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_B  , `K_1  , `OP_B   };
-        24'b1110_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_C  , `K_1  , `OP_C   };
-        24'b1110_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_ADD , `OP_D  , `K_1  , `OP_D   }; // D=D-1
-        24'b1110_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_B  , `K_A  , `OP_B   }; // B=B-A
-        24'b1110_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_C   };
-        24'b1110_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_A   };
-        24'b1110_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_C   }; // C=C-D
-        24'b1110_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   }; // A=A-B
-        24'b1110_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_B   };
-        24'b1110_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_C   };
-        24'b1110_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_D   }; // D=C-D
-        //F
-        24'b1111_0000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SL  , `OP_A  , `K_A  , `OP_A   }; // ASL
-        24'b1111_0001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SL  , `OP_B  , `K_B  , `OP_B   };
-        24'b1111_0010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SL  , `OP_C  , `K_C  , `OP_C   };
-        24'b1111_0011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SL  , `OP_D  , `K_D  , `OP_D   };
-        24'b1111_0100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SR  , `OP_A  , `K_A  , `OP_A   }; // ASR
-        24'b1111_0101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SR  , `OP_B  , `K_B  , `OP_B   };
-        24'b1111_0110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SR  , `OP_C  , `K_C  , `OP_C   };
-        24'b1111_0111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SR  , `OP_D  , `K_D  , `OP_D   }; // DSR
-        24'b1111_1000_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_Z  , `K_A  , `OP_A   }; // A=0-A
-        24'b1111_1001_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_Z  , `K_B  , `OP_B   }; // B=0-B
-        24'b1111_1010_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_Z  , `K_C  , `OP_C   }; // C=0-C
-        24'b1111_1011_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_Z  , `K_D  , `OP_D   }; // D=0-D
-        24'b1111_1100_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_A  , `K_9  , `OP_A   }; // A=-A-1 == A=A-9
-        24'b1111_1101_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_B  , `K_9  , `OP_B   };
-        24'b1111_1110_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_C  , `K_9  , `OP_C   };
-        24'b1111_1111_xxxx_xxxx_xxxx_xxxx: mc = { 3'h4,`ALU_OP_SUB , `OP_D  , `K_9  , `OP_D   };
-
-        default:
-            mc = { 3'h0,`ALU_OP_ADD, `OP_A  , `OP_A  , `OP_A   };
-    endcase
-*/
 endmodule
 // mimic a block ROM
 `ifdef SIMULATOR

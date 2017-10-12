@@ -56,6 +56,17 @@ assign we_lcd = (we == 1'b0) && (((addr[19:0] >= 20'h2e100) && (addr[19:0] < 20'
                                  ((addr[19:0] >= 20'h2e200) && (addr[19:0] < 20'h2e260)) || // slave2
                                  ((addr[19:0] >= 20'h2e300) && (addr[19:0] < 20'h2e360)));  // master
 
+                                 
+//
+// A19 A18 A17 A16 A15 A14 A13 
+//  0   0   0   0   0   0   0
+//
+//
+//
+//
+//
+                                 
+                                 
 // data to cpu mux
 assign bus_to_cpu = oe_ti1 ? data_from_ti1:
                     oe_ti2 ? data_from_ti2:
@@ -230,7 +241,7 @@ module sync_mem2k(
 
     );
 
-reg [15:0] mem[16383:0];
+reg [15:0] mem[1023:0];
 
 always @(posedge clk_in)
     begin
@@ -264,7 +275,7 @@ module async_rom(
 
 reg [15:0] mem[32767:0];
 
-assign #70 data_o = mem[addr_in[17:2]];
+assign #70 data_o = mem[addr_in[16:2]];
 
 integer i;
 initial

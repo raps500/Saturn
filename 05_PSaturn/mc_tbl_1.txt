@@ -1,20 +1,37 @@
+# Saturn processor microcode
+# The microcode is address decoded to select the correct group and an extra nibble is
+# used to select inside the group
+#
+#
+#
+#
+#
+#
+#  goto on bit set/clear ?ABIT ?CBIT -------------+
+#  goto on condition true ?HS ?ST ?P ?A -------+  |
+#  write sticky ----------------------------+  |  |
+#  write dst ----------------------------+  |  |  |
+#  write carry -----------------------+  |  |  |  |
+#  forced hex mode ----------------+  |  |  |  |  |  |  |
+#  forced carry with literal 0 -+  |  |  |  |  |  |  |  |
+#                               |  |  |  |  |  |  |  |  |
 # 00 op3 0Ean 0EFn                      
-0000_1110_xxxx_0000_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_A  , `K_B  , `OP_A   # A=A&B
-0000_1110_xxxx_0001_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_B  , `K_C  , `OP_B   # B=B&C
-0000_1110_xxxx_0010_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_C  , `K_A  , `OP_C   # A=A&B
-0000_1110_xxxx_0011_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_D  , `K_C  , `OP_D   # B=B&C
-0000_1110_xxxx_0100_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_B  , `K_A  , `OP_B   # A=A&B
-0000_1110_xxxx_0101_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_C  , `K_B  , `OP_C   # B=B&C
-0000_1110_xxxx_0110_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_A  , `K_C  , `OP_A   # A=A&B
-0000_1110_xxxx_0111_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_C  , `K_D  , `OP_C   # B=B&C
-0000_1110_xxxx_1000_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_A  , `K_B  , `OP_A   # A=A!B
-0000_1110_xxxx_1001_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_B  , `K_C  , `OP_B   # B=B!C
-0000_1110_xxxx_1010_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_C  , `K_A  , `OP_C   # A=A!B
-0000_1110_xxxx_1011_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_D  , `K_C  , `OP_D   # B=B!C
-0000_1110_xxxx_1100_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_B  , `K_A  , `OP_B   # A=A!B
-0000_1110_xxxx_1101_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_C  , `K_B  , `OP_C   # B=B!C
-0000_1110_xxxx_1110_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_A  , `K_C  , `OP_A   # A=A!B
-0000_1110_xxxx_1111_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_C  , `K_D  , `OP_C   # B=B!C
+0000_1110_xxxx_0000_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_A  , `K_B  , `OP_A   # A=A&B
+0000_1110_xxxx_0001_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_B  , `K_C  , `OP_B   # B=B&C
+0000_1110_xxxx_0010_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_C  , `K_A  , `OP_C   # A=A&B
+0000_1110_xxxx_0011_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_D  , `K_C  , `OP_D   # B=B&C
+0000_1110_xxxx_0100_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_B  , `K_A  , `OP_B   # A=A&B
+0000_1110_xxxx_0101_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_C  , `K_B  , `OP_C   # B=B&C
+0000_1110_xxxx_0110_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_A  , `K_C  , `OP_A   # A=A&B
+0000_1110_xxxx_0111_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_AND , `OP_C  , `K_D  , `OP_C   # B=B&C
+0000_1110_xxxx_1000_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_A  , `K_B  , `OP_A   # A=A!B
+0000_1110_xxxx_1001_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_B  , `K_C  , `OP_B   # B=B!C
+0000_1110_xxxx_1010_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_C  , `K_A  , `OP_C   # A=A!B
+0000_1110_xxxx_1011_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_D  , `K_C  , `OP_D   # B=B!C
+0000_1110_xxxx_1100_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_B  , `K_A  , `OP_B   # A=A!B
+0000_1110_xxxx_1101_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_C  , `K_B  , `OP_C   # B=B!C
+0000_1110_xxxx_1110_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_A  , `K_C  , `OP_A   # A=A!B
+0000_1110_xxxx_1111_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_OR  , `OP_C  , `K_D  , `OP_C   # B=B!C
 # 01 op1 0x
 0000_0000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # RTNSXM
 0000_0001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # RTN
@@ -22,118 +39,118 @@
 0000_0011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # RTNCC
 0000_0100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # SETHEX
 0000_0101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # SETDEC
-0000_0110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_STK # RSTK=C
-0000_0111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_STK, `K_A  , `OP_C   # C=RSTK
-0000_1000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 2,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_ST  # CLRST
-0000_1001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 2,`ALU_OP_TFR , `OP_ST , `K_A  , `OP_C   # C=ST
-0000_1010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 2,`ALU_OP_TFR , `OP_C  , `K_C  , `OP_ST  # ST=C
-0000_1011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 2,`ALU_OP_EX  , `OP_ST , `K_C  , `OP_C   # CSTEX
-0000_1100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_ADD , `OP_P  , `K_1  , `OP_P   # P=P+1
-0000_1101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_SUB , `OP_P  , `K_1  , `OP_P   # P=P-1
+0000_0110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_STK # RSTK=C
+0000_0111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_STK, `K_A  , `OP_C   # C=RSTK
+0000_1000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 2,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_ST  # CLRST
+0000_1001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 2,`ALU_OP_TFR , `OP_ST , `K_A  , `OP_C   # C=ST
+0000_1010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 2,`ALU_OP_TFR , `OP_C  , `K_C  , `OP_ST  # ST=C
+0000_1011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 2,`ALU_OP_EX  , `OP_ST , `K_C  , `OP_C   # CSTEX
+0000_1100_xxxx_xxxx_xxxx_xxxx , 1, 1, 0, 1, 0, 0, 0, 0, 0, 0,`ALU_OP_ADD , `OP_P  , `K_LIT, `OP_P   # P=P+1
+0000_1101_xxxx_xxxx_xxxx_xxxx , 1, 1, 0, 1, 0, 0, 0, 0, 0, 0,`ALU_OP_SUB , `OP_P  , `K_LIT, `OP_P   # P=P-1
 0000_1110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
 0000_1111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # RTI
 # 02 op2 10n Rn=A Rn=C
-0001_0000_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R0  # R0=A
-0001_0000_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R1  #
-0001_0000_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R2  #
-0001_0000_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R3  #
-0001_0000_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R4  #
-0001_0000_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R5  # needs extra registers
-0001_0000_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R6  # needs extra registers
-0001_0000_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R7  # needs extra registers
-0001_0000_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R0  # R0=C
-0001_0000_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R1  #
-0001_0000_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R2  #
-0001_0000_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R3  #
-0001_0000_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R4  #
-0001_0000_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R5  # needs extra registers
-0001_0000_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R6  # needs extra registers
-0001_0000_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R7  # needs extra registers
+0001_0000_0000_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R0  # R0=A
+0001_0000_0001_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R1  #
+0001_0000_0010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R2  #
+0001_0000_0011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R3  #
+0001_0000_0100_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R4  #
+0001_0000_0101_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R5  # needs extra registers
+0001_0000_0110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R6  # needs extra registers
+0001_0000_0111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R7  # needs extra registers
+0001_0000_1000_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R0  # R0=C
+0001_0000_1001_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R1  #
+0001_0000_1010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R2  #
+0001_0000_1011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R3  #
+0001_0000_1100_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R4  #
+0001_0000_1101_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R5  # needs extra registers
+0001_0000_1110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R6  # needs extra registers
+0001_0000_1111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R7  # needs extra registers
 # 03 op2 11n A=Rn C=Rn                 
-0001_0001_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_A   #
-0001_0001_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_A   #
-0001_0001_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_A   #
-0001_0001_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_A   #
-0001_0001_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_A   #
-0001_0001_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R5 , `K_A  , `OP_A   #
-0001_0001_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R6 , `K_A  , `OP_A   #
-0001_0001_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R7 , `K_A  , `OP_A   #
-0001_0001_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_C   #
-0001_0001_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_C   #
-0001_0001_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_C   #
-0001_0001_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_C   #
-0001_0001_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_C   #
-0001_0001_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R5 , `K_A  , `OP_C   #
-0001_0001_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R6 , `K_A  , `OP_C   #
-0001_0001_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R7 , `K_A  , `OP_C   #
+0001_0001_0000_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_A   #
+0001_0001_0001_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_A   #
+0001_0001_0010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_A   #
+0001_0001_0011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_A   #
+0001_0001_0100_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_A   #
+0001_0001_0101_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R5 , `K_A  , `OP_A   #
+0001_0001_0110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R6 , `K_A  , `OP_A   #
+0001_0001_0111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R7 , `K_A  , `OP_A   #
+0001_0001_1000_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_C   #
+0001_0001_1001_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_C   #
+0001_0001_1010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_C   #
+0001_0001_1011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_C   #
+0001_0001_1100_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_C   #
+0001_0001_1101_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R5 , `K_A  , `OP_C   #
+0001_0001_1110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R6 , `K_A  , `OP_C   #
+0001_0001_1111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_TFR , `OP_R7 , `K_A  , `OP_C   #
 # 04 op2 12n ARnEX CRnEX                                                           reg1     reg2     dst
-0001_0010_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R0 , `K_A  , `OP_A   # AR0EX
-0001_0010_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R1 , `K_A  , `OP_A   #
-0001_0010_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R2 , `K_A  , `OP_A   #
-0001_0010_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R3 , `K_A  , `OP_A   #
-0001_0010_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_A   #
-0001_0010_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R5 , `K_A  , `OP_A   #
-0001_0010_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R6 , `K_A  , `OP_A   #
-0001_0010_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R7 , `K_A  , `OP_A   #
-0001_0010_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R0 , `K_C  , `OP_C   # CR0EX
-0001_0010_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R1 , `K_C  , `OP_C   #
-0001_0010_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R2 , `K_C  , `OP_C   #
-0001_0010_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R3 , `K_C  , `OP_C   #
-0001_0010_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R4 , `K_C  , `OP_C   #
-0001_0010_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R5 , `K_C  , `OP_C   #
-0001_0010_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R6 , `K_C  , `OP_C   #
-0001_0010_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R7 , `K_C  , `OP_C   #
+0001_0010_0000_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R0 , `K_A  , `OP_A   # AR0EX
+0001_0010_0001_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R1 , `K_A  , `OP_A   #
+0001_0010_0010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R2 , `K_A  , `OP_A   #
+0001_0010_0011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R3 , `K_A  , `OP_A   #
+0001_0010_0100_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_A   #
+0001_0010_0101_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R5 , `K_A  , `OP_A   #
+0001_0010_0110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R6 , `K_A  , `OP_A   #
+0001_0010_0111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R7 , `K_A  , `OP_A   #
+0001_0010_1000_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R0 , `K_C  , `OP_C   # CR0EX
+0001_0010_1001_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R1 , `K_C  , `OP_C   #
+0001_0010_1010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R2 , `K_C  , `OP_C   #
+0001_0010_1011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R3 , `K_C  , `OP_C   #
+0001_0010_1100_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R4 , `K_C  , `OP_C   #
+0001_0010_1101_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R5 , `K_C  , `OP_C   #
+0001_0010_1110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R6 , `K_C  , `OP_C   #
+0001_0010_1111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_EX  , `OP_R7 , `K_C  , `OP_C   #
 # 05 op2 13n
-0001_0011_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D0  #
-0001_0011_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D1  #
-0001_0011_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D0 , `K_A  , `OP_A   #
-0001_0011_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D1 , `K_A  , `OP_A   #
-0001_0011_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D0  #
-0001_0011_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D1  #
-0001_0011_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D0 , `K_C  , `OP_C   #
-0001_0011_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D1 , `K_C  , `OP_C   #
-0001_0011_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D0  #
-0001_0011_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D1  #
-0001_0011_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D0 , `K_A  , `OP_A   #
-0001_0011_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D1 , `K_A  , `OP_A   #
-0001_0011_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D0  #
-0001_0011_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D1  #
-0001_0011_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D0 , `K_C  , `OP_C   #
-0001_0011_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D1 , `K_C  , `OP_C   #
-# 06 op2 14n DATn=A/C  A/C=DATn                                                    reg1     reg2     dst
-0001_0100_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   #
-0001_0100_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   #
-0001_0100_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   #
-0001_0100_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   #
-0001_0100_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   #
-0001_0100_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   #
-0001_0100_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   #
-0001_0100_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   #
-0001_0100_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   #
-0001_0100_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   #
-0001_0100_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   #
-0001_0100_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   #
-0001_0100_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   #
-0001_0100_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   #
-0001_0100_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   #
-0001_0100_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   #
+0001_0011_0000_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D0  # D0=A
+0001_0011_0001_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D1  # D1=A
+0001_0011_0010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D0 , `K_A  , `OP_A   # A=D0
+0001_0011_0011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D1 , `K_A  , `OP_A   # A=D1
+0001_0011_0100_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D0  # D0=C
+0001_0011_0101_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D1  # D1=C
+0001_0011_0110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D0 , `K_C  , `OP_C   #
+0001_0011_0111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D1 , `K_C  , `OP_C   #
+0001_0011_1000_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D0  #
+0001_0011_1001_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_D1  #
+0001_0011_1010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D0 , `K_A  , `OP_A   #
+0001_0011_1011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D1 , `K_A  , `OP_A   #
+0001_0011_1100_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D0  #
+0001_0011_1101_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D1  #
+0001_0011_1110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D0 , `K_C  , `OP_C   #
+0001_0011_1111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_D1 , `K_C  , `OP_C   #
+# 06 op2 14n DATn=A/C  A/C=DATn                                             reg1     reg2     dst
+0001_0100_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_WR  , `OP_A  , `K_D0 , `OP_A   #
+0001_0100_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_WR  , `OP_A  , `K_D1 , `OP_A   #
+0001_0100_0010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_RD  , `OP_A  , `K_D0 , `OP_A   #
+0001_0100_0011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_RD  , `OP_A  , `K_D1 , `OP_A   #
+0001_0100_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_WR  , `OP_C  , `K_D1 , `OP_A   #
+0001_0100_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_WR  , `OP_C  , `K_D0 , `OP_A   #
+0001_0100_0110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_RD  , `OP_A  , `K_D0 , `OP_C   #
+0001_0100_0111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_RD  , `OP_A  , `K_D1 , `OP_C   #
+0001_0100_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,`ALU_OP_WR  , `OP_A  , `K_D0 , `OP_A   #
+0001_0100_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,`ALU_OP_WR  , `OP_A  , `K_D1 , `OP_A   #
+0001_0100_1010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,`ALU_OP_RD  , `OP_A  , `K_D0 , `OP_A   #
+0001_0100_1011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,`ALU_OP_RD  , `OP_A  , `K_D1 , `OP_A   #
+0001_0100_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,`ALU_OP_WR  , `OP_C  , `K_D0 , `OP_A   #
+0001_0100_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,`ALU_OP_WR  , `OP_C  , `K_D1 , `OP_A   #
+0001_0100_1110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,`ALU_OP_RD  , `OP_A  , `K_D0 , `OP_C   #
+0001_0100_1111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,`ALU_OP_RD  , `OP_A  , `K_D1 , `OP_C   #
 # 07 op2 15n DATn=A/C  A/C=DATn         
-0001_0101_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   #
-0001_0101_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   #
-0001_0101_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   #
-0001_0101_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   #
-0001_0101_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   #
-0001_0101_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   #
-0001_0101_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   #
-0001_0101_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   #
-0001_0101_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   #
-0001_0101_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,`ALU_OP_WR  , `OP_A  , `K_A  , `OP_A   #
-0001_0101_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   #
-0001_0101_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_A   #
-0001_0101_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   #
-0001_0101_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,`ALU_OP_WR  , `OP_C  , `K_A  , `OP_A   #
-0001_0101_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   #
-0001_0101_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,`ALU_OP_RD  , `OP_A  , `K_A  , `OP_C   #
+0001_0101_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_WR  , `OP_A  , `K_D0 , `OP_A   #
+0001_0101_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_WR  , `OP_A  , `K_D1 , `OP_A   #
+0001_0101_0010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_RD  , `OP_A  , `K_D0 , `OP_A   #
+0001_0101_0011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_RD  , `OP_A  , `K_D1 , `OP_A   #
+0001_0101_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_WR  , `OP_C  , `K_D0 , `OP_A   #
+0001_0101_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_WR  , `OP_C  , `K_D1 , `OP_A   #
+0001_0101_0110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_RD  , `OP_A  , `K_D0 , `OP_C   #
+0001_0101_0111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_RD  , `OP_A  , `K_D1 , `OP_C   #
+0001_0101_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,`ALU_OP_WR  , `OP_A  , `K_D0 , `OP_A   #
+0001_0101_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,`ALU_OP_WR  , `OP_A  , `K_D1 , `OP_A   #
+0001_0101_1010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 5,`ALU_OP_RD  , `OP_A  , `K_D0 , `OP_A   #
+0001_0101_1011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 5,`ALU_OP_RD  , `OP_A  , `K_D1 , `OP_A   #
+0001_0101_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,`ALU_OP_WR  , `OP_C  , `K_D0 , `OP_A   #
+0001_0101_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,`ALU_OP_WR  , `OP_C  , `K_D1 , `OP_A   #
+0001_0101_1110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 5,`ALU_OP_RD  , `OP_A  , `K_D0 , `OP_C   #
+0001_0101_1111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 5,`ALU_OP_RD  , `OP_A  , `K_D1 , `OP_C   #
 # 08 op1 10..1F
 0001_0000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
 0001_0001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
@@ -141,72 +158,72 @@
 0001_0011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
 0001_0100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
 0001_0101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
-0001_0110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_D0 , `K_LIT, `OP_D0  #   D0=D0+n
-0001_0111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_D1 , `K_LIT, `OP_D1  #   D1=D1+n
-0001_1000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_D0 , `K_LIT, `OP_D0  #   D0=D0-n
-0001_1001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D0  # D0(2)=n
-0001_1010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D0  # D0(4)=n
-0001_1011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D0  # D0(5)=n
-0001_1100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_LIT, `K_A  , `OP_D1  #   D1=D1-n
-0001_1101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D1  # D1(2)=n
-0001_1110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D1  # D1(4)=n
-0001_1111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_RD  , `OP_LIT, `K_A  , `OP_D1  # D1(5)=n
+0001_0110_xxxx_xxxx_xxxx_xxxx , 0, 1, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_D0 , `K_LIT, `OP_D0  #   D0=D0+n
+0001_0111_xxxx_xxxx_xxxx_xxxx , 0, 1, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_D1 , `K_LIT, `OP_D1  #   D1=D1+n
+0001_1000_xxxx_xxxx_xxxx_xxxx , 0, 1, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_D0 , `K_LIT, `OP_D0  #   D0=D0-n
+0001_1001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_D0  # D0(2)=n
+0001_1010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 3,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_D0  # D0(4)=n
+0001_1011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_D0  # D0(5)=n
+0001_1100_xxxx_xxxx_xxxx_xxxx , 0, 1, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_LIT, `K_A  , `OP_D1  #   D1=D1-n
+0001_1101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_D1  # D1(2)=n
+0001_1110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 3,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_D1  # D1(4)=n
+0001_1111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_D1  # D1(5)=n
 # 09 op3 808x
 1000_0000_1000_0000_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder INTON
 1000_0000_1000_0001_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder RSI
-1000_0000_1000_0010_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 5,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_A   # LA
+1000_0000_1000_0010_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 5,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_A   # LA
 1000_0000_1000_0011_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder BUSCB
-1000_0000_1000_0100_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_ANDN, `OP_A  , `K_LIT, `OP_A   # ABIT=0
-1000_0000_1000_0101_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_OR  , `OP_A  , `K_LIT, `OP_A   # ABIT=1
-1000_0000_1000_0110_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_TST0, `OP_A  , `K_LIT, `OP_A   # ?ABIT=0
-1000_0000_1000_0111_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_TST1, `OP_A  , `K_LIT, `OP_A   # ?ABIT=1
-1000_0000_1000_1000_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_ANDN, `OP_C  , `K_LIT, `OP_C   # CBIT=0
-1000_0000_1000_1001_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_OR  , `OP_C  , `K_LIT, `OP_C   # CBIT=1
-1000_0000_1000_1010_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_TST0, `OP_C  , `K_LIT, `OP_C   # ?CBIT=0
-1000_0000_1000_1011_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_TST1, `OP_C  , `K_LIT, `OP_C   # ?CBIT=1
-1000_0000_1000_1100_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_RD  , `OP_MEM, `K_A  , `OP_PC  # PC=(A)
+1000_0000_1000_0100_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 3,`ALU_OP_ANDN, `OP_A  , `K_LIT, `OP_A   # ABIT=0
+1000_0000_1000_0101_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 3,`ALU_OP_OR  , `OP_A  , `K_LIT, `OP_A   # ABIT=1
+1000_0000_1000_0110_xxxx_xxxx , 0, 0, 1, 0, 0, 0, 1, 0, 0, 3,`ALU_OP_TST0, `OP_A  , `K_LIT, `OP_A   # ?ABIT=0
+1000_0000_1000_0111_xxxx_xxxx , 0, 0, 1, 0, 0, 0, 1, 0, 0, 3,`ALU_OP_TST1, `OP_A  , `K_LIT, `OP_A   # ?ABIT=1
+1000_0000_1000_1000_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 3,`ALU_OP_ANDN, `OP_C  , `K_LIT, `OP_C   # CBIT=0
+1000_0000_1000_1001_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 3,`ALU_OP_OR  , `OP_C  , `K_LIT, `OP_C   # CBIT=1
+1000_0000_1000_1010_xxxx_xxxx , 0, 0, 1, 0, 0, 0, 1, 0, 0, 3,`ALU_OP_TST0, `OP_C  , `K_LIT, `OP_C   # ?CBIT=0
+1000_0000_1000_1011_xxxx_xxxx , 0, 0, 1, 0, 0, 0, 1, 0, 0, 3,`ALU_OP_TST1, `OP_C  , `K_LIT, `OP_C   # ?CBIT=1
+1000_0000_1000_1100_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_RD  , `OP_MEM, `K_A  , `OP_PC  # PC=(A)
 1000_0000_1000_1101_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_ID , `K_D  , `OP_A   # BUSCD
-1000_0000_1000_1110_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_RD  , `OP_MEM, `K_C  , `OP_PC  # PC=(C)
+1000_0000_1000_1110_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_RD  , `OP_MEM, `K_C  , `OP_PC  # PC=(C)
 1000_0000_1000_1111_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder INTOFF
 # 0A op2 80x                                                                       reg1    reg2      dst
-1000_0000_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_OUT #   OUT=C
-1000_0000_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 2,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_OUT #   OUT=C
-1000_0000_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_TFR , `OP_IN , `K_A  , `OP_A   #   A=IN
-1000_0000_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_TFR , `OP_IN , `K_A  , `OP_C   #   C=IN
+1000_0000_0000_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_OUT #   OUT=C
+1000_0000_0001_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 2,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_OUT #   OUT=C
+1000_0000_0010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 3,`ALU_OP_TFR , `OP_IN , `K_A  , `OP_A   #   A=IN
+1000_0000_0011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 3,`ALU_OP_TFR , `OP_IN , `K_A  , `OP_C   #   C=IN
 1000_0000_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
 1000_0000_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
-1000_0000_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_ID , `K_A  , `OP_C   #   C=ID
+1000_0000_0110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_ID , `K_A  , `OP_C   #   C=ID
 1000_0000_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
 1000_0000_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
-1000_0000_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_P  , `K_C  , `OP_C   #   C=C+P+1 on field A sets carry
+1000_0000_1001_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_P  , `K_C  , `OP_C   #   C=C+P+1 on field A sets carry
 1000_0000_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
 1000_0000_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_TFR , `OP_ID , `K_C  , `OP_A   #   BUSCC
-1000_0000_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_TFR , `OP_P  , `K_A  , `OP_C   #   C=P n
-1000_0000_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_P   #   P=C n
+1000_0000_1100_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,`ALU_OP_TFR , `OP_P  , `K_A  , `OP_C   #   C=P n
+1000_0000_1101_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_P   #   P=C n
 1000_0000_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
-1000_0000_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_EX  , `OP_P  , `K_C  , `OP_C   #   CPEX n
+1000_0000_1111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,`ALU_OP_EX  , `OP_P  , `K_C  , `OP_C   #   CPEX n
 # 0B op4 818fnm A=A+CON/A=A-CON   
-1000_0001_1000_xxxx_0000_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_A  , `K_LIT, `OP_A   #   A=A+CON
-1000_0001_1000_xxxx_0001_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_B  , `K_LIT, `OP_B   #   B=B+CON
-1000_0001_1000_xxxx_0010_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_C  , `K_LIT, `OP_C   #  
-1000_0001_1000_xxxx_0011_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_D  , `K_LIT, `OP_D   #  
+1000_0001_1000_xxxx_0000_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_A  , `K_LIT, `OP_A   #   A=A+CON
+1000_0001_1000_xxxx_0001_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_B  , `K_LIT, `OP_B   #   B=B+CON
+1000_0001_1000_xxxx_0010_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_C  , `K_LIT, `OP_C   #   C=C+con
+1000_0001_1000_xxxx_0011_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_D  , `K_LIT, `OP_D   #   D=D+CON
 1000_0001_1000_xxxx_0100_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 8184
 1000_0001_1000_xxxx_0101_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 8185
 1000_0001_1000_xxxx_0110_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 8186
 1000_0001_1000_xxxx_0111_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 8187
-1000_0001_1000_xxxx_1000_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_A  , `K_LIT, `OP_A   #   A=A-CON
-1000_0001_1000_xxxx_1001_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_B  , `K_LIT, `OP_B   #  
-1000_0001_1000_xxxx_1010_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_LIT, `OP_C   #  
-1000_0001_1000_xxxx_1011_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_D  , `K_LIT, `OP_D   #
+1000_0001_1000_xxxx_1000_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_A  , `K_LIT, `OP_A   #   A=A-CON
+1000_0001_1000_xxxx_1001_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_B  , `K_LIT, `OP_B   #   B=B-CON
+1000_0001_1000_xxxx_1010_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_LIT, `OP_C   #   C=C-CON
+1000_0001_1000_xxxx_1011_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_D  , `K_LIT, `OP_D   #   D=D-CON
 1000_0001_1000_xxxx_1100_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 818C
 1000_0001_1000_xxxx_1101_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 818D
 1000_0001_1000_xxxx_1110_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 818E
 1000_0001_1000_xxxx_1111_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 818F
 # 0C op4 819fn ASRB.f        
-1000_0001_1001_xxxx_0000_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SRB , `OP_A  , `K_A  , `OP_A   #
-1000_0001_1001_xxxx_0001_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SRB , `OP_B  , `K_B  , `OP_B   #
-1000_0001_1001_xxxx_0010_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SRB , `OP_C  , `K_C  , `OP_C   #
-1000_0001_1001_xxxx_0011_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SRB , `OP_D  , `K_D  , `OP_D   #
+1000_0001_1001_xxxx_0000_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SRB , `OP_A  , `K_A  , `OP_A   # ASRB
+1000_0001_1001_xxxx_0001_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SRB , `OP_B  , `K_B  , `OP_B   # BSRB
+1000_0001_1001_xxxx_0010_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SRB , `OP_C  , `K_C  , `OP_C   # CSRB
+1000_0001_1001_xxxx_0011_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SRB , `OP_D  , `K_D  , `OP_D   # DSRB
 1000_0001_1001_xxxx_0100_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
 1000_0001_1001_xxxx_0101_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
 1000_0001_1001_xxxx_0110_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
@@ -220,65 +237,65 @@
 1000_0001_1001_xxxx_1110_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
 1000_0001_1001_xxxx_1111_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
 # 0D op5 81Af0n Rn=A.f           
-1000_0001_1010_xxxx_0000_0000 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R0  #
-1000_0001_1010_xxxx_0000_0001 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R1  #
-1000_0001_1010_xxxx_0000_0010 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R2  #
-1000_0001_1010_xxxx_0000_0011 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R3  #
-1000_0001_1010_xxxx_0000_0100 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R4  #
-1000_0001_1010_xxxx_0000_0101 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R5  #
-1000_0001_1010_xxxx_0000_0110 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R6  #
-1000_0001_1010_xxxx_0000_0111 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R7  #
-1000_0001_1010_xxxx_0000_1000 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R0  #
-1000_0001_1010_xxxx_0000_1001 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R1  #
-1000_0001_1010_xxxx_0000_1010 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R2  #
-1000_0001_1010_xxxx_0000_1011 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R3  #
-1000_0001_1010_xxxx_0000_1100 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R4  #
-1000_0001_1010_xxxx_0000_1101 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R5  #
-1000_0001_1010_xxxx_0000_1110 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R6  #
-1000_0001_1010_xxxx_0000_1111 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R7  #
+1000_0001_1010_xxxx_0000_0000 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R0  # R0=A.f
+1000_0001_1010_xxxx_0000_0001 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R1  #
+1000_0001_1010_xxxx_0000_0010 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R2  #
+1000_0001_1010_xxxx_0000_0011 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R3  #
+1000_0001_1010_xxxx_0000_0100 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R4  #
+1000_0001_1010_xxxx_0000_0101 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R5  #
+1000_0001_1010_xxxx_0000_0110 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R6  #
+1000_0001_1010_xxxx_0000_0111 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_R7  #
+1000_0001_1010_xxxx_0000_1000 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R0  #
+1000_0001_1010_xxxx_0000_1001 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R1  #
+1000_0001_1010_xxxx_0000_1010 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R2  #
+1000_0001_1010_xxxx_0000_1011 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R3  #
+1000_0001_1010_xxxx_0000_1100 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R4  #
+1000_0001_1010_xxxx_0000_1101 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R5  #
+1000_0001_1010_xxxx_0000_1110 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R6  #
+1000_0001_1010_xxxx_0000_1111 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_R7  # R7=C.f
 # 0E op5 81Af1n A.f=Rn C.f=Rn         
-1000_0001_1010_xxxx_0001_0000 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0001_0001 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0001_0010 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0001_0011 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0001_0100 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0001_0101 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R5 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0001_0110 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R6 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0001_0111 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R7 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0001_1000 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_C   #
-1000_0001_1010_xxxx_0001_1001 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_C   #
-1000_0001_1010_xxxx_0001_1010 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_C   #
-1000_0001_1010_xxxx_0001_1011 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_C   #
-1000_0001_1010_xxxx_0001_1100 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_C   #
-1000_0001_1010_xxxx_0001_1101 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R5 , `K_A  , `OP_C   #
-1000_0001_1010_xxxx_0001_1110 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R6 , `K_A  , `OP_C   #
-1000_0001_1010_xxxx_0001_1111 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R7 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0001_0000 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_A   # A=R0.f
+1000_0001_1010_xxxx_0001_0001 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_A   #
+1000_0001_1010_xxxx_0001_0010 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_A   #
+1000_0001_1010_xxxx_0001_0011 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_A   #
+1000_0001_1010_xxxx_0001_0100 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_A   #
+1000_0001_1010_xxxx_0001_0101 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R5 , `K_A  , `OP_A   #
+1000_0001_1010_xxxx_0001_0110 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R6 , `K_A  , `OP_A   #
+1000_0001_1010_xxxx_0001_0111 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R7 , `K_A  , `OP_A   #
+1000_0001_1010_xxxx_0001_1000 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R0 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0001_1001 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R1 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0001_1010 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R2 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0001_1011 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R3 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0001_1100 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R4 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0001_1101 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R5 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0001_1110 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R6 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0001_1111 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_R7 , `K_A  , `OP_C   # C=R7.f
 # 0F op5 81Af2n ARnEX.f   
-1000_0001_1010_xxxx_0010_0000 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R0 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0010_0001 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R1 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0010_0010 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R2 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0010_0011 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R3 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0010_0100 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0010_0101 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R5 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0010_0110 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R6 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0010_0111 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R7 , `K_A  , `OP_A   #
-1000_0001_1010_xxxx_0010_1000 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R0 , `K_A  , `OP_C   #
-1000_0001_1010_xxxx_0010_1001 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R1 , `K_A  , `OP_C   #
-1000_0001_1010_xxxx_0010_1010 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R2 , `K_A  , `OP_C   #
-1000_0001_1010_xxxx_0010_1011 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R3 , `K_A  , `OP_C   #
-1000_0001_1010_xxxx_0010_1100 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_C   #
-1000_0001_1010_xxxx_0010_1101 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_C   #
-1000_0001_1010_xxxx_0010_1110 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_C   #
-1000_0001_1010_xxxx_0010_1111 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0010_0000 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R0 , `K_A  , `OP_A   # AR0EX.f
+1000_0001_1010_xxxx_0010_0001 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R1 , `K_A  , `OP_A   #
+1000_0001_1010_xxxx_0010_0010 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R2 , `K_A  , `OP_A   #
+1000_0001_1010_xxxx_0010_0011 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R3 , `K_A  , `OP_A   #
+1000_0001_1010_xxxx_0010_0100 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_A   #
+1000_0001_1010_xxxx_0010_0101 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R5 , `K_A  , `OP_A   #
+1000_0001_1010_xxxx_0010_0110 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R6 , `K_A  , `OP_A   #
+1000_0001_1010_xxxx_0010_0111 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R7 , `K_A  , `OP_A   #
+1000_0001_1010_xxxx_0010_1000 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R0 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0010_1001 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R1 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0010_1010 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R2 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0010_1011 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R3 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0010_1100 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0010_1101 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0010_1110 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_C   #
+1000_0001_1010_xxxx_0010_1111 , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_R4 , `K_A  , `OP_C   # CR7EX.f
 # 10 op3 81Bx
 1000_0001_1011_0000_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 81B0
 1000_0001_1011_0001_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 81B1
-1000_0001_1011_0010_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_PC  #   PC=A
-1000_0001_1011_0011_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_PC  #   PC=C
-1000_0001_1011_0100_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_PC , `K_A  , `OP_A   #   A=PC
-1000_0001_1011_0101_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_PC , `K_A  , `OP_C   #   C=PC
-1000_0001_1011_0110_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EX ,  `OP_PC , `K_A  , `OP_A   #   APCEX
-1000_0001_1011_0111_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EX ,  `OP_PC , `K_A  , `OP_C   #   CPCEX
+1000_0001_1011_0010_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_PC  #   PC=A
+1000_0001_1011_0011_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_PC  #   PC=C
+1000_0001_1011_0100_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_PC , `K_A  , `OP_A   #   A=PC
+1000_0001_1011_0101_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_PC , `K_A  , `OP_C   #   C=PC
+1000_0001_1011_0110_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_EX ,  `OP_PC , `K_A  , `OP_A   #   APCEX
+1000_0001_1011_0111_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_EX ,  `OP_PC , `K_A  , `OP_C   #   CPCEX
 1000_0001_1011_1000_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 81B8
 1000_0001_1011_1001_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 81B9
 1000_0001_1011_1010_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 81BA
@@ -288,252 +305,252 @@
 1000_0001_1011_1110_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 81BE
 1000_0001_1011_1111_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 81BF
 # 11 op2 81x ASLC/ASRC/ASRB Word
-1000_0001_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_SLC , `OP_A  , `K_A  , `OP_A   #   ASLC
-1000_0001_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_SLC , `OP_B  , `K_B  , `OP_B   #   BSLC
-1000_0001_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_SLC , `OP_C  , `K_C  , `OP_C   #   CSLC
-1000_0001_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_SLC , `OP_D  , `K_D  , `OP_D   #   DSLC
-1000_0001_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_SRC , `OP_A  , `K_A  , `OP_A   #   ASRC
-1000_0001_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_SRC , `OP_B  , `K_A  , `OP_B   #
-1000_0001_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_SRC , `OP_C  , `K_A  , `OP_C   #
-1000_0001_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_SRC , `OP_D  , `K_A  , `OP_D   #
+1000_0001_0000_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_SLC , `OP_A  , `K_A  , `OP_A   #   ASLC
+1000_0001_0001_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_SLC , `OP_B  , `K_B  , `OP_B   #   BSLC
+1000_0001_0010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_SLC , `OP_C  , `K_C  , `OP_C   #   CSLC
+1000_0001_0011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_SLC , `OP_D  , `K_D  , `OP_D   #   DSLC
+1000_0001_0100_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_SRC , `OP_A  , `K_A  , `OP_A   #   ASRC
+1000_0001_0101_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_SRC , `OP_B  , `K_A  , `OP_B   #
+1000_0001_0110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_SRC , `OP_C  , `K_A  , `OP_C   #
+1000_0001_0111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 7,`ALU_OP_SRC , `OP_D  , `K_A  , `OP_D   #
 1000_0001_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 818
 1000_0001_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 819
 1000_0001_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 81A
 1000_0001_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 81B
-1000_0001_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_SRB , `OP_A  , `K_A  , `OP_A   #   ASRB
-1000_0001_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_SRB , `OP_B  , `K_A  , `OP_B   #   BSRB
-1000_0001_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_SRB , `OP_C  , `K_A  , `OP_C   #   CSRB
-1000_0001_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 7,`ALU_OP_SRB , `OP_D  , `K_A  , `OP_D   #   DSRB
-# 12 op2 8Ax
-1000_1010_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_A  , `K_B  , `OP_A   #
-1000_1010_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_B  , `K_C  , `OP_A   #
-1000_1010_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_A  , `K_C  , `OP_A   #
-1000_1010_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_C  , `K_D  , `OP_A   #
-1000_1010_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_A  , `K_B  , `OP_A   #
-1000_1010_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_B  , `K_C  , `OP_A   #
-1000_1010_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_A  , `K_C  , `OP_A   #
-1000_1010_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_C  , `K_D  , `OP_A   #
-1000_1010_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_A  , `K_Z  , `OP_A   #
-1000_1010_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_B  , `K_Z  , `OP_A   #
-1000_1010_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_C  , `K_Z  , `OP_A   #
-1000_1010_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_D  , `K_Z  , `OP_A   #
-1000_1010_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_A  , `K_Z  , `OP_A   #
-1000_1010_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_B  , `K_Z  , `OP_A   #
-1000_1010_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_C  , `K_Z  , `OP_A   #
-1000_1010_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_D  , `K_Z  , `OP_A   #
+1000_0001_1100_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 7,`ALU_OP_SRB , `OP_A  , `K_A  , `OP_A   #   ASRB
+1000_0001_1101_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 7,`ALU_OP_SRB , `OP_B  , `K_A  , `OP_B   #   BSRB
+1000_0001_1110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 7,`ALU_OP_SRB , `OP_C  , `K_A  , `OP_C   #   CSRB
+1000_0001_1111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 7,`ALU_OP_SRB , `OP_D  , `K_A  , `OP_D   #   DSRB
+# 12 op2 8Ax                   fc hx wc wd ws cc ab
+1000_1010_0000_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_A  , `K_B  , `OP_A   # ?A=B
+1000_1010_0001_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_B  , `K_C  , `OP_A   # ?B=C
+1000_1010_0010_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_A  , `K_C  , `OP_A   #
+1000_1010_0011_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_C  , `K_D  , `OP_A   #
+1000_1010_0100_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_A  , `K_B  , `OP_A   # ?A#B
+1000_1010_0101_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_B  , `K_C  , `OP_A   #
+1000_1010_0110_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_A  , `K_C  , `OP_A   #
+1000_1010_0111_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_C  , `K_D  , `OP_A   #
+1000_1010_1000_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_A  , `K_LIT, `OP_A   #
+1000_1010_1001_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_B  , `K_LIT, `OP_A   #
+1000_1010_1010_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_C  , `K_LIT, `OP_A   #
+1000_1010_1011_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_EQ  , `OP_D  , `K_LIT, `OP_A   #
+1000_1010_1100_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_A  , `K_LIT, `OP_A   #
+1000_1010_1101_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_B  , `K_LIT, `OP_A   #
+1000_1010_1110_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_C  , `K_LIT, `OP_A   #
+1000_1010_1111_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_NEQ , `OP_D  , `K_LIT, `OP_A   #
 # 13 op2 8Bx
-1000_1011_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_GT  , `OP_A  , `K_B  , `OP_A   #
-1000_1011_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_GT  , `OP_B  , `K_C  , `OP_A   #
-1000_1011_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_GT  , `OP_C  , `K_A  , `OP_A   #
-1000_1011_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_GT  , `OP_D  , `K_C  , `OP_A   #
-1000_1011_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_LT  , `OP_A  , `K_B  , `OP_A   #
-1000_1011_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_LT  , `OP_B  , `K_C  , `OP_A   #
-1000_1011_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_LT  , `OP_C  , `K_A  , `OP_A   #
-1000_1011_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_LT  , `OP_D  , `K_C  , `OP_A   #
-1000_1011_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_GTEQ, `OP_A  , `K_B  , `OP_A   #
-1000_1011_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_GTEQ, `OP_B  , `K_C  , `OP_A   #
-1000_1011_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_GTEQ, `OP_C  , `K_A  , `OP_A   #
-1000_1011_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_GTEQ, `OP_D  , `K_C  , `OP_A   #
-1000_1011_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_LTEQ, `OP_A  , `K_B  , `OP_A   #
-1000_1011_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_LTEQ, `OP_B  , `K_C  , `OP_A   #
-1000_1011_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_LTEQ, `OP_C  , `K_A  , `OP_A   #
-1000_1011_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_LTEQ, `OP_D  , `K_C  , `OP_A   #
+1000_1011_0000_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_GT  , `OP_A  , `K_B  , `OP_A   # ?A>B
+1000_1011_0001_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_GT  , `OP_B  , `K_C  , `OP_A   # ?B>C
+1000_1011_0010_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_GT  , `OP_C  , `K_A  , `OP_A   #
+1000_1011_0011_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_GT  , `OP_D  , `K_C  , `OP_A   #
+1000_1011_0100_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_LT  , `OP_A  , `K_B  , `OP_A   #
+1000_1011_0101_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_LT  , `OP_B  , `K_C  , `OP_A   #
+1000_1011_0110_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_LT  , `OP_C  , `K_A  , `OP_A   #
+1000_1011_0111_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_LT  , `OP_D  , `K_C  , `OP_A   #
+1000_1011_1000_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_GTEQ, `OP_A  , `K_B  , `OP_A   #
+1000_1011_1001_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_GTEQ, `OP_B  , `K_C  , `OP_A   #
+1000_1011_1010_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_GTEQ, `OP_C  , `K_A  , `OP_A   #
+1000_1011_1011_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_GTEQ, `OP_D  , `K_C  , `OP_A   #
+1000_1011_1100_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_LTEQ, `OP_A  , `K_B  , `OP_A   #
+1000_1011_1101_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_LTEQ, `OP_B  , `K_C  , `OP_A   #
+1000_1011_1110_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_LTEQ, `OP_C  , `K_A  , `OP_A   #
+1000_1011_1111_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 4,`ALU_OP_LTEQ, `OP_D  , `K_C  , `OP_A   #
 # 14 op1 8x
 1000_0000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 80x
 1000_0001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 81x
-1000_0010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_AND , `OP_HS , `K_LIT, `OP_HS  #   HS=0
-1000_0011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_TST0, `OP_HS , `K_LIT, `OP_HS  #   ?HS=0
-1000_0100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_ANDN, `OP_ST , `K_LIT, `OP_ST  #   ST=0
-1000_0101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_OR  , `OP_ST , `K_LIT, `OP_ST  #   ST=1
-1000_0110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_TST0, `OP_ST , `K_LIT, `OP_ST  #   ?ST=0
-1000_0111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,`ALU_OP_TST1, `OP_ST , `K_LIT, `OP_ST  #   ?ST=1
-1000_1000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NEQ , `OP_P  , `K_LIT, `OP_A   #   ?P#n
-1000_1001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_EQ  , `OP_P  , `K_LIT, `OP_A   #   ?P=n
+1000_0010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,`ALU_OP_AND , `OP_HS , `K_LIT, `OP_HS  #   HS=0
+1000_0011_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,`ALU_OP_TST0, `OP_HS , `K_LIT, `OP_HS  #   ?HS=0
+1000_0100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 3,`ALU_OP_ANDN, `OP_ST , `K_LIT, `OP_ST  #   ST=0
+1000_0101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 3,`ALU_OP_OR  , `OP_ST , `K_LIT, `OP_ST  #   ST=1
+1000_0110_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 3,`ALU_OP_TST0, `OP_ST , `K_LIT, `OP_ST  #   ?ST=0
+1000_0111_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 3,`ALU_OP_TST1, `OP_ST , `K_LIT, `OP_ST  #   ?ST=1
+1000_1000_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,`ALU_OP_NEQ , `OP_P  , `K_LIT, `OP_A   #   ?P#n
+1000_1001_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,`ALU_OP_EQ  , `OP_P  , `K_LIT, `OP_A   #   ?P=n
 1000_1010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 8Ax
 1000_1011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder 8Bx
 1000_1100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder GOLONG
 1000_1101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder GOVLNG
-1000_1110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_STK  #   GOSUBL
-1000_1111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_STK  #   GOSBVL
+1000_1110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_STK  #   GOSUBL
+1000_1111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_STK  #   GOSBVL
 # 15 op2 9aX
-1001_0xxx_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_A  , `K_B  , `OP_A   #
-1001_0xxx_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_B  , `K_C  , `OP_A   #
-1001_0xxx_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_A  , `K_C  , `OP_A   #
-1001_0xxx_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_C  , `K_D  , `OP_A   #
-1001_0xxx_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_A  , `K_B  , `OP_A   #
-1001_0xxx_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_B  , `K_C  , `OP_A   #
-1001_0xxx_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_A  , `K_C  , `OP_A   #
-1001_0xxx_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_C  , `K_D  , `OP_A   #
-1001_0xxx_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_A  , `K_Z  , `OP_A   #
-1001_0xxx_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_B  , `K_Z  , `OP_A   #
-1001_0xxx_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_C  , `K_Z  , `OP_A   #
-1001_0xxx_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_D  , `K_Z  , `OP_A   #
-1001_0xxx_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_A  , `K_Z  , `OP_A   #
-1001_0xxx_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_B  , `K_Z  , `OP_A   #
-1001_0xxx_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_C  , `K_Z  , `OP_A   #
-1001_0xxx_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_D  , `K_Z  , `OP_A   #
+1001_0xxx_0000_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_A  , `K_B  , `OP_A   # ?A=B
+1001_0xxx_0001_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_B  , `K_C  , `OP_A   #
+1001_0xxx_0010_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_A  , `K_C  , `OP_A   #
+1001_0xxx_0011_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_C  , `K_D  , `OP_A   #
+1001_0xxx_0100_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_A  , `K_B  , `OP_A   #
+1001_0xxx_0101_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_B  , `K_C  , `OP_A   #
+1001_0xxx_0110_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_A  , `K_C  , `OP_A   #
+1001_0xxx_0111_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_C  , `K_D  , `OP_A   # 
+1001_0xxx_1000_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_A  , `K_LIT, `OP_A   # ?A=0
+1001_0xxx_1001_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_B  , `K_LIT, `OP_A   # ?B=0
+1001_0xxx_1010_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_C  , `K_LIT, `OP_A   # ?C=0
+1001_0xxx_1011_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_EQ  , `OP_D  , `K_LIT, `OP_A   # ?D=0
+1001_0xxx_1100_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_A  , `K_LIT, `OP_A   # ?A#0
+1001_0xxx_1101_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_B  , `K_LIT, `OP_A   # ?B#0
+1001_0xxx_1110_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_C  , `K_LIT, `OP_A   # ?C#0
+1001_0xxx_1111_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_NEQ , `OP_D  , `K_LIT, `OP_A   # ?D#0
 # 16 op2 9bX
-1001_1xxx_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_GT  , `OP_A  , `K_B  , `OP_A   # ?A>B
-1001_1xxx_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_GT  , `OP_B  , `K_C  , `OP_A   # ?B>C
-1001_1xxx_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_GT  , `OP_C  , `K_A  , `OP_A   # ?C>A
-1001_1xxx_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_GT  , `OP_D  , `K_C  , `OP_A   # ?D>C
-1001_1xxx_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_LT  , `OP_A  , `K_B  , `OP_A   # ?A<B
-1001_1xxx_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_LT  , `OP_B  , `K_C  , `OP_A   # ?B<C
-1001_1xxx_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_LT  , `OP_C  , `K_A  , `OP_A   # ?C<A
-1001_1xxx_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_LT  , `OP_D  , `K_C  , `OP_A   # ?D<C
-1001_1xxx_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_GTEQ, `OP_A  , `K_B  , `OP_A   # ?A>=B
-1001_1xxx_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_GTEQ, `OP_B  , `K_C  , `OP_A   #
-1001_1xxx_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_GTEQ, `OP_C  , `K_A  , `OP_A   #
-1001_1xxx_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_GTEQ, `OP_D  , `K_C  , `OP_A   #
-1001_1xxx_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_LTEQ, `OP_A  , `K_B  , `OP_A   #
-1001_1xxx_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_LTEQ, `OP_B  , `K_C  , `OP_A   #
-1001_1xxx_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_LTEQ, `OP_C  , `K_A  , `OP_A   #
-1001_1xxx_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_LTEQ, `OP_D  , `K_C  , `OP_A   #
+1001_1xxx_0000_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_GT  , `OP_A  , `K_B  , `OP_A   # ?A>B
+1001_1xxx_0001_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_GT  , `OP_B  , `K_C  , `OP_A   # ?B>C
+1001_1xxx_0010_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_GT  , `OP_C  , `K_A  , `OP_A   # ?C>A
+1001_1xxx_0011_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_GT  , `OP_D  , `K_C  , `OP_A   # ?D>C
+1001_1xxx_0100_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_LT  , `OP_A  , `K_B  , `OP_A   # ?A<B
+1001_1xxx_0101_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_LT  , `OP_B  , `K_C  , `OP_A   # ?B<C
+1001_1xxx_0110_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_LT  , `OP_C  , `K_A  , `OP_A   # ?C<A
+1001_1xxx_0111_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_LT  , `OP_D  , `K_C  , `OP_A   # ?D<C
+1001_1xxx_1000_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_GTEQ, `OP_A  , `K_B  , `OP_A   # ?A>=B
+1001_1xxx_1001_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_GTEQ, `OP_B  , `K_C  , `OP_A   # ?B>=C
+1001_1xxx_1010_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_GTEQ, `OP_C  , `K_A  , `OP_A   # ?C>=A
+1001_1xxx_1011_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_GTEQ, `OP_D  , `K_C  , `OP_A   # ?D>=C
+1001_1xxx_1100_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_LTEQ, `OP_A  , `K_B  , `OP_A   # ?A<=B
+1001_1xxx_1101_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_LTEQ, `OP_B  , `K_C  , `OP_A   # ?B<=C
+1001_1xxx_1110_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_LTEQ, `OP_C  , `K_A  , `OP_A   # ?C<=A
+1001_1xxx_1111_xxxx_xxxx_xxxx , 0, 0, 1, 0, 0, 1, 0, 0, 0, 6,`ALU_OP_LTEQ, `OP_D  , `K_C  , `OP_A   # ?D<=C
 # 17 op2 AaX
-1010_0xxx_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_A  , `K_B  , `OP_A   #   A=A+B
-1010_0xxx_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_B  , `K_C  , `OP_B   #
-1010_0xxx_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_C  , `K_A  , `OP_C   #
-1010_0xxx_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_D  , `K_C  , `OP_D   #
-1010_0xxx_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_A  , `K_A  , `OP_A   #   A=A+A
-1010_0xxx_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_B  , `K_B  , `OP_B   #
-1010_0xxx_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_C  , `K_C  , `OP_C   #
-1010_0xxx_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_D  , `K_D  , `OP_D   #   D=D+D
-1010_0xxx_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_B  , `K_A  , `OP_B   #
-1010_0xxx_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_C  , `K_B  , `OP_C   #
-1010_0xxx_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_A  , `K_C  , `OP_A   #
-1010_0xxx_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_C  , `K_D  , `OP_C   #
-1010_0xxx_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_A  , `K_1  , `OP_A   #
-1010_0xxx_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_B  , `K_1  , `OP_B   #
-1010_0xxx_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_1  , `OP_C   #
-1010_0xxx_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_D  , `K_1  , `OP_D   #
+1010_0xxx_0000_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_A  , `K_B  , `OP_A   #   A=A+B
+1010_0xxx_0001_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_B  , `K_C  , `OP_B   #
+1010_0xxx_0010_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_C  , `K_A  , `OP_C   #
+1010_0xxx_0011_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_D  , `K_C  , `OP_D   #
+1010_0xxx_0100_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_A  , `K_A  , `OP_A   #   A=A+A
+1010_0xxx_0101_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_B  , `K_B  , `OP_B   #
+1010_0xxx_0110_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_C  , `K_C  , `OP_C   #
+1010_0xxx_0111_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_D  , `K_D  , `OP_D   #   D=D+D
+1010_0xxx_1000_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_B  , `K_A  , `OP_B   #
+1010_0xxx_1001_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_C  , `K_B  , `OP_C   #
+1010_0xxx_1010_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_A  , `K_C  , `OP_A   #
+1010_0xxx_1011_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_C  , `K_D  , `OP_C   #
+1010_0xxx_1100_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_A  , `K_LIT, `OP_A   # A=A-1
+1010_0xxx_1101_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_B  , `K_LIT, `OP_B   #
+1010_0xxx_1110_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_LIT, `OP_C   #
+1010_0xxx_1111_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_D  , `K_LIT, `OP_D   #
 # 18 op2 AbX
-1010_1xxx_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_A   #   A=0
-1010_1xxx_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_B   #   B=0
-1010_1xxx_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_C   #   C=0
-1010_1xxx_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_D   #   D=0
-1010_1xxx_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_A   #   A=B
-1010_1xxx_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_B   #   B=C
-1010_1xxx_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_C   #   C=A
-1010_1xxx_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D   #   D=C
-1010_1xxx_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_B   #   B=A
-1010_1xxx_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_C   #   C=B
-1010_1xxx_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_A   #   A=C
-1010_1xxx_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_D  , `K_A  , `OP_C   #   C=D
-1010_1xxx_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_B  , `K_A  , `OP_A   #   ABEX
-1010_1xxx_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_C  , `K_B  , `OP_B   #   BCEX
-1010_1xxx_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_A  , `K_C  , `OP_C   #   CAEX
-1010_1xxx_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_C  , `K_D  , `OP_D   #   DCEX
+1010_1xxx_0000_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_A   #   A=0
+1010_1xxx_0001_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_B   #   B=0
+1010_1xxx_0010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_C   #   C=0
+1010_1xxx_0011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_D   #   D=0
+1010_1xxx_0100_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_A   #   A=B
+1010_1xxx_0101_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_B   #   B=C
+1010_1xxx_0110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_C   #   C=A
+1010_1xxx_0111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D   #   D=C
+1010_1xxx_1000_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_B   #   B=A
+1010_1xxx_1001_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_C   #   C=B
+1010_1xxx_1010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_A   #   A=C
+1010_1xxx_1011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_TFR , `OP_D  , `K_A  , `OP_C   #   C=D
+1010_1xxx_1100_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_B  , `K_A  , `OP_A   #   ABEX
+1010_1xxx_1101_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_C  , `K_B  , `OP_B   #   BCEX
+1010_1xxx_1110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_A  , `K_C  , `OP_C   #   CAEX
+1010_1xxx_1111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_EX  , `OP_C  , `K_D  , `OP_D   #   DCEX
 # 19 op2 BaX
-1011_0xxx_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   #   A=A-B
-1011_0xxx_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_B  , `K_C  , `OP_B   #
-1011_0xxx_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_A  , `OP_C   #
-1011_0xxx_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_D  , `K_C  , `OP_D   #
-1011_0xxx_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_A  , `K_1  , `OP_A   #   A=A+1
-1011_0xxx_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_B  , `K_1  , `OP_B   #
-1011_0xxx_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_C  , `K_1  , `OP_C   #
-1011_0xxx_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_D  , `K_1  , `OP_D   #   D=D+1
-1011_0xxx_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_B  , `K_A  , `OP_B   #   B=B-A
-1011_0xxx_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_C   #
-1011_0xxx_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_A   #
-1011_0xxx_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_C   #   C=C-D
-1011_0xxx_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   #   A=A-B
-1011_0xxx_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_B   #
-1011_0xxx_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_C   #
-1011_0xxx_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_D   #   D=C-D
+1011_0xxx_0000_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   #   A=A-B
+1011_0xxx_0001_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_B  , `K_C  , `OP_B   #
+1011_0xxx_0010_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_A  , `OP_C   #
+1011_0xxx_0011_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_D  , `K_C  , `OP_D   #
+1011_0xxx_0100_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_A  , `K_LIT, `OP_A   #   A=A+1
+1011_0xxx_0101_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_B  , `K_LIT, `OP_B   #
+1011_0xxx_0110_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_C  , `K_LIT, `OP_C   #
+1011_0xxx_0111_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_ADD , `OP_D  , `K_LIT, `OP_D   #   D=D+1
+1011_0xxx_1000_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_B  , `K_A  , `OP_B   #   B=B-A
+1011_0xxx_1001_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_C   #
+1011_0xxx_1010_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_A   #
+1011_0xxx_1011_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_C   #   C=C-D
+1011_0xxx_1100_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   #   A=A-B
+1011_0xxx_1101_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_B   #
+1011_0xxx_1110_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_C   #
+1011_0xxx_1111_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_D   #   D=C-D
 # 1A op2 BbX
-1011_1xxx_0000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SL  , `OP_A  , `K_A  , `OP_A   #   ASL
-1011_1xxx_0001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SL  , `OP_B  , `K_B  , `OP_B   #   BSL
-1011_1xxx_0010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SL  , `OP_C  , `K_C  , `OP_C   #   CSL
-1011_1xxx_0011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SL  , `OP_D  , `K_D  , `OP_D   #   DSL
-1011_1xxx_0100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SR  , `OP_A  , `K_A  , `OP_A   #   ASR
-1011_1xxx_0101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SR  , `OP_B  , `K_B  , `OP_B   #   BSR
-1011_1xxx_0110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SR  , `OP_C  , `K_C  , `OP_C   #   CSR
-1011_1xxx_0111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SR  , `OP_D  , `K_D  , `OP_D   #   DSR
-1011_1xxx_1000_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_Z  , `K_A  , `OP_A   #   A=0-A
-1011_1xxx_1001_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_Z  , `K_B  , `OP_B   #   B=0-B
-1011_1xxx_1010_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_Z  , `K_C  , `OP_C   #   C=0-C
-1011_1xxx_1011_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_Z  , `K_D  , `OP_D   #   D=0-D
-1011_1xxx_1100_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_A  , `K_9  , `OP_A   #   A=-A-1 == A=A-9
-1011_1xxx_1101_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_B  , `K_9  , `OP_B   #
-1011_1xxx_1110_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_9  , `OP_C   #
-1011_1xxx_1111_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_D  , `K_9  , `OP_D   #
+1011_1xxx_0000_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 6,`ALU_OP_SL  , `OP_A  , `K_A  , `OP_A   #   ASL
+1011_1xxx_0001_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 6,`ALU_OP_SL  , `OP_B  , `K_B  , `OP_B   #   BSL
+1011_1xxx_0010_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 6,`ALU_OP_SL  , `OP_C  , `K_C  , `OP_C   #   CSL
+1011_1xxx_0011_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 6,`ALU_OP_SL  , `OP_D  , `K_D  , `OP_D   #   DSL
+1011_1xxx_0100_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 6,`ALU_OP_SR  , `OP_A  , `K_A  , `OP_A   #   ASR
+1011_1xxx_0101_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 6,`ALU_OP_SR  , `OP_B  , `K_B  , `OP_B   #   BSR
+1011_1xxx_0110_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 6,`ALU_OP_SR  , `OP_C  , `K_C  , `OP_C   #   CSR
+1011_1xxx_0111_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 6,`ALU_OP_SR  , `OP_D  , `K_D  , `OP_D   #   DSR
+1011_1xxx_1000_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_Z  , `K_A  , `OP_A   #   A=0-A
+1011_1xxx_1001_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_Z  , `K_B  , `OP_B   #   B=0-B
+1011_1xxx_1010_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_Z  , `K_C  , `OP_C   #   C=0-C
+1011_1xxx_1011_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_Z  , `K_D  , `OP_D   #   D=0-D
+1011_1xxx_1100_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_A  , `K_9  , `OP_A   #   A=-A-1 == A=A-9
+1011_1xxx_1101_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_B  , `K_9  , `OP_B   #
+1011_1xxx_1110_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_C  , `K_9  , `OP_C   #
+1011_1xxx_1111_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 6,`ALU_OP_SUB , `OP_D  , `K_9  , `OP_D   #
 # 1B op1 Cx
-1100_0000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_A  , `K_B  , `OP_A   #   A=A+B
-1100_0001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_B  , `K_C  , `OP_B   #
-1100_0010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_C  , `K_A  , `OP_C   #
-1100_0011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_D  , `K_C  , `OP_D   #
-1100_0100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_A  , `K_A  , `OP_A   #   A=A+A
-1100_0101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_B  , `K_B  , `OP_B   #
-1100_0110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_C  , `K_C  , `OP_C   #
-1100_0111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_D  , `K_D  , `OP_D   #   D=D+D
-1100_1000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_B  , `K_A  , `OP_B   #
-1100_1001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_C  , `K_B  , `OP_C   #
-1100_1010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_A  , `K_C  , `OP_A   #
-1100_1011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_C  , `K_D  , `OP_C   #
-1100_1100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_A  , `K_1  , `OP_A   #
-1100_1101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_B  , `K_1  , `OP_B   #
-1100_1110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_C  , `K_1  , `OP_C   #
-1100_1111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_D  , `K_1  , `OP_D   #
-# 1C op1 Dx
-1101_0000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_A   #   A=0
-1101_0001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_B   #
-1101_0010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_C   #
-1101_0011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_D   #
-1101_0100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_A   #   A=B
-1101_0101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_B   #
-1101_0110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_C   #
-1101_0111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D   #   D=C
-1101_1000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_B   #
-1101_1001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_C   #
-1101_1010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_A   #
-1101_1011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_D  , `K_A  , `OP_C   #
-1101_1100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_B  , `K_A  , `OP_A   #
-1101_1101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_C  , `K_B  , `OP_B   #
-1101_1110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_A  , `K_C  , `OP_C   #
-1101_1111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_C  , `K_D  , `OP_D   #
+1100_0000_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_A  , `K_B  , `OP_A   #   A=A+B
+1100_0001_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_B  , `K_C  , `OP_B   #
+1100_0010_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_C  , `K_A  , `OP_C   #
+1100_0011_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_D  , `K_C  , `OP_D   #
+1100_0100_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_A  , `K_A  , `OP_A   #   A=A+A
+1100_0101_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_B  , `K_B  , `OP_B   #
+1100_0110_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_C  , `K_C  , `OP_C   #
+1100_0111_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_D  , `K_D  , `OP_D   #   D=D+D
+1100_1000_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_B  , `K_A  , `OP_B   #
+1100_1001_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_C  , `K_B  , `OP_C   #
+1100_1010_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_A  , `K_C  , `OP_A   #
+1100_1011_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_C  , `K_D  , `OP_C   #
+1100_1100_xxxx_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_A  , `K_LIT, `OP_A   # A=A-1
+1100_1101_xxxx_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_B  , `K_LIT, `OP_B   #
+1100_1110_xxxx_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_C  , `K_LIT, `OP_C   #
+1100_1111_xxxx_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_D  , `K_LIT, `OP_D   # D=D-1
+# 1C op1 Dx                    fc fh wc wd ws
+1101_0000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_A   #   A=0
+1101_0001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_B   #
+1101_0010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_C   #
+1101_0011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_Z  , `K_A  , `OP_D   #
+1101_0100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_A   #   A=B
+1101_0101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_B   #
+1101_0110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_C   #
+1101_0111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_D   #   D=C
+1101_1000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_A  , `K_A  , `OP_B   #
+1101_1001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_B  , `K_A  , `OP_C   #
+1101_1010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_C  , `K_A  , `OP_A   #
+1101_1011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_D  , `K_A  , `OP_C   #
+1101_1100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_B  , `K_A  , `OP_A   #
+1101_1101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_C  , `K_B  , `OP_B   #
+1101_1110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_A  , `K_C  , `OP_C   #
+1101_1111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_EX  , `OP_C  , `K_D  , `OP_D   #
 # 1D op1 Ex
-1110_0000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   #   A=A-B
-1110_0001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_B  , `K_C  , `OP_B   #
-1110_0010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_C  , `K_A  , `OP_C   #
-1110_0011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_D  , `K_C  , `OP_D   #
-1110_0100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_A  , `K_1  , `OP_A   #   A=A-1
-1110_0101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_B  , `K_1  , `OP_B   #
-1110_0110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_C  , `K_1  , `OP_C   #
-1110_0111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_D  , `K_1  , `OP_D   #   D=D-1
-1110_1000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_B  , `K_A  , `OP_B   #   B=B-A
-1110_1001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_C   #
-1110_1010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_A   #
-1110_1011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_C   #   C=C-D
-1110_1100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   #   A=A-B
-1110_1101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_B   #
-1110_1110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_C   #
-1110_1111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_D   #   D=C-D
+1110_0000_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   #   A=A-B
+1110_0001_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_B  , `K_C  , `OP_B   #
+1110_0010_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_C  , `K_A  , `OP_C   #
+1110_0011_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_D  , `K_C  , `OP_D   #
+1110_0100_xxxx_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_A  , `K_LIT, `OP_A   #   A=A+1
+1110_0101_xxxx_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_B  , `K_LIT, `OP_B   #
+1110_0110_xxxx_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_C  , `K_LIT, `OP_C   #
+1110_0111_xxxx_xxxx_xxxx_xxxx , 1, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_ADD , `OP_D  , `K_LIT, `OP_D   #   D=D+1
+1110_1000_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_B  , `K_A  , `OP_B   #   B=B-A
+1110_1001_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_C   #
+1110_1010_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_A   #
+1110_1011_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_C   #   C=C-D
+1110_1100_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_A  , `K_B  , `OP_A   #   A=A-B
+1110_1101_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_C  , `K_B  , `OP_B   #
+1110_1110_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_A  , `K_C  , `OP_C   #
+1110_1111_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_C  , `K_D  , `OP_D   #   D=C-D
 # 1E op1 Fx
-1111_0000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SL  , `OP_A  , `K_A  , `OP_A   #   ASL
-1111_0001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SL  , `OP_B  , `K_B  , `OP_B   #
-1111_0010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SL  , `OP_C  , `K_C  , `OP_C   #
-1111_0011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SL  , `OP_D  , `K_D  , `OP_D   #
-1111_0100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SR  , `OP_A  , `K_A  , `OP_A   #   ASR
-1111_0101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SR  , `OP_B  , `K_B  , `OP_B   #
-1111_0110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SR  , `OP_C  , `K_C  , `OP_C   #
-1111_0111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SR  , `OP_D  , `K_D  , `OP_D   #   DSR
-1111_1000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_Z  , `K_A  , `OP_A   #   A=0-A
-1111_1001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_Z  , `K_B  , `OP_B   #   B=0-B
-1111_1010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_Z  , `K_C  , `OP_C   #   C=0-C
-1111_1011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_Z  , `K_D  , `OP_D   #   D=0-D
-1111_1100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_A  , `K_9  , `OP_A   #   A=-A-1 == A=A-9
-1111_1101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_B  , `K_9  , `OP_B   #
-1111_1110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_C  , `K_9  , `OP_C   #
-1111_1111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_D  , `K_9  , `OP_D   #
+1111_0000_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 4,`ALU_OP_SL  , `OP_A  , `K_A  , `OP_A   #   ASL
+1111_0001_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 4,`ALU_OP_SL  , `OP_B  , `K_B  , `OP_B   #
+1111_0010_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 4,`ALU_OP_SL  , `OP_C  , `K_C  , `OP_C   #
+1111_0011_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 4,`ALU_OP_SL  , `OP_D  , `K_D  , `OP_D   #
+1111_0100_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 4,`ALU_OP_SR  , `OP_A  , `K_A  , `OP_A   #   ASR
+1111_0101_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 4,`ALU_OP_SR  , `OP_B  , `K_B  , `OP_B   #
+1111_0110_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 4,`ALU_OP_SR  , `OP_C  , `K_C  , `OP_C   #
+1111_0111_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 1, 0, 0, 0, 0, 4,`ALU_OP_SR  , `OP_D  , `K_D  , `OP_D   #   DSR
+1111_1000_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_Z  , `K_A  , `OP_A   #   A=0-A
+1111_1001_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_Z  , `K_B  , `OP_B   #   B=0-B
+1111_1010_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_Z  , `K_C  , `OP_C   #   C=0-C
+1111_1011_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_Z  , `K_D  , `OP_D   #   D=0-D
+1111_1100_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_A  , `K_9  , `OP_A   #   A=-A-1 == A=A-9
+1111_1101_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_B  , `K_9  , `OP_B   #
+1111_1110_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_C  , `K_9  , `OP_C   #
+1111_1111_xxxx_xxxx_xxxx_xxxx , 0, 0, 1, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_SUB , `OP_D  , `K_9  , `OP_D   #
 # 1F op0 0..F
 0000_xxxx_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
 0001_xxxx_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
-0010_xxxx_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_P   #   P=n
-0011_xxxx_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_C   #   LC(n)
+0010_xxxx_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_P   #   P=n
+0011_xxxx_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_C   #   LC(n)
 0100_xxxx_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder GOC
 0101_xxxx_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder GONC
 0110_xxxx_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder GOTO
-0111_xxxx_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_STK #   GOSUB
+0111_xxxx_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 1, 0, 0, 0, 0, 0, 4,`ALU_OP_TFR , `OP_LIT, `K_A  , `OP_STK #   GOSUB
 1000_xxxx_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
 1001_xxxx_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder
 1010_xxxx_xxxx_xxxx_xxxx_xxxx , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,`ALU_OP_NONE, `OP_A  , `K_A  , `OP_A   # placeholder

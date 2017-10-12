@@ -46,9 +46,9 @@ KOP = {
     '`K_C':        2 ,
     '`K_D':        3 ,
     '`K_9':        4 ,
-    '`K_Z':        5 ,
-    '`K_1':        6 ,
-    '`K_LIT':      7 
+    '`K_LIT':      5 ,
+    '`K_D0':       6 ,
+    '`K_D1':       7 
 }
 
 ALU_OP = {
@@ -62,21 +62,20 @@ ALU_OP = {
     '`ALU_OP_OR'  : 0x07 ,
     '`ALU_OP_SL'  : 0x08 ,
     '`ALU_OP_SR'  : 0x09 ,
-    '`ALU_OP_SLB' : 0x0A ,
-    '`ALU_OP_SRB' : 0x0B ,
-    '`ALU_OP_SLC' : 0x0C ,
-    '`ALU_OP_SRC' : 0x10 ,
-    '`ALU_OP_EQ'  : 0x11 ,
-    '`ALU_OP_NEQ' : 0x12 ,
-    '`ALU_OP_GTEQ': 0x13 ,
-    '`ALU_OP_GT'  : 0x14 ,
-    '`ALU_OP_LTEQ': 0x15 ,
-    '`ALU_OP_LT'  : 0x16 ,
-    '`ALU_OP_RD'  : 0x17 ,
-    '`ALU_OP_WR'  : 0x18 ,
-    '`ALU_OP_TST1': 0x19 ,
-    '`ALU_OP_TST0': 0x1A ,
-    '`ALU_OP_ANDN': 0x1B 
+    '`ALU_OP_SRB' : 0x0A ,
+    '`ALU_OP_SLC' : 0x0B ,
+    '`ALU_OP_SRC' : 0x0C ,
+    '`ALU_OP_EQ'  : 0x0D ,
+    '`ALU_OP_NEQ' : 0x0E ,
+    '`ALU_OP_GTEQ': 0x0F ,
+    '`ALU_OP_GT'  : 0x10 ,
+    '`ALU_OP_LTEQ': 0x11 ,
+    '`ALU_OP_LT'  : 0x12 ,
+    '`ALU_OP_RD'  : 0x13 ,
+    '`ALU_OP_WR'  : 0x14 ,
+    '`ALU_OP_TST1': 0x15 ,
+    '`ALU_OP_TST0': 0x16 ,
+    '`ALU_OP_ANDN': 0x17 
 }
 
 

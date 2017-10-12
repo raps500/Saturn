@@ -22,7 +22,7 @@ Setup and Hold Report
 
 --------------------------------------------------------------------------------
 <A name="Map_Twr_setup"></A><B><U><big>Lattice TRACE Report - Setup, Version Diamond (64-bit) 3.9.0.99.2</big></U></B>
-Sat Oct 07 14:49:40 2017
+Thu Oct 12 07:18:58 2017
 
 Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
 Copyright (c) 1995 AT&T Corp.   All rights reserved.
@@ -42,7 +42,7 @@ Report level:    verbose report, limited to 1 item per preference
 <A name="mtw1_set_ps"></A><B><U><big>Preference Summary</big></U></B>
 
 <LI><A href='#map_twr_pref_0_0' Target='right'>FREQUENCY NET "nclk_o_c" 2.080000 MHz (0 errors)</A></LI>            4096 items scored, 0 timing errors detected.
-Report:    4.331MHz is the maximum frequency for this preference.
+Report:    4.377MHz is the maximum frequency for this preference.
 
 BLOCK ASYNCPATHS
 BLOCK RESETPATHS
@@ -56,210 +56,206 @@ BLOCK RESETPATHS
 --------------------------------------------------------------------------------
 
 
-Passed: The following path meets requirements by 249.890ns
+Passed: The following path meets requirements by 252.278ns
 
  Logical Details:  Cell type  Pin type       Cell/ASIC name  (clock net +/-)
 
-   Source:         FF         Q              core/alru/R[3][0]  (from nclk_o_c +)
-   Destination:    FF         Data in        core/alru/f_carry  (to nclk_o_c +)
+   Source:         FF         Q              core/dec_seq/right_mask_o[2]  (from nclk_o_c +)
+   Destination:    FF         Data in        core/alru/ABCD[1][61]  (to nclk_o_c +)
 
-   Delay:             230.447ns  (47.0% logic, 53.0% route), 90 logic levels.
+   Delay:             228.059ns  (45.9% logic, 54.1% route), 88 logic levels.
 
  Constraint Details:
 
-    230.447ns physical path delay core/alru/SLICE_577 to core/alru/SLICE_809 meets
+    228.059ns physical path delay core/dec_seq/SLICE_1116 to core/alru/SLICE_448 meets
     480.769ns delay constraint less
-      0.432ns DIN_SET requirement (totaling 480.337ns) by 249.890ns
+      0.432ns DIN_SET requirement (totaling 480.337ns) by 252.278ns
 
  Physical Path Details:
 
-      Data path core/alru/SLICE_577 to core/alru/SLICE_809:
+      Data path core/dec_seq/SLICE_1116 to core/alru/SLICE_448:
 
    Name    Fanout   Delay (ns)          Site               Resource
-REG_DEL     ---     0.955 *SLICE_577.CLK to */SLICE_577.Q0 core/alru/SLICE_577 (from nclk_o_c)
-ROUTE         2   e 1.905 */SLICE_577.Q0 to *SLICE_1227.C1 core/alru/R[3][0]
-CTOOFX_DEL  ---     1.359 *SLICE_1227.C1 to *ICE_1227.OFX0 core/alru/add64/src_reg_3_2[0]/SLICE_1227
-ROUTE         1   e 1.905 *ICE_1227.OFX0 to *SLICE_2835.A1 core/alru/add64/N_7158
-CTOF_DEL    ---     0.923 *SLICE_2835.A1 to *SLICE_2835.F1 core/alru/add64/SLICE_2835
-ROUTE         1   e 1.905 *SLICE_2835.F1 to *SLICE_2054.D0 core/alru/add64/src_reg_3_m[0]
-CTOF_DEL    ---     0.923 *SLICE_2054.D0 to *SLICE_2054.F0 core/alru/add64/SLICE_2054
-ROUTE         1   e 1.905 *SLICE_2054.F0 to *SLICE_1965.B1 core/alru/add64/src_reg_1_0_iv_2[0]
-CTOF_DEL    ---     0.923 *SLICE_1965.B1 to *SLICE_1965.F1 core/alru/add64/SLICE_1965
-ROUTE         1   e 0.742 *SLICE_1965.F1 to *SLICE_1965.B0 core/alru/add64/src_reg_1_0_iv_7[0]
-CTOF_DEL    ---     0.923 *SLICE_1965.B0 to *SLICE_1965.F0 core/alru/add64/SLICE_1965
-ROUTE         3   e 1.905 *SLICE_1965.F0 to */SLICE_144.C1 core/alru/src_reg_1[0]
-C1TOFCO_DE  ---     1.795 */SLICE_144.C1 to *SLICE_144.FCO core/alru/rsub64/s0/SLICE_144
-ROUTE         1   e 0.001 *SLICE_144.FCO to *SLICE_143.FCI core/alru/rsub64/s0/sub_cry_0
-FCITOF1_DE  ---     1.298 *SLICE_143.FCI to */SLICE_143.F1 core/alru/rsub64/s0/SLICE_143
-ROUTE         3   e 1.905 */SLICE_143.F1 to *SLICE_1773.B1 core/alru/rsub64/s0/sub[2]
-CTOF_DEL    ---     0.923 *SLICE_1773.B1 to *SLICE_1773.F1 core/alru/rsub64/s0/SLICE_1773
-ROUTE         1   e 0.742 *SLICE_1773.F1 to *SLICE_1773.D0 core/alru/rsub64/s0/un3_qc_outlt3
-CTOF_DEL    ---     0.923 *SLICE_1773.D0 to *SLICE_1773.F0 core/alru/rsub64/s0/SLICE_1773
-ROUTE         2   e 1.905 *SLICE_1773.F0 to *SLICE_1770.A0 core/alru/rsub64/c0
-CTOF_DEL    ---     0.923 *SLICE_1770.A0 to *SLICE_1770.F0 core/alru/SLICE_1770
-ROUTE         1   e 1.905 *SLICE_1770.F0 to */SLICE_141.B0 core/alru/rsub64/s1/un1_c0_i
-C0TOFCO_DE  ---     2.064 */SLICE_141.B0 to *SLICE_141.FCO core/alru/rsub64/s1/SLICE_141
-ROUTE         1   e 0.001 *SLICE_141.FCO to *SLICE_140.FCI core/alru/rsub64/s1/sub_cry_0
-FCITOF1_DE  ---     1.298 *SLICE_140.FCI to */SLICE_140.F1 core/alru/rsub64/s1/SLICE_140
-ROUTE         3   e 1.905 */SLICE_140.F1 to *SLICE_2502.C1 core/alru/rsub64/s1/sub[2]
-CTOF_DEL    ---     0.923 *SLICE_2502.C1 to *SLICE_2502.F1 core/alru/rsub64/s1/SLICE_2502
-ROUTE         2   e 1.905 *SLICE_2502.F1 to *SLICE_1769.D0 core/alru/rsub64/N_2999_tz
-CTOF_DEL    ---     0.923 *SLICE_1769.D0 to *SLICE_1769.F0 core/alru/SLICE_1769
-ROUTE         1   e 1.905 *SLICE_1769.F0 to */SLICE_138.B0 core/alru/rsub64/s2/un1_c1_i
-C0TOFCO_DE  ---     2.064 */SLICE_138.B0 to *SLICE_138.FCO core/alru/rsub64/s2/SLICE_138
-ROUTE         1   e 0.001 *SLICE_138.FCO to *SLICE_137.FCI core/alru/rsub64/s2/sub_cry_0
-FCITOF1_DE  ---     1.298 *SLICE_137.FCI to */SLICE_137.F1 core/alru/rsub64/s2/SLICE_137
-ROUTE         3   e 1.905 */SLICE_137.F1 to *SLICE_1767.B1 core/alru/rsub64/s2/sub[2]
-CTOF_DEL    ---     0.923 *SLICE_1767.B1 to *SLICE_1767.F1 core/alru/rsub64/s2/SLICE_1767
-ROUTE         1   e 0.742 *SLICE_1767.F1 to *SLICE_1767.D0 core/alru/rsub64/s2/un3_qc_outlt3
-CTOF_DEL    ---     0.923 *SLICE_1767.D0 to *SLICE_1767.F0 core/alru/rsub64/s2/SLICE_1767
-ROUTE         2   e 1.905 *SLICE_1767.F0 to *SLICE_1765.B0 core/alru/rsub64/c2
-CTOF_DEL    ---     0.923 *SLICE_1765.B0 to *SLICE_1765.F0 core/alru/SLICE_1765
-ROUTE         1   e 1.905 *SLICE_1765.F0 to */SLICE_135.B0 core/alru/rsub64/s3/un1_c2_i
-C0TOFCO_DE  ---     2.064 */SLICE_135.B0 to *SLICE_135.FCO core/alru/rsub64/s3/SLICE_135
-ROUTE         1   e 0.001 *SLICE_135.FCO to *SLICE_134.FCI core/alru/rsub64/s3/sub_cry_0
-FCITOF1_DE  ---     1.298 *SLICE_134.FCI to */SLICE_134.F1 core/alru/rsub64/s3/SLICE_134
-ROUTE         3   e 1.905 */SLICE_134.F1 to *SLICE_1766.C1 core/alru/sub_2[2]
-CTOF_DEL    ---     0.923 *SLICE_1766.C1 to *SLICE_1766.F1 core/alru/rsub64/s3/SLICE_1766
-ROUTE         2   e 1.905 *SLICE_1766.F1 to *SLICE_1764.D0 core/alru/rsub64/N_2998_tz
-CTOF_DEL    ---     0.923 *SLICE_1764.D0 to *SLICE_1764.F0 core/alru/SLICE_1764
-ROUTE         1   e 1.905 *SLICE_1764.F0 to */SLICE_132.B0 core/alru/rsub64/s4/un1_c3_i
-C0TOFCO_DE  ---     2.064 */SLICE_132.B0 to *SLICE_132.FCO core/alru/rsub64/s4/SLICE_132
-ROUTE         1   e 0.001 *SLICE_132.FCO to *SLICE_131.FCI core/alru/rsub64/s4/sub_cry_0
-FCITOF1_DE  ---     1.298 *SLICE_131.FCI to */SLICE_131.F1 core/alru/rsub64/s4/SLICE_131
-ROUTE         3   e 1.905 */SLICE_131.F1 to *SLICE_1762.B1 core/alru/rsub64/s4/sub[2]
-CTOF_DEL    ---     0.923 *SLICE_1762.B1 to *SLICE_1762.F1 core/alru/rsub64/s4/SLICE_1762
-ROUTE         1   e 0.742 *SLICE_1762.F1 to *SLICE_1762.D0 core/alru/rsub64/s4/un3_qc_outlt3
-CTOF_DEL    ---     0.923 *SLICE_1762.D0 to *SLICE_1762.F0 core/alru/rsub64/s4/SLICE_1762
-ROUTE         2   e 1.905 *SLICE_1762.F0 to *SLICE_1759.A0 core/alru/rsub64/c4
-CTOF_DEL    ---     0.923 *SLICE_1759.A0 to *SLICE_1759.F0 core/alru/SLICE_1759
-ROUTE         1   e 1.905 *SLICE_1759.F0 to */SLICE_129.B0 core/alru/rsub64/s5/un1_c4_i
-C0TOFCO_DE  ---     2.064 */SLICE_129.B0 to *SLICE_129.FCO core/alru/rsub64/s5/SLICE_129
-ROUTE         1   e 0.001 *SLICE_129.FCO to *SLICE_128.FCI core/alru/rsub64/s5/sub_cry_0
-FCITOF1_DE  ---     1.298 *SLICE_128.FCI to */SLICE_128.F1 core/alru/rsub64/s5/SLICE_128
-ROUTE         3   e 1.905 */SLICE_128.F1 to *SLICE_1760.B1 core/alru/rsub64/s5/sub[2]
-CTOF_DEL    ---     0.923 *SLICE_1760.B1 to *SLICE_1760.F1 core/alru/rsub64/s5/SLICE_1760
-ROUTE         1   e 0.742 *SLICE_1760.F1 to *SLICE_1760.D0 core/alru/rsub64/s5/un3_qc_outlt3
-CTOF_DEL    ---     0.923 *SLICE_1760.D0 to *SLICE_1760.F0 core/alru/rsub64/s5/SLICE_1760
-ROUTE         2   e 1.905 *SLICE_1760.F0 to *SLICE_1757.B0 core/alru/rsub64/c5
-CTOF_DEL    ---     0.923 *SLICE_1757.B0 to *SLICE_1757.F0 core/alru/SLICE_1757
-ROUTE         1   e 1.905 *SLICE_1757.F0 to */SLICE_126.B0 core/alru/rsub64/s6/un1_c5_i
-C0TOFCO_DE  ---     2.064 */SLICE_126.B0 to *SLICE_126.FCO core/alru/rsub64/s6/SLICE_126
-ROUTE         1   e 0.001 *SLICE_126.FCO to *SLICE_125.FCI core/alru/rsub64/s6/sub_cry_0
-FCITOF1_DE  ---     1.298 *SLICE_125.FCI to */SLICE_125.F1 core/alru/rsub64/s6/SLICE_125
-ROUTE         3   e 1.905 */SLICE_125.F1 to *SLICE_1776.B1 core/alru/rsub64/sub[2]
-CTOF_DEL    ---     0.923 *SLICE_1776.B1 to *SLICE_1776.F1 core/alru/rsub64/SLICE_1776
-ROUTE         1   e 0.742 *SLICE_1776.F1 to *SLICE_1776.A0 core/alru/rsub64/N_8692
-CTOF_DEL    ---     0.923 *SLICE_1776.A0 to *SLICE_1776.F0 core/alru/rsub64/SLICE_1776
-ROUTE         2   e 1.905 *SLICE_1776.F0 to *SLICE_1754.A0 core/alru/rsub64/N_8695
-CTOF_DEL    ---     0.923 *SLICE_1754.A0 to *SLICE_1754.F0 core/alru/rsub64/SLICE_1754
-ROUTE         1   e 1.905 *SLICE_1754.F0 to */SLICE_123.B0 core/alru/rsub64/s7/un1_c6_i
-C0TOFCO_DE  ---     2.064 */SLICE_123.B0 to *SLICE_123.FCO core/alru/rsub64/s7/SLICE_123
-ROUTE         1   e 0.001 *SLICE_123.FCO to *SLICE_122.FCI core/alru/rsub64/s7/sub_cry_0
-FCITOF1_DE  ---     1.298 *SLICE_122.FCI to */SLICE_122.F1 core/alru/rsub64/s7/SLICE_122
-ROUTE         3   e 1.905 */SLICE_122.F1 to *SLICE_1755.B1 core/alru/rsub64/s7/sub[2]
-CTOF_DEL    ---     0.923 *SLICE_1755.B1 to *SLICE_1755.F1 core/alru/rsub64/s7/SLICE_1755
-ROUTE         2   e 0.742 *SLICE_1755.F1 to *SLICE_1755.D0 core/alru/rsub64/un3_qc_outlt3
-CTOF_DEL    ---     0.923 *SLICE_1755.D0 to *SLICE_1755.F0 core/alru/rsub64/s7/SLICE_1755
-ROUTE         1   e 1.905 *SLICE_1755.F0 to *SLICE_1751.B0 core/alru/rsub64/c7
-CTOF_DEL    ---     0.923 *SLICE_1751.B0 to *SLICE_1751.F0 core/alru/SLICE_1751
-ROUTE         1   e 1.905 *SLICE_1751.F0 to */SLICE_120.B0 core/alru/rsub64/s8/un1_c7_i
-C0TOFCO_DE  ---     2.064 */SLICE_120.B0 to *SLICE_120.FCO core/alru/rsub64/s8/SLICE_120
-ROUTE         1   e 0.001 *SLICE_120.FCO to *SLICE_119.FCI core/alru/rsub64/s8/sub_cry_0
-FCITOF1_DE  ---     1.298 *SLICE_119.FCI to */SLICE_119.F1 core/alru/rsub64/s8/SLICE_119
-ROUTE         3   e 1.905 */SLICE_119.F1 to *SLICE_2550.B1 core/alru/rsub64/s8/sub[2]
-CTOF_DEL    ---     0.923 *SLICE_2550.B1 to *SLICE_2550.F1 core/alru/rsub64/s8/SLICE_2550
-ROUTE         1   e 1.905 *SLICE_2550.F1 to *SLICE_1752.D0 core/alru/rsub64/s8/un3_qc_outlt3
-CTOF_DEL    ---     0.923 *SLICE_1752.D0 to *SLICE_1752.F0 core/alru/rsub64/SLICE_1752
-ROUTE         2   e 1.905 *SLICE_1752.F0 to *SLICE_1749.A0 core/alru/rsub64/c8
-CTOF_DEL    ---     0.923 *SLICE_1749.A0 to *SLICE_1749.F0 core/alru/SLICE_1749
-ROUTE         1   e 1.905 *SLICE_1749.F0 to */SLICE_117.B0 core/alru/rsub64/s9/un1_c8_i
-C0TOFCO_DE  ---     2.064 */SLICE_117.B0 to *SLICE_117.FCO core/alru/rsub64/s9/SLICE_117
-ROUTE         1   e 0.001 *SLICE_117.FCO to *SLICE_116.FCI core/alru/rsub64/s9/sub_cry_0
-FCITOF1_DE  ---     1.298 *SLICE_116.FCI to */SLICE_116.F1 core/alru/rsub64/s9/SLICE_116
-ROUTE         3   e 1.905 */SLICE_116.F1 to *SLICE_2549.B1 core/alru/rsub64/s9/sub[2]
-CTOF_DEL    ---     0.923 *SLICE_2549.B1 to *SLICE_2549.F1 core/alru/rsub64/s9/SLICE_2549
-ROUTE         1   e 1.905 *SLICE_2549.F1 to *SLICE_1746.D1 core/alru/rsub64/s9/un3_qc_outlt3
-CTOF_DEL    ---     0.923 *SLICE_1746.D1 to *SLICE_1746.F1 core/alru/rsub64/SLICE_1746
-ROUTE         2   e 0.742 *SLICE_1746.F1 to *SLICE_1746.A0 core/alru/rsub64/c9
-CTOF_DEL    ---     0.923 *SLICE_1746.A0 to *SLICE_1746.F0 core/alru/rsub64/SLICE_1746
-ROUTE         1   e 1.905 *SLICE_1746.F0 to */SLICE_114.B0 core/alru/rsub64/sa/un1_c9_i
-C0TOFCO_DE  ---     2.064 */SLICE_114.B0 to *SLICE_114.FCO core/alru/rsub64/sa/SLICE_114
-ROUTE         1   e 0.001 *SLICE_114.FCO to *SLICE_113.FCI core/alru/rsub64/sa/sub_cry_0
-FCITOF1_DE  ---     1.298 *SLICE_113.FCI to */SLICE_113.F1 core/alru/rsub64/sa/SLICE_113
-ROUTE         3   e 1.905 */SLICE_113.F1 to */SLICE_965.B1 core/alru/sub_1[2]
-CTOF_DEL    ---     0.923 */SLICE_965.B1 to */SLICE_965.F1 core/SLICE_965
-ROUTE         1   e 1.905 */SLICE_965.F1 to *SLICE_1747.D0 core/alru/rsub64/sa/un3_qc_outlt3
-CTOF_DEL    ---     0.923 *SLICE_1747.D0 to *SLICE_1747.F0 core/alru/rsub64/SLICE_1747
-ROUTE         2   e 1.905 *SLICE_1747.F0 to *SLICE_1743.B0 core/alru/rsub64/ca
-CTOF_DEL    ---     0.923 *SLICE_1743.B0 to *SLICE_1743.F0 core/alru/SLICE_1743
-ROUTE         1   e 1.905 *SLICE_1743.F0 to */SLICE_111.B0 core/alru/rsub64/sb/un1_ca_i
-C0TOFCO_DE  ---     2.064 */SLICE_111.B0 to *SLICE_111.FCO core/alru/rsub64/sb/SLICE_111
-ROUTE         1   e 0.001 *SLICE_111.FCO to *SLICE_110.FCI core/alru/rsub64/sb/sub_cry_0
-FCITOF1_DE  ---     1.298 *SLICE_110.FCI to */SLICE_110.F1 core/alru/rsub64/sb/SLICE_110
-ROUTE         3   e 1.905 */SLICE_110.F1 to *SLICE_2548.B1 core/alru/rsub64/sb/sub[2]
-CTOF_DEL    ---     0.923 *SLICE_2548.B1 to *SLICE_2548.F1 core/alru/rsub64/sb/SLICE_2548
-ROUTE         1   e 1.905 *SLICE_2548.F1 to *SLICE_1744.D0 core/alru/rsub64/sb/un3_qc_outlt3
-CTOF_DEL    ---     0.923 *SLICE_1744.D0 to *SLICE_1744.F0 core/alru/rsub64/SLICE_1744
-ROUTE         2   e 1.905 *SLICE_1744.F0 to *SLICE_1740.B0 core/alru/rsub64/cb
-CTOF_DEL    ---     0.923 *SLICE_1740.B0 to *SLICE_1740.F0 core/alru/SLICE_1740
-ROUTE         1   e 1.905 *SLICE_1740.F0 to */SLICE_108.B0 core/alru/rsub64/sc/un1_cb_i
-C0TOFCO_DE  ---     2.064 */SLICE_108.B0 to *SLICE_108.FCO core/alru/rsub64/sc/SLICE_108
-ROUTE         1   e 0.001 *SLICE_108.FCO to *SLICE_107.FCI core/alru/rsub64/sc/sub_cry_0
-FCITOF1_DE  ---     1.298 *SLICE_107.FCI to */SLICE_107.F1 core/alru/rsub64/sc/SLICE_107
-ROUTE         3   e 1.905 */SLICE_107.F1 to *SLICE_1741.B1 core/alru/rsub64/sc/sub[2]
-CTOF_DEL    ---     0.923 *SLICE_1741.B1 to *SLICE_1741.F1 core/alru/rsub64/sc/SLICE_1741
-ROUTE         1   e 0.742 *SLICE_1741.F1 to *SLICE_1741.D0 core/alru/rsub64/sc/un3_qc_outlt3
-CTOF_DEL    ---     0.923 *SLICE_1741.D0 to *SLICE_1741.F0 core/alru/rsub64/sc/SLICE_1741
-ROUTE         2   e 1.905 *SLICE_1741.F0 to *SLICE_1737.A0 core/alru/rsub64/cc
-CTOF_DEL    ---     0.923 *SLICE_1737.A0 to *SLICE_1737.F0 core/alru/SLICE_1737
-ROUTE         1   e 1.905 *SLICE_1737.F0 to */SLICE_105.B0 core/alru/rsub64/sd/un1_cc_i
-C0TOFCO_DE  ---     2.064 */SLICE_105.B0 to *SLICE_105.FCO core/alru/rsub64/sd/SLICE_105
-ROUTE         1   e 0.001 *SLICE_105.FCO to *SLICE_104.FCI core/alru/rsub64/sd/sub_cry_0
-FCITOF1_DE  ---     1.298 *SLICE_104.FCI to */SLICE_104.F1 core/alru/rsub64/sd/SLICE_104
-ROUTE         3   e 1.905 */SLICE_104.F1 to *SLICE_1738.B1 core/alru/rsub64/sd/sub[2]
-CTOF_DEL    ---     0.923 *SLICE_1738.B1 to *SLICE_1738.F1 core/alru/rsub64/sd/SLICE_1738
-ROUTE         1   e 0.742 *SLICE_1738.F1 to *SLICE_1738.D0 core/alru/rsub64/sd/un3_qc_outlt3
-CTOF_DEL    ---     0.923 *SLICE_1738.D0 to *SLICE_1738.F0 core/alru/rsub64/sd/SLICE_1738
-ROUTE         2   e 1.905 *SLICE_1738.F0 to *SLICE_1734.A0 core/alru/rsub64/cd
-CTOF_DEL    ---     0.923 *SLICE_1734.A0 to *SLICE_1734.F0 core/alru/SLICE_1734
-ROUTE         1   e 1.905 *SLICE_1734.F0 to */SLICE_102.B0 core/alru/rsub64/se/un1_cd_i
-C0TOFCO_DE  ---     2.064 */SLICE_102.B0 to *SLICE_102.FCO core/alru/rsub64/se/SLICE_102
-ROUTE         1   e 0.001 *SLICE_102.FCO to *SLICE_101.FCI core/alru/rsub64/se/sub_cry_0
-FCITOF1_DE  ---     1.298 *SLICE_101.FCI to */SLICE_101.F1 core/alru/rsub64/se/SLICE_101
-ROUTE         3   e 1.905 */SLICE_101.F1 to *SLICE_1735.B1 core/alru/rsub64/se/sub[2]
-CTOF_DEL    ---     0.923 *SLICE_1735.B1 to *SLICE_1735.F1 core/alru/rsub64/se/SLICE_1735
-ROUTE         1   e 0.742 *SLICE_1735.F1 to *SLICE_1735.D0 core/alru/rsub64/se/un3_qc_outlt3
-CTOF_DEL    ---     0.923 *SLICE_1735.D0 to *SLICE_1735.F0 core/alru/rsub64/se/SLICE_1735
-ROUTE         2   e 1.905 *SLICE_1735.F0 to *SLICE_1732.A0 core/alru/rsub64/ce
-CTOF_DEL    ---     0.923 *SLICE_1732.A0 to *SLICE_1732.F0 core/alru/SLICE_1732
-ROUTE         1   e 1.905 *SLICE_1732.F0 to *f/SLICE_99.B0 core/alru/rsub64/sf/un1_ce_i
-C0TOFCO_DE  ---     2.064 *f/SLICE_99.B0 to */SLICE_99.FCO core/alru/rsub64/sf/SLICE_99
-ROUTE         1   e 0.001 */SLICE_99.FCO to */SLICE_98.FCI core/alru/rsub64/sf/sub_cry_0
-FCITOF1_DE  ---     1.298 */SLICE_98.FCI to *f/SLICE_98.F1 core/alru/rsub64/sf/SLICE_98
-ROUTE         3   e 1.905 *f/SLICE_98.F1 to *SLICE_2547.B1 core/alru/rsub64/sf/sub[2]
-CTOF_DEL    ---     0.923 *SLICE_2547.B1 to *SLICE_2547.F1 core/alru/rsub64/sf/SLICE_2547
-ROUTE         1   e 1.905 *SLICE_2547.F1 to *SLICE_1028.D1 core/alru/rsub64/un3_qc_outlt3_0
-CTOOFX_DEL  ---     1.359 *SLICE_1028.D1 to *ICE_1028.OFX0 core/alru/rsub64/qc_out_12/SLICE_1028
-ROUTE         1   e 1.905 *ICE_1028.OFX0 to *SLICE_1026.C1 core/alru/rsub64/N_472
-CTOOFX_DEL  ---     1.359 *SLICE_1026.C1 to *ICE_1026.OFX0 core/alru/rsub64/qc_out_14_i_m2/SLICE_1026
-ROUTE         1   e 0.001 *ICE_1026.OFX0 to *LICE_1026.FXB core/alru/rsub64/N_8830
-FXTOOFX_DE  ---     0.478 *LICE_1026.FXB to *ICE_1026.OFX1 core/alru/rsub64/qc_out_14_i_m2/SLICE_1026
-ROUTE         1   e 1.905 *ICE_1026.OFX1 to *SLICE_1034.A0 core/alru/N_8784
-CTOOFX_DEL  ---     1.359 *SLICE_1034.A0 to *ICE_1034.OFX0 core/alru/add64/alu_carry_6/SLICE_1034
-ROUTE         1   e 1.905 *ICE_1034.OFX0 to *SLICE_1887.A0 core/alru/add64/N_4104
-CTOF_DEL    ---     0.923 *SLICE_1887.A0 to *SLICE_1887.F0 core/alru/add64/SLICE_1887
-ROUTE         1   e 0.742 *SLICE_1887.F0 to *SLICE_1887.B1 core/alru/add64/N_4109
-CTOF_DEL    ---     0.923 *SLICE_1887.B1 to *SLICE_1887.F1 core/alru/add64/SLICE_1887
-ROUTE         1   e 1.905 *SLICE_1887.F1 to */SLICE_809.B1 core/alru/alu_carry
-CTOF_DEL    ---     0.923 */SLICE_809.B1 to */SLICE_809.F1 core/alru/SLICE_809
-ROUTE         1   e 0.742 */SLICE_809.F1 to */SLICE_809.A0 core/alru/N_1
-CTOF_DEL    ---     0.923 */SLICE_809.A0 to */SLICE_809.F0 core/alru/SLICE_809
-ROUTE         1   e 0.001 */SLICE_809.F0 to *SLICE_809.DI0 core/alru/f_carry_2 (to nclk_o_c)
+REG_DEL     ---     0.955 *LICE_1116.CLK to *SLICE_1116.Q0 core/dec_seq/SLICE_1116 (from nclk_o_c)
+ROUTE        61   e 1.905 *SLICE_1116.Q0 to *SLICE_1959.B1 core/seq_field_right[2]
+CTOF_DEL    ---     0.923 *SLICE_1959.B1 to *SLICE_1959.F1 core/alru/SLICE_1959
+ROUTE         5   e 1.905 *SLICE_1959.F1 to *SLICE_2777.A1 core/f0_2
+CTOF_DEL    ---     0.923 *SLICE_2777.A1 to *SLICE_2777.F1 core/alru/add64/SLICE_2777
+ROUTE         1   e 1.905 *SLICE_2777.F1 to */SLICE_192.B0 core/alru/add64/f0
+C0TOFCO_DE  ---     2.064 */SLICE_192.B0 to *SLICE_192.FCO core/alru/add64/a0/SLICE_192
+ROUTE         1   e 0.001 *SLICE_192.FCO to *SLICE_191.FCI core/alru/add64/a0/a_plus_b_plus_c_cry_0
+FCITOF1_DE  ---     1.298 *SLICE_191.FCI to */SLICE_191.F1 core/alru/add64/a0/SLICE_191
+ROUTE         2   e 1.905 */SLICE_191.F1 to *SLICE_1121.B1 core/alru/add64/a_plus_b_plus_c_11[2]
+CTOF_DEL    ---     0.923 *SLICE_1121.B1 to *SLICE_1121.F1 core/SLICE_1121
+ROUTE         4   e 1.905 *SLICE_1121.F1 to *SLICE_1978.A1 core/alru/add64/N_9068
+CTOF_DEL    ---     0.923 *SLICE_1978.A1 to *SLICE_1978.F1 core/alru/add64/SLICE_1978
+ROUTE         1   e 0.742 *SLICE_1978.F1 to *SLICE_1978.A0 core/alru/add64/c0
+CTOF_DEL    ---     0.923 *SLICE_1978.A0 to *SLICE_1978.F0 core/alru/add64/SLICE_1978
+ROUTE         1   e 1.905 *SLICE_1978.F0 to */SLICE_189.B0 core/alru/add64/a1/a_plus_b_plus_c_cry_0_0_RNO_3
+C0TOFCO_DE  ---     2.064 */SLICE_189.B0 to *SLICE_189.FCO core/alru/add64/a1/SLICE_189
+ROUTE         1   e 0.001 *SLICE_189.FCO to *SLICE_188.FCI core/alru/add64/a1/a_plus_b_plus_c_cry_0
+FCITOFCO_D  ---     0.317 *SLICE_188.FCI to *SLICE_188.FCO core/alru/add64/a1/SLICE_188
+ROUTE         1   e 0.001 *SLICE_188.FCO to *SLICE_187.FCI core/alru/add64/a1/a_plus_b_plus_c_cry_2
+FCITOF1_DE  ---     1.298 *SLICE_187.FCI to */SLICE_187.F1 core/alru/add64/a1/SLICE_187
+ROUTE         3   e 1.905 */SLICE_187.F1 to *SLICE_1786.A0 core/alru/add64/un2_qc_outlto4_1
+CTOF_DEL    ---     0.923 *SLICE_1786.A0 to *SLICE_1786.F0 core/alru/add64/SLICE_1786
+ROUTE         5   e 0.742 *SLICE_1786.F0 to *SLICE_1786.A1 core/alru/un2_qc_out
+CTOF_DEL    ---     0.923 *SLICE_1786.A1 to *SLICE_1786.F1 core/alru/add64/SLICE_1786
+ROUTE         1   e 1.905 *SLICE_1786.F1 to */SLICE_186.B0 core/alru/add64/un1_c1
+C0TOFCO_DE  ---     2.064 */SLICE_186.B0 to *SLICE_186.FCO core/alru/add64/a2/SLICE_186
+ROUTE         1   e 0.001 *SLICE_186.FCO to *SLICE_185.FCI core/alru/add64/a2/a_plus_b_plus_c_cry_0
+FCITOF1_DE  ---     1.298 *SLICE_185.FCI to */SLICE_185.F1 core/alru/add64/a2/SLICE_185
+ROUTE         2   e 1.905 */SLICE_185.F1 to *SLICE_1122.B1 core/alru/add64/a_plus_b_plus_c_0[2]
+CTOF_DEL    ---     0.923 *SLICE_1122.B1 to *SLICE_1122.F1 core/SLICE_1122
+ROUTE         3   e 1.905 *SLICE_1122.F1 to *SLICE_1977.A1 core/alru/add64/N_9062
+CTOF_DEL    ---     0.923 *SLICE_1977.A1 to *SLICE_1977.F1 core/alru/add64/SLICE_1977
+ROUTE         4   e 0.742 *SLICE_1977.F1 to *SLICE_1977.A0 core/alru/add64/c2
+CTOF_DEL    ---     0.923 *SLICE_1977.A0 to *SLICE_1977.F0 core/alru/add64/SLICE_1977
+ROUTE         1   e 1.905 *SLICE_1977.F0 to */SLICE_183.B0 core/alru/add64/a3/a_plus_b_plus_c_cry_0_0_RNO_2
+C0TOFCO_DE  ---     2.064 */SLICE_183.B0 to *SLICE_183.FCO core/alru/add64/a3/SLICE_183
+ROUTE         1   e 0.001 *SLICE_183.FCO to *SLICE_182.FCI core/alru/add64/a3/a_plus_b_plus_c_cry_0
+FCITOF1_DE  ---     1.298 *SLICE_182.FCI to */SLICE_182.F1 core/alru/add64/a3/SLICE_182
+ROUTE         2   e 1.905 */SLICE_182.F1 to *SLICE_3378.B0 core/alru/add64/a_plus_b_plus_c_1[2]
+CTOF_DEL    ---     0.923 *SLICE_3378.B0 to *SLICE_3378.F0 core/alru/add64/SLICE_3378
+ROUTE         3   e 1.905 *SLICE_3378.F0 to *SLICE_1976.A1 core/alru/add64/N_9
+CTOF_DEL    ---     0.923 *SLICE_1976.A1 to *SLICE_1976.F1 core/alru/add64/a3/SLICE_1976
+ROUTE         3   e 1.905 *SLICE_1976.F1 to *SLICE_3378.B1 core/alru/add64/c3_0
+CTOF_DEL    ---     0.923 *SLICE_3378.B1 to *SLICE_3378.F1 core/alru/add64/SLICE_3378
+ROUTE         1   e 1.905 *SLICE_3378.F1 to */SLICE_180.B0 core/alru/add64/un1_c3_0
+C0TOFCO_DE  ---     2.064 */SLICE_180.B0 to *SLICE_180.FCO core/alru/add64/a4/SLICE_180
+ROUTE         1   e 0.001 *SLICE_180.FCO to *SLICE_179.FCI core/alru/add64/a4/a_plus_b_plus_c_cry_0
+FCITOF1_DE  ---     1.298 *SLICE_179.FCI to */SLICE_179.F1 core/alru/add64/a4/SLICE_179
+ROUTE         2   e 1.905 */SLICE_179.F1 to *SLICE_3376.B0 core/alru/add64/a_plus_b_plus_c_7[2]
+CTOF_DEL    ---     0.923 *SLICE_3376.B0 to *SLICE_3376.F0 core/alru/SLICE_3376
+ROUTE         3   e 1.905 *SLICE_3376.F0 to *SLICE_1975.A1 core/alru/add64/N_9031
+CTOF_DEL    ---     0.923 *SLICE_1975.A1 to *SLICE_1975.F1 core/alru/add64/SLICE_1975
+ROUTE         4   e 0.742 *SLICE_1975.F1 to *SLICE_1975.A0 core/alru/add64/c4
+CTOF_DEL    ---     0.923 *SLICE_1975.A0 to *SLICE_1975.F0 core/alru/add64/SLICE_1975
+ROUTE         1   e 1.905 *SLICE_1975.F0 to */SLICE_177.B0 core/alru/add64/a5/a_plus_b_plus_c_cry_0_0_RNO_1
+C0TOFCO_DE  ---     2.064 */SLICE_177.B0 to *SLICE_177.FCO core/alru/add64/a5/SLICE_177
+ROUTE         1   e 0.001 *SLICE_177.FCO to *SLICE_176.FCI core/alru/add64/a5/a_plus_b_plus_c_cry_0
+FCITOF1_DE  ---     1.298 *SLICE_176.FCI to */SLICE_176.F1 core/alru/add64/a5/SLICE_176
+ROUTE         2   e 1.905 */SLICE_176.F1 to *SLICE_3379.B0 core/alru/add64/a_plus_b_plus_c_6[2]
+CTOF_DEL    ---     0.923 *SLICE_3379.B0 to *SLICE_3379.F0 core/alru/add64/SLICE_3379
+ROUTE         3   e 1.905 *SLICE_3379.F0 to *SLICE_1974.A1 core/alru/add64/N_9061
+CTOF_DEL    ---     0.923 *SLICE_1974.A1 to *SLICE_1974.F1 core/alru/add64/a5/SLICE_1974
+ROUTE         3   e 1.905 *SLICE_1974.F1 to *SLICE_3379.A1 core/alru/add64/c5
+CTOF_DEL    ---     0.923 *SLICE_3379.A1 to *SLICE_3379.F1 core/alru/add64/SLICE_3379
+ROUTE         1   e 1.905 *SLICE_3379.F1 to */SLICE_174.B0 core/alru/add64/un1_c5
+C0TOFCO_DE  ---     2.064 */SLICE_174.B0 to *SLICE_174.FCO core/alru/add64/a6/SLICE_174
+ROUTE         1   e 0.001 *SLICE_174.FCO to *SLICE_173.FCI core/alru/add64/a6/a_plus_b_plus_c_cry_0
+FCITOF1_DE  ---     1.298 *SLICE_173.FCI to */SLICE_173.F1 core/alru/add64/a6/SLICE_173
+ROUTE         2   e 1.905 */SLICE_173.F1 to *SLICE_3273.B0 core/alru/add64/a6/a_plus_b_plus_c[2]
+CTOF_DEL    ---     0.923 *SLICE_3273.B0 to *SLICE_3273.F0 core/alru/add64/a6/SLICE_3273
+ROUTE         3   e 1.905 *SLICE_3273.F0 to *SLICE_1972.A1 core/alru/add64/un2_qc_outlt3
+CTOF_DEL    ---     0.923 *SLICE_1972.A1 to *SLICE_1972.F1 core/alru/add64/a6/SLICE_1972
+ROUTE         3   e 1.905 *SLICE_1972.F1 to *SLICE_1120.A0 core/alru/add64/c6
+CTOF_DEL    ---     0.923 *SLICE_1120.A0 to *SLICE_1120.F0 core/SLICE_1120
+ROUTE         1   e 1.905 *SLICE_1120.F0 to */SLICE_171.B0 core/alru/add64/un1_c6
+C0TOFCO_DE  ---     2.064 */SLICE_171.B0 to *SLICE_171.FCO core/alru/add64/a7/SLICE_171
+ROUTE         1   e 0.001 *SLICE_171.FCO to *SLICE_170.FCI core/alru/add64/a7/a_plus_b_plus_c_cry_0
+FCITOF1_DE  ---     1.298 *SLICE_170.FCI to */SLICE_170.F1 core/alru/add64/a7/SLICE_170
+ROUTE         2   e 1.905 */SLICE_170.F1 to *SLICE_1122.B0 core/alru/add64/a_plus_b_plus_c_5[2]
+CTOF_DEL    ---     0.923 *SLICE_1122.B0 to *SLICE_1122.F0 core/SLICE_1122
+ROUTE         3   e 1.905 *SLICE_1122.F0 to *SLICE_1971.A1 core/alru/add64/N_7
+CTOF_DEL    ---     0.923 *SLICE_1971.A1 to *SLICE_1971.F1 core/alru/add64/a7/SLICE_1971
+ROUTE         3   e 1.905 *SLICE_1971.F1 to *SLICE_1962.B1 core/alru/add64/c7_0
+CTOF_DEL    ---     0.923 *SLICE_1962.B1 to *SLICE_1962.F1 core/alru/SLICE_1962
+ROUTE         1   e 1.905 *SLICE_1962.F1 to */SLICE_168.B0 core/alru/add64/un1_c7_0
+C0TOFCO_DE  ---     2.064 */SLICE_168.B0 to *SLICE_168.FCO core/alru/add64/a8/SLICE_168
+ROUTE         1   e 0.001 *SLICE_168.FCO to *SLICE_167.FCI core/alru/add64/a8/a_plus_b_plus_c_cry_0
+FCITOF1_DE  ---     1.298 *SLICE_167.FCI to */SLICE_167.F1 core/alru/add64/a8/SLICE_167
+ROUTE         2   e 1.905 */SLICE_167.F1 to *SLICE_1123.B1 core/alru/add64/a_plus_b_plus_c_10[2]
+CTOF_DEL    ---     0.923 *SLICE_1123.B1 to *SLICE_1123.F1 core/SLICE_1123
+ROUTE         4   e 1.905 *SLICE_1123.F1 to *SLICE_1969.A1 core/alru/add64/N_9069
+CTOF_DEL    ---     0.923 *SLICE_1969.A1 to *SLICE_1969.F1 core/alru/add64/SLICE_1969
+ROUTE         1   e 0.742 *SLICE_1969.F1 to *SLICE_1969.A0 core/alru/add64/c8
+CTOF_DEL    ---     0.923 *SLICE_1969.A0 to *SLICE_1969.F0 core/alru/add64/SLICE_1969
+ROUTE         1   e 1.905 *SLICE_1969.F0 to */SLICE_165.B0 core/alru/add64/a9/a_plus_b_plus_c_cry_0_0_RNO_0
+C0TOFCO_DE  ---     2.064 */SLICE_165.B0 to *SLICE_165.FCO core/alru/add64/a9/SLICE_165
+ROUTE         1   e 0.001 *SLICE_165.FCO to *SLICE_164.FCI core/alru/add64/a9/a_plus_b_plus_c_cry_0
+FCITOF1_DE  ---     1.298 *SLICE_164.FCI to */SLICE_164.F1 core/alru/add64/a9/SLICE_164
+ROUTE         2   e 1.905 */SLICE_164.F1 to *SLICE_3380.B0 core/alru/add64/a_plus_b_plus_c_3[2]
+CTOF_DEL    ---     0.923 *SLICE_3380.B0 to *SLICE_3380.F0 core/alru/add64/SLICE_3380
+ROUTE         3   e 1.905 *SLICE_3380.F0 to *SLICE_1968.A1 core/alru/add64/CO1_5
+CTOF_DEL    ---     0.923 *SLICE_1968.A1 to *SLICE_1968.F1 core/alru/add64/a9/SLICE_1968
+ROUTE         3   e 1.905 *SLICE_1968.F1 to *SLICE_3380.A1 core/alru/add64/c9
+CTOF_DEL    ---     0.923 *SLICE_3380.A1 to *SLICE_3380.F1 core/alru/add64/SLICE_3380
+ROUTE         1   e 1.905 *SLICE_3380.F1 to */SLICE_162.B0 core/alru/add64/un1_c9
+C0TOFCO_DE  ---     2.064 */SLICE_162.B0 to *SLICE_162.FCO core/alru/add64/aa/SLICE_162
+ROUTE         1   e 0.001 *SLICE_162.FCO to *SLICE_161.FCI core/alru/add64/aa/a_plus_b_plus_c_cry_0
+FCITOF1_DE  ---     1.298 *SLICE_161.FCI to */SLICE_161.F1 core/alru/add64/aa/SLICE_161
+ROUTE         2   e 1.905 */SLICE_161.F1 to *SLICE_1123.B0 core/alru/add64/a_plus_b_plus_c_8[2]
+CTOF_DEL    ---     0.923 *SLICE_1123.B0 to *SLICE_1123.F0 core/SLICE_1123
+ROUTE         3   e 1.905 *SLICE_1123.F0 to *SLICE_1967.A1 core/alru/add64/N_9060
+CTOF_DEL    ---     0.923 *SLICE_1967.A1 to *SLICE_1967.F1 core/alru/add64/SLICE_1967
+ROUTE         3   e 0.742 *SLICE_1967.F1 to *SLICE_1967.A0 core/alru/add64/ca
+CTOF_DEL    ---     0.923 *SLICE_1967.A0 to *SLICE_1967.F0 core/alru/add64/SLICE_1967
+ROUTE         1   e 1.905 *SLICE_1967.F0 to */SLICE_159.B0 core/alru/add64/ab/a_plus_b_plus_c_cry_0_0_RNO
+C0TOFCO_DE  ---     2.064 */SLICE_159.B0 to *SLICE_159.FCO core/alru/add64/ab/SLICE_159
+ROUTE         1   e 0.001 *SLICE_159.FCO to *SLICE_158.FCI core/alru/add64/ab/a_plus_b_plus_c_cry_0
+FCITOF1_DE  ---     1.298 *SLICE_158.FCI to */SLICE_158.F1 core/alru/add64/ab/SLICE_158
+ROUTE         2   e 1.905 */SLICE_158.F1 to *SLICE_3381.B0 core/alru/add64/a_plus_b_plus_c_4[2]
+CTOF_DEL    ---     0.923 *SLICE_3381.B0 to *SLICE_3381.F0 core/alru/add64/SLICE_3381
+ROUTE         3   e 1.905 *SLICE_3381.F0 to *SLICE_1966.A1 core/alru/add64/N_9043
+CTOF_DEL    ---     0.923 *SLICE_1966.A1 to *SLICE_1966.F1 core/alru/add64/ab/SLICE_1966
+ROUTE         3   e 1.905 *SLICE_1966.F1 to *SLICE_3381.A1 core/alru/add64/cb_0
+CTOF_DEL    ---     0.923 *SLICE_3381.A1 to *SLICE_3381.F1 core/alru/add64/SLICE_3381
+ROUTE         1   e 1.905 *SLICE_3381.F1 to */SLICE_156.B0 core/alru/add64/un1_cb
+C0TOFCO_DE  ---     2.064 */SLICE_156.B0 to *SLICE_156.FCO core/alru/add64/ac/SLICE_156
+ROUTE         1   e 0.001 *SLICE_156.FCO to *SLICE_155.FCI core/alru/add64/ac/a_plus_b_plus_c_cry_0
+FCITOFCO_D  ---     0.317 *SLICE_155.FCI to *SLICE_155.FCO core/alru/add64/ac/SLICE_155
+ROUTE         1   e 0.001 *SLICE_155.FCO to *SLICE_154.FCI core/alru/add64/ac/a_plus_b_plus_c_cry_2
+FCITOF1_DE  ---     1.298 *SLICE_154.FCI to */SLICE_154.F1 core/alru/add64/ac/SLICE_154
+ROUTE         3   e 1.905 */SLICE_154.F1 to *SLICE_1785.A0 core/alru/add64/un2_qc_outlto4_0
+CTOF_DEL    ---     0.923 *SLICE_1785.A0 to *SLICE_1785.F0 core/alru/add64/ac/SLICE_1785
+ROUTE         4   e 1.905 *SLICE_1785.F0 to *SLICE_1983.A1 core/alru/add64/un2_qc_out_0
+CTOF_DEL    ---     0.923 *SLICE_1983.A1 to *SLICE_1983.F1 core/alru/add64/SLICE_1983
+ROUTE         1   e 1.905 *SLICE_1983.F1 to */SLICE_153.B0 core/alru/add64/un1_cc
+C0TOFCO_DE  ---     2.064 */SLICE_153.B0 to *SLICE_153.FCO core/alru/add64/ad/SLICE_153
+ROUTE         1   e 0.001 *SLICE_153.FCO to *SLICE_152.FCI core/alru/add64/ad/a_plus_b_plus_c_cry_0
+FCITOF1_DE  ---     1.298 *SLICE_152.FCI to */SLICE_152.F1 core/alru/add64/ad/SLICE_152
+ROUTE         2   e 1.905 */SLICE_152.F1 to *SLICE_3382.B0 core/alru/add64/a_plus_b_plus_c[2]
+CTOF_DEL    ---     0.923 *SLICE_3382.B0 to *SLICE_3382.F0 core/alru/add64/SLICE_3382
+ROUTE         3   e 1.905 *SLICE_3382.F0 to *SLICE_1965.A1 core/alru/add64/CO1_1
+CTOF_DEL    ---     0.923 *SLICE_1965.A1 to *SLICE_1965.F1 core/alru/add64/ad/SLICE_1965
+ROUTE         3   e 1.905 *SLICE_1965.F1 to *SLICE_3382.A1 core/alru/add64/cd
+CTOF_DEL    ---     0.923 *SLICE_3382.A1 to *SLICE_3382.F1 core/alru/add64/SLICE_3382
+ROUTE         1   e 1.905 *SLICE_3382.F1 to */SLICE_150.B0 core/alru/add64/un1_cd
+C0TOFCO_DE  ---     2.064 */SLICE_150.B0 to *SLICE_150.FCO core/alru/add64/SLICE_150
+ROUTE         1   e 0.001 *SLICE_150.FCO to *SLICE_149.FCI core/alru/add64/ae/a_plus_b_plus_c_cry_0
+FCITOF1_DE  ---     1.298 *SLICE_149.FCI to */SLICE_149.F1 core/alru/add64/ae/SLICE_149
+ROUTE         4   e 1.905 */SLICE_149.F1 to */SLICE_818.B1 core/alru/add64/a_plus_b_plus_c_12[2]
+CTOF_DEL    ---     0.923 */SLICE_818.B1 to */SLICE_818.F1 core/alru/add64/ae/SLICE_818
+ROUTE         2   e 1.905 */SLICE_818.F1 to */SLICE_819.A1 core/alru/add64/CO1_0
+CTOF_DEL    ---     0.923 */SLICE_819.A1 to */SLICE_819.F1 core/alru/add64/ae/SLICE_819
+ROUTE         3   e 1.905 */SLICE_819.F1 to *SLICE_3377.A0 core/alru/add64/ce
+CTOF_DEL    ---     0.923 *SLICE_3377.A0 to *SLICE_3377.F0 core/SLICE_3377
+ROUTE         1   e 1.905 *SLICE_3377.F0 to */SLICE_147.B0 core/alru/add64/un1_ce
+C0TOFCO_DE  ---     2.064 */SLICE_147.B0 to *SLICE_147.FCO core/alru/add64/af/SLICE_147
+ROUTE         1   e 0.001 *SLICE_147.FCO to *SLICE_146.FCI core/alru/add64/af/a_plus_b_plus_c_cry_0
+FCITOF1_DE  ---     1.298 *SLICE_146.FCI to */SLICE_146.F1 core/alru/add64/af/SLICE_146
+ROUTE         2   e 1.905 */SLICE_146.F1 to  SLICE_1176.B1 core/alru/add64/a_plus_b_plus_c_2[2]
+CTOF_DEL    ---     0.923  SLICE_1176.B1 to  SLICE_1176.F1 SLICE_1176
+ROUTE         3   e 1.905  SLICE_1176.F1 to *SLICE_1964.A1 core/alru/add64/N_9059
+CTOF_DEL    ---     0.923 *SLICE_1964.A1 to *SLICE_1964.F1 core/alru/add64/af/SLICE_1964
+ROUTE         3   e 0.742 *SLICE_1964.F1 to *SLICE_1964.B0 core/alru/add64/un2_q_out_0
+CTOF_DEL    ---     0.923 *SLICE_1964.B0 to *SLICE_1964.F0 core/alru/add64/af/SLICE_1964
+ROUTE         1   e 1.905 *SLICE_1964.F0 to *SLICE_1231.A0 core/alru/add64/add_q[61]
+CTOOFX_DEL  ---     1.359 *SLICE_1231.A0 to *ICE_1231.OFX0 core/alru/add64/alu_q_7_0[61]/SLICE_1231
+ROUTE         1   e 1.905 *ICE_1231.OFX0 to *SLICE_2078.B0 core/alru/add64/N_6441
+CTOF_DEL    ---     0.923 *SLICE_2078.B0 to *SLICE_2078.F0 core/alru/add64/SLICE_2078
+ROUTE         1   e 1.905 *SLICE_2078.F0 to *SLICE_2064.B1 core/alru/add64/N_6573
+CTOF_DEL    ---     0.923 *SLICE_2064.B1 to *SLICE_2064.F1 core/alru/add64/SLICE_2064
+ROUTE         9   e 1.905 *SLICE_2064.F1 to *SLICE_3286.C1 core/alru/alu_q[61]
+CTOF_DEL    ---     0.923 *SLICE_3286.C1 to *SLICE_3286.F1 core/alru/SLICE_3286
+ROUTE         1   e 1.905 *SLICE_3286.F1 to */SLICE_448.B0 core/alru/N_4309
+CTOF_DEL    ---     0.923 */SLICE_448.B0 to */SLICE_448.F0 core/alru/SLICE_448
+ROUTE         1   e 0.001 */SLICE_448.F0 to *SLICE_448.DI0 core/alru/ABCD[1]_165[61] (to nclk_o_c)
                   --------
-                  230.447   (47.0% logic, 53.0% route), 90 logic levels.
+                  228.059   (45.9% logic, 54.1% route), 88 logic levels.
 
-Report:    4.331MHz is the maximum frequency for this preference.
+Report:    4.377MHz is the maximum frequency for this preference.
 
 <A name="mtw1_set_rs"></A><B><U><big>Report Summary</big></U></B>
 --------------
@@ -267,7 +263,7 @@ Report:    4.331MHz is the maximum frequency for this preference.
 Preference                              |   Constraint|       Actual|Levels
 ----------------------------------------------------------------------------
                                         |             |             |
-FREQUENCY NET "nclk_o_c" 2.080000 MHz ; |    2.080 MHz|    4.331 MHz|  90  
+FREQUENCY NET "nclk_o_c" 2.080000 MHz ; |    2.080 MHz|    4.377 MHz|  88  
                                         |             |             |
 ----------------------------------------------------------------------------
 
@@ -280,7 +276,7 @@ All preferences were met.
 
 Found 1 clocks:
 
-Clock Domain: nclk_o_c   Source: OSCH_inst.OSC   Loads: 750
+Clock Domain: nclk_o_c   Source: OSCH_inst.OSC   Loads: 917
    Covered under: FREQUENCY NET "nclk_o_c" 2.080000 MHz ;
 
 
@@ -290,11 +286,11 @@ Clock Domain: nclk_o_c   Source: OSCH_inst.OSC   Loads: 750
 Timing errors: 0  Score: 0
 Cumulative negative slack: 0
 
-Constraints cover 2147483647 paths, 1 nets, and 23514 connections (99.93% coverage)
+Constraints cover 2147483647 paths, 1 nets, and 26726 connections (99.94% coverage)
 
 --------------------------------------------------------------------------------
 <A name="Map_Twr_hold"></A><B><U><big>Lattice TRACE Report - Hold, Version Diamond (64-bit) 3.9.0.99.2</big></U></B>
-Sat Oct 07 14:49:40 2017
+Thu Oct 12 07:18:59 2017
 
 Copyright (c) 1991-1994 by NeoCAD Inc. All rights reserved.
 Copyright (c) 1995 AT&T Corp.   All rights reserved.
@@ -313,8 +309,8 @@ Report level:    verbose report, limited to 1 item per preference
 
 <A name="mtw1_hold_ps"></A><B><U><big>Preference Summary</big></U></B>
 
-<FONT COLOR=red><LI><A href='#map_twr_pref_1_0' Target='right'><FONT COLOR=red>FREQUENCY NET "nclk_o_c" 2.080000 MHz (8 errors)</FONT></A></LI>
-</FONT>            4096 items scored, 8 timing errors detected.
+<FONT COLOR=red><LI><A href='#map_twr_pref_1_0' Target='right'><FONT COLOR=red>FREQUENCY NET "nclk_o_c" 2.080000 MHz (256 errors)</FONT></A></LI>
+</FONT>            4096 items scored, 256 timing errors detected.
 
 BLOCK ASYNCPATHS
 BLOCK RESETPATHS
@@ -324,7 +320,7 @@ BLOCK RESETPATHS
 
 ================================================================================
 <A name="map_twr_pref_1_0"></A>Preference: FREQUENCY NET "nclk_o_c" 2.080000 MHz ;
-            4096 items scored, 8 timing errors detected.
+            4096 items scored, 256 timing errors detected.
 --------------------------------------------------------------------------------
 
 
@@ -333,26 +329,26 @@ Error: The following path exceeds requirements by 0.072ns
  Logical Details:  Cell type  Pin type       Cell/ASIC name  (clock net +/-)
 
    Source:         FF         Q              core/bus_ctrl/bus_addr[2]  (from nclk_o_c +)
-   Destination:    FF         Data in        disp_ctrl/lcdrame_ram/RAM0  (to nclk_o_c +)
-                   FF                        disp_ctrl/lcdrame_ram/RAM0
+   Destination:    FF         Data in        disp_ctrl/lcdrame_ram_3/RAM0  (to nclk_o_c +)
+                   FF                        disp_ctrl/lcdrame_ram_3/RAM0
 
    Delay:               0.257ns  (100.0% logic, 0.0% route), 2 logic levels.
 
  Constraint Details:
 
-      0.257ns physical path delay core/bus_ctrl/SLICE_324 to disp_ctrl/lcdrame_ram/SLICE_321 exceeds
+      0.257ns physical path delay core/bus_ctrl/SLICE_379 to disp_ctrl/lcdrame_ram_3/SLICE_373 exceeds
       0.329ns WAD_HLD and
       0.000ns delay constraint requirement (totaling 0.329ns) by 0.072ns
 
  Physical Path Details:
 
-      Data path core/bus_ctrl/SLICE_324 to disp_ctrl/lcdrame_ram/SLICE_321:
+      Data path core/bus_ctrl/SLICE_379 to disp_ctrl/lcdrame_ram_3/SLICE_373:
 
    Name    Fanout   Delay (ns)          Site               Resource
-REG_DEL     ---     0.257 *SLICE_324.CLK to */SLICE_324.Q0 core/bus_ctrl/SLICE_324 (from nclk_o_c)
-ROUTE         6   e 0.000 */SLICE_324.Q0 to */SLICE_320.A0 addr_o_c[2]
-ZERO_DEL    ---     0.000 */SLICE_320.A0 to *ICE_320.WADO0 disp_ctrl/lcdrame_ram/SLICE_320
-ROUTE         2   e 0.000 *ICE_320.WADO0 to *LICE_321.WAD0 disp_ctrl/lcdrame_ram/WAD0_INT (to nclk_o_c)
+REG_DEL     ---     0.257 *SLICE_379.CLK to */SLICE_379.Q0 core/bus_ctrl/SLICE_379 (from nclk_o_c)
+ROUTE        38   e 0.000 */SLICE_379.Q0 to */SLICE_372.A0 addr_o_c[2]
+ZERO_DEL    ---     0.000 */SLICE_372.A0 to *ICE_372.WADO0 disp_ctrl/lcdrame_ram_3/SLICE_372
+ROUTE         2   e 0.000 *ICE_372.WADO0 to *LICE_373.WAD0 disp_ctrl/lcdrame_ram_3/WAD0_INT (to nclk_o_c)
                   --------
                     0.257   (100.0% logic, 0.0% route), 2 logic levels.
 
@@ -372,21 +368,13 @@ FREQUENCY NET "nclk_o_c" 2.080000 MHz ; |     0.000 ns|    -0.072 ns|   2 *
 ----------------------------------------------------------------------------
 Critical Nets                           |   Loads|  Errors| % of total
 ----------------------------------------------------------------------------
-disp_ctrl/lcdrame_ram/WAD3_INT          |       2|       2|     25.00%
+addr_o_c[5]                             |      38|      64|     25.00%
                                         |        |        |
-disp_ctrl/lcdrame_ram/WAD2_INT          |       2|       2|     25.00%
+addr_o_c[4]                             |      37|      64|     25.00%
                                         |        |        |
-disp_ctrl/lcdrame_ram/WAD1_INT          |       2|       2|     25.00%
+addr_o_c[3]                             |      37|      64|     25.00%
                                         |        |        |
-disp_ctrl/lcdrame_ram/WAD0_INT          |       2|       2|     25.00%
-                                        |        |        |
-addr_o_c[2]                             |       6|       2|     25.00%
-                                        |        |        |
-addr_o_c[3]                             |       5|       2|     25.00%
-                                        |        |        |
-addr_o_c[4]                             |       5|       2|     25.00%
-                                        |        |        |
-addr_o_c[5]                             |       5|       2|     25.00%
+addr_o_c[2]                             |      38|      64|     25.00%
                                         |        |        |
 ----------------------------------------------------------------------------
 
@@ -396,26 +384,26 @@ addr_o_c[5]                             |       5|       2|     25.00%
 
 Found 1 clocks:
 
-Clock Domain: nclk_o_c   Source: OSCH_inst.OSC   Loads: 750
+Clock Domain: nclk_o_c   Source: OSCH_inst.OSC   Loads: 917
    Covered under: FREQUENCY NET "nclk_o_c" 2.080000 MHz ;
 
 
 <A name="mtw1_hold_ts"></A><B><U><big>Timing summary (Hold):</big></U></B>
 ---------------
 
-Timing errors: 8  Score: 576
-Cumulative negative slack: 576
+Timing errors: 256  Score: 18432
+Cumulative negative slack: 18432
 
-Constraints cover 2147483647 paths, 1 nets, and 23514 connections (99.93% coverage)
+Constraints cover 2147483647 paths, 1 nets, and 26726 connections (99.94% coverage)
 
 
 
 <A name="mtw1_ts"></A><B><U><big>Timing summary (Setup and Hold):</big></U></B>
 ---------------
 
-Timing errors: 0 (setup), 8 (hold)
-Score: 0 (setup), 576 (hold)
-Cumulative negative slack: 576 (0+576)
+Timing errors: 0 (setup), 256 (hold)
+Score: 0 (setup), 18432 (hold)
+Cumulative negative slack: 18432 (0+18432)
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------

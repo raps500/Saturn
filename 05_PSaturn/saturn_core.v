@@ -49,21 +49,14 @@ wire [4:0] ibus_pre_opcode_length; // length of opcode in the pre-fetched buffer
 wire [19:0] ibus_pre_fetched_opcode_addr;
 wire ibus_ready;        // the current pre-fetch buffer has a valid opcode
 
-// Internal Data interface
-wire [19:0] data_addr;  // address of the current transfer
 wire [3:0] data_size;   // size in nibbles of the current transfer
-wire [63:0] data_to_mem;// data register to write or read
-wire [63:0] data_from_mem;  // read data from memory, register aligned
-wire data_read;         // read data from memory strobe
-wire data_write;        // write data to memory strobe
-wire data_read_ready;   // read data from memory completed
-wire data_write_ready;  // write data to memory completed
+wire data_rw_ready;     // read/write data from/to memory completed
 
-assign data_read = 1'b0;
-assign data_write = 1'b0;
-wire [ 0: 0] seq_showregs           ;
+wire [ 0: 0] seq_showregs          ;
 wire [ 0: 0] seq_write_dst         ;
 wire [ 0: 0] seq_write_op1         ;
+wire [ 0: 0] seq_data_read         ;
+wire [ 0: 0] seq_data_write        ;
 wire [ 0: 0] seq_latch_alu_regs    ;
 wire [ 0: 0] seq_forced_carry      ;
 wire [ 0: 0] seq_forced_hex        ;
@@ -93,22 +86,19 @@ wire [ 0: 0] seq_pull_rstk         ;
 wire [19: 0] alru_PC               ;
 wire [15: 0] bus_IN                ;
 wire [11: 0] alru_OUT              ;
-wire [ 0: 0] seq_dp_sel_in         ;
 wire [19: 0] alru_Dn               ;
 
 saturn_bus_controller bus_ctrl(
     .clk_in                             (clk_in),           // BUS and cpu c
     .reset_in                           (reset_in),
-    
+    // external memory port 
     .bus_addr_o                         (addr_o),           // address bus,
     .bus_rd_o                           (oe_o),             // read strobe
     .bus_we_o                           (we_o),             // write strobe
-
     .bus_data_in                        (data_in),          // read data bus
     .bus_data_o                         (data_o),           // write data bus
-
     .bus_data_io                        (),    // bidirectional
-
+    // instruction port
     .ibus_addr_in                       (ibus_addr),        // new fetch address
     .ibus_flush_q_in                    (ibus_flush_queue), // force flush t
     .ibus_fetch_in                      (ibus_fetch),       // fetch strobe,
@@ -118,235 +108,102 @@ saturn_bus_controller bus_ctrl(
     .ibus_pre_fetched_opcode_length_o   (ibus_pre_opcode_length), // length
     .ibus_pre_fetched_opcode_addr_o     (ibus_pre_fetched_opcode_addr), // address
     .ibus_ready_o                       (ibus_ready),       // asserted when opcode is fully loaded
-
-    .data_addr_in                       (data_addr),        // data address
+    // data port
+    .data_addr_in                       (alru_Dn),          // data address
     .data_size_in                       (data_size),        // size of data
-    .data_data_in                       (data_to_mem),      // data to be written
-    .data_field_left_in                 (seq_field_left),  // data mask
-    .data_field_right_in                (seq_field_right), // data mask
-
-    .data_data_o                        (data_from_mem),    // read data
-    .data_read_in                       (data_read),
-    .data_write_in                      (data_write),
-    .data_read_ready_o                  (data_read_ready),
-    .data_write_ready_o                 (data_write_ready)
+    .data_data_in                       (alru_data_to_memory),      // data to be written
+    .data_field_left_in                 (seq_field_left),   // data mask
+    .data_field_right_in                (seq_field_right),  // data mask
+    .data_data_o                        (bus_data_from_memory),    // read data
+    .data_read_in                       (seq_data_read),
+    .data_write_in                      (seq_data_write),
+    .data_rw_ready_o                    (data_rw_ready)
 );
 
 saturn_decoder_sequencer dec_seq(
-    .clk_in                 (clk_in),
-    .reset_in               (reset_in),
-    .irq_in                 (),
-    .irqen_in               (),
-    .irq_ack_o              (),
-    .showregs_o             (seq_showregs       ),
-    .ibus_addr_o            (ibus_addr),
-    .ibus_flush_q_o         (ibus_flush_queue),
-    .ibus_fetch_o           (ibus_fetch),
-    .ibus_fetch_ack_o       (ibus_fetch_ack),
+    .clk_in                             (clk_in),
+    .reset_in                           (reset_in),
+    .irq_in                             (1'b0),
+    .irqen_in                           (1'b0),
+    .irq_ack_o                          (),
+    .showregs_o                         (seq_showregs       ),
+    .ibus_addr_o                        (ibus_addr),
+    .ibus_flush_q_o                     (ibus_flush_queue),
+    .ibus_fetch_o                       (ibus_fetch),
+    .ibus_fetch_ack_o                   (ibus_fetch_ack),
     .ibus_pre_fetched_opcode_in         (ibus_pre_opcode),
     .ibus_pre_fetched_opcode_length_in  (ibus_pre_opcode_length),
     .ibus_pre_fetched_opcode_addr_in    (ibus_pre_fetched_opcode_addr),
-    .ibus_ready_in          (ibus_ready),
-
-    .write_dst_o            (seq_write_dst),
-    .write_op1_o            (seq_write_op1),
-    .latch_alu_regs_o       (seq_latch_alu_regs),
-    .forced_carry_o         (seq_forced_carry),
-    .forced_hex_o           (seq_forced_hex        ),
-    .op1_reg_o              (seq_op1_reg),
-    .op2_reg_o              (seq_op2_reg),
-    .dst_reg_o              (seq_dst_reg),
-    .op_literal_o           (seq_op_literal),
-    .set_decimal_o          (seq_set_decimal),
-    .set_hexadecimal_o      (seq_set_hex),
-    .left_mask_o            (seq_field_left ),
-    .right_mask_o           (seq_field_right),
-    .alu_op_o               (seq_alu_op),
-    .addr_o                 (seq_addr),
-    .write_sticky_bit_o     (seq_write_sticky_bit),
-    .write_carry_o          (seq_write_carry),
-    .clr_carry_o            (seq_clr_carry),
-    .set_carry_o            (seq_set_carry),
-    .carry_in               (alru_carry),
-    .shift_alu_q_o          (seq_shift_alu_q       ),
-    .reg_P_in               (alru_P                ),
-    .add_pc_o               (seq_add_pc),
-    .load_pc_o              (seq_load_pc),
-    .push_rstk_o            (seq_push_rstk         ),
-    .pull_rstk_o            (seq_pull_rstk         ),
-    .PC_in                  (alru_PC),
-    .dp_sel_o               (seq_dp_sel_in),
-    .Dn_in                  (alru_Dn)
+    .ibus_ready_in                      (ibus_ready),
+    .data_write_o                       (seq_data_write),
+    .data_read_o                        (seq_data_read),
+    .read_write_ready_in                (data_rw_ready),
+    .write_dst_o                        (seq_write_dst),
+    .write_op1_o                        (seq_write_op1),
+    .latch_alu_regs_o                   (seq_latch_alu_regs),
+    .forced_carry_o                     (seq_forced_carry),
+    .forced_hex_o                       (seq_forced_hex        ),
+    .op1_reg_o                          (seq_op1_reg),
+    .op2_reg_o                          (seq_op2_reg),
+    .dst_reg_o                          (seq_dst_reg),
+    .op_literal_o                       (seq_op_literal),
+    .set_decimal_o                      (seq_set_decimal),
+    .set_hexadecimal_o                  (seq_set_hex),
+    .left_mask_o                        (seq_field_left ),
+    .right_mask_o                       (seq_field_right),
+    .alu_op_o                           (seq_alu_op),
+    .addr_o                             (seq_addr),
+    .write_sticky_bit_o                 (seq_write_sticky_bit),
+    .write_carry_o                      (seq_write_carry),
+    .clr_carry_o                        (seq_clr_carry),
+    .set_carry_o                        (seq_set_carry),
+    .carry_in                           (alru_carry),
+    .shift_alu_q_o                      (seq_shift_alu_q       ),
+    .reg_P_in                           (alru_P                ),
+    .add_pc_o                           (seq_add_pc),
+    .load_pc_o                          (seq_load_pc),
+    .push_rstk_o                        (seq_push_rstk         ),
+    .pull_rstk_o                        (seq_pull_rstk         ),
+    .PC_in                              (alru_PC)
 );
 
 saturn_alru alru(
-	.clk_in                 (clk_in                ),
-	.showregs_in            (seq_showregs          ),
-    .write_dst_in           (seq_write_dst         ),
-    .write_op1_in           (seq_write_op1         ),
-    .latch_alu_regs_in      (seq_latch_alu_regs    ),
-    .forced_carry_in        (seq_forced_carry      ),
-    .forced_hex_in          (seq_forced_hex        ),
-    .op1_reg_in             (seq_op1_reg           ),
-    .op2_reg_in             (seq_op2_reg           ),
-    .dst_reg_in             (seq_dst_reg           ),
-    .set_decimal_in         (seq_set_decimal       ),
-    .set_hexadecimal_in     (seq_set_hex           ),
-    .data_in                (bus_data_from_memory  ),
-    .data_o                 (alru_data_to_memory   ),
-    .left_mask_in           (seq_field_left        ),
-    .right_mask_in          (seq_field_right       ),
-    .alu_op_in              (seq_alu_op            ),
-    .op_literal_in          (seq_op_literal        ),
-    .write_sticky_bit_in    (seq_write_sticky_bit),
-    .write_carry_in         (seq_write_carry),
-    .clr_carry_in           (seq_clr_carry         ),
-    .set_carry_in           (seq_set_carry         ),
-    .carry_o                (alru_carry            ),
-    .shift_alu_q_in         (seq_shift_alu_q       ),
-    .P_o                    (alru_P                ),
-    .add_pc_in              (seq_add_pc            ),
-    .push_rstk_in           (seq_push_rstk         ),
-    .pull_rstk_in           (seq_pull_rstk         ),
-    .bwrite_fetched_pc_in   (ibus_ready            ), // write back fetched PC
-    .fetched_PC_in          (ibus_pre_fetched_opcode_addr),
-    .PC_o                   (alru_PC               ),
-    .IN_in                  (bus_IN                ),
-    .OUT_o                  (alru_OUT              ),
-    .dp_sel_in              (seq_dp_sel_in         ),
-    .Dn_o                   (alru_Dn               )
+	.clk_in                             (clk_in                ),
+	.showregs_in                        (seq_showregs          ),
+    .write_dst_in                       (seq_write_dst         ),
+    .write_op1_in                       (seq_write_op1         ),
+    .latch_alu_regs_in                  (seq_latch_alu_regs    ),
+    .forced_carry_in                    (seq_forced_carry      ),
+    .forced_hex_in                      (seq_forced_hex        ),
+    .op1_reg_in                         (seq_op1_reg           ),
+    .op2_reg_in                         (seq_op2_reg           ),
+    .dst_reg_in                         (seq_dst_reg           ),
+    .set_decimal_in                     (seq_set_decimal       ),
+    .set_hexadecimal_in                 (seq_set_hex           ),
+    .data_in                            (bus_data_from_memory  ),
+    .data_o                             (alru_data_to_memory   ),
+    .left_mask_in                       (seq_field_left        ),
+    .right_mask_in                      (seq_field_right       ),
+    .alu_op_in                          (seq_alu_op            ),
+    .op_literal_in                      (seq_op_literal        ),
+    .write_sticky_bit_in                (seq_write_sticky_bit),
+    .write_carry_in                     (seq_write_carry),
+    .clr_carry_in                       (seq_clr_carry         ),
+    .set_carry_in                       (seq_set_carry         ),
+    .carry_o                            (alru_carry            ),
+    .shift_alu_q_in                     (seq_shift_alu_q       ),
+    .P_o                                (alru_P                ),
+    .add_pc_in                          (seq_add_pc            ),
+    .push_rstk_in                       (seq_push_rstk         ),
+    .pull_rstk_in                       (seq_pull_rstk         ),
+    .bwrite_fetched_pc_in               (ibus_ready            ), // write back fetched PC
+    .fetched_PC_in                      (ibus_pre_fetched_opcode_addr),
+    .PC_o                               (alru_PC               ),
+    .IN_in                              (bus_IN                ),
+    .OUT_o                              (alru_OUT              ),
+    .Dn_o                               (alru_Dn                )
     );
 
-
-/*
-llf2_flags_unit flags_unit(
-    .clk_in(clk_in),
-    .exe_in(execute),
-
-    .sethex_in(sethex),
-    .setdec_in(setdec),
-    .setxm_in(setxm),
-    .setmp_in(setmp),
-    .setsb_in(setsb | set_stickybit_from_alu),
-    .setsr_in(setsr),
-    .setint_in(setint),
-    .clrxm_in(clrxm),
-    .clrmp_in(clrmp),
-    .clrsb_in(clrsb),
-    .clrsr_in(clrsr),
-    .tstxm_in(tstxm),
-    .tstmp_in(tstmp),
-    .tstsb_in(tstsb),
-    .tstsr_in(tstsr),
-    .clrint_in(clrint),
-    .clrhst_in(clrhst),
-    .set_carry_in(set_carry | set_carry_from_alu | test_cond_true_st | test_cond_true_hst),
-    .clr_carry_in(clr_carry | clr_carry_from_alu | test_cond_false_st),
-    .irqen_o(irqen),
-    .dec_o(decimal),
-    .carry_o(carry),
-    .test_cond_true_o(test_cond_true_hst)
-    );
-
-`ifdef HAS_TRACE_UNIT
-llf2_trace_unit tu(
-    .clk_in(clk_in),
-    .reset_in(reset_in),       // asserted high reset
-
-    .data_in(alu_op1),        // register data at current address
-    .op1_nib_in(op1_nib),     // nibble address of register 1 from decoder unit
-    .reg_op1_in(reg_op1),    // alu operand, register 1 from decoder unit
-    .pc_in(pc),          // alu operand, register 1 from decoder unit
-
-    .op1_nib_o(trace_op1_nib),      // address of operand 1 nibble to register unit
-    .reg_op1_o(trace_reg_op1),     // alu operand, register 1 to register unit
-
-    .trace_start_in(trace_start), // assert to start trace
-    .trace_end_o(trace_end),    // wait for this signal to proceed with next intsruction
-
-    .txd_o(txd_o)    // serial data
-    );
-`endif
-*/
-
-endmodule
-
-
-/* A hw/sw flags unit
- * with 3 functions
- * set, clear, test
- */
-module llf2_flags_unit(
-    input wire          clk_in,
-    input wire          exe_in,
-
-    input wire          sethex_in,
-    input wire          setdec_in,
-    input wire          setxm_in,
-    input wire          setmp_in,
-    input wire          setsb_in,
-    input wire          setsr_in,
-    input wire          setint_in,
-    input wire          clrxm_in,
-    input wire          clrmp_in,
-    input wire          clrsb_in,
-    input wire          clrsr_in,
-    input wire          tstxm_in,
-    input wire          tstmp_in,
-    input wire          tstsb_in,
-    input wire          tstsr_in,
-    input wire          clrint_in,
-    input wire          clrhst_in,
-    input wire          set_carry_in,
-    input wire          clr_carry_in,
-    output wire         irqen_o,        // interrupts enabled
-    output wire         dec_o,
-    output wire         carry_o,
-    output wire         test_cond_true_o
-
-    );
-
-reg dec;
-reg carry;
-reg xm; // external module missing
-reg mp; // module pulled
-reg sb; // sticky bit
-reg sr; // Service request
-reg irqen;
-
-assign dec_o = dec;
-assign carry_o = carry;
-assign irqen_o = irqen;
-
-assign test_cond_true_o = (tstxm_in && (~xm)) || (tstmp_in && (~mp)) || (tstsb_in && (~sb)) || (tstsr_in && (~sr));
-
-always @(posedge clk_in)
-    begin
-        if (sethex_in & exe_in) dec <= 1'b0;
-        if (setdec_in & exe_in) dec <= 1'b1;
-        if (setxm_in) xm <= 1'b1;
-        if (clrxm_in | clrhst_in) xm <= 1'b0;
-        if (setmp_in) mp <= 1'b1;
-        if (clrmp_in | clrhst_in) mp <= 1'b0;
-        if (setsb_in) sb <= 1'b1;
-        if (clrsb_in | clrhst_in) sb <= 1'b0;
-        if (setsr_in) sr <= 1'b1;
-        if (clrsr_in | clrhst_in) sr <= 1'b0;
-        if (set_carry_in & exe_in) carry <= 1'b1;
-        if (clr_carry_in & exe_in) carry <= 1'b0;
-        if (setint_in & exe_in) irqen <= 1'b1;
-        if (clrint_in & exe_in) irqen <= 1'b0;
-    end
-initial
-    begin
-        xm = 1'b0;
-        sb = 1'b0;
-        sr = 1'b0;
-        mp = 1'b0;
-        dec = 1'b0; // starts in hex mode
-        carry = 1'b0;
-        irqen = 1'b0;
-    end
 endmodule
 
 /* 6 nibbles 1LG3 Timer
